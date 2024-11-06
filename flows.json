@@ -1089,7 +1089,7 @@
         "id": "9b111b1a593b741c",
         "type": "inject",
         "z": "fce55c80ba409b3d",
-        "name": "initialize",
+        "name": "reload",
         "props": [
             {
                 "p": "payload"
@@ -1106,7 +1106,7 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 100,
+        "x": 90,
         "y": 680,
         "wires": [
             [
