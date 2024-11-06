@@ -1,0 +1,4675 @@
+[
+    {
+        "id": "fce55c80ba409b3d",
+        "type": "tab",
+        "label": "dispatch",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "a39c97029f2c005f",
+        "type": "tab",
+        "label": "app",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d6d8802f46b4aa03",
+        "type": "tab",
+        "label": "ASHP0",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ce7503bf65214c43",
+        "type": "tab",
+        "label": "Controller",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0b049155917211c7",
+        "type": "tab",
+        "label": "bridge",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "852c7fb3560fe3c5",
+        "type": "tab",
+        "label": "UI",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "892c223a74ad0925",
+        "type": "tab",
+        "label": "recycling bin",
+        "disabled": true,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "0ada38113f2dc695",
+        "type": "subflow",
+        "name": "Process Simulation",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 37,
+                "y": 103,
+                "wires": [
+                    {
+                        "id": "5198a3b093941629"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 728.5,
+                "y": 294,
+                "wires": [
+                    {
+                        "id": "f7ed1a411069eb16",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#DDAA99",
+        "status": {
+            "x": 360,
+            "y": 40,
+            "wires": []
+        }
+    },
+    {
+        "id": "91e4421d067a2d1b",
+        "type": "junction",
+        "z": "fce55c80ba409b3d",
+        "x": 560,
+        "y": 240,
+        "wires": [
+            [
+                "6ac4b5a2620be04c"
+            ]
+        ]
+    },
+    {
+        "id": "2f07922ce4dbc1ad",
+        "type": "junction",
+        "z": "0b049155917211c7",
+        "x": 100,
+        "y": 340,
+        "wires": [
+            [
+                "55db0f5201cd5d76",
+                "154f1ee8c4c69a62"
+            ]
+        ]
+    },
+    {
+        "id": "d8c9fe5d3202c415",
+        "type": "junction",
+        "z": "852c7fb3560fe3c5",
+        "x": 600,
+        "y": 1120,
+        "wires": [
+            [
+                "2812b7408327b47f",
+                "17424e81709a438d"
+            ]
+        ]
+    },
+    {
+        "id": "657e75936deb6112",
+        "type": "junction",
+        "z": "d6d8802f46b4aa03",
+        "x": 580,
+        "y": 40,
+        "wires": [
+            [
+                "faf9c12a90fda8f1",
+                "0b3d1bb1f851d520"
+            ]
+        ]
+    },
+    {
+        "id": "2b42a705743e033e",
+        "type": "junction",
+        "z": "892c223a74ad0925",
+        "x": 380,
+        "y": 180,
+        "wires": [
+            [
+                "71fb77d41d8abc20"
+            ]
+        ]
+    },
+    {
+        "id": "2ce60664f6ba7120",
+        "type": "mqtt-broker",
+        "name": "hivemq-cloud",
+        "broker": "mqtts://c07335216ae5441aaa13f083bcff6484.s2.eu.hivemq.cloud",
+        "port": "1883",
+        "tls": "",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "2a239ef334400a8a",
+        "type": "influxdb",
+        "d": true,
+        "hostname": "eu-central-1-1.aws.cloud2.influxdata.com",
+        "port": "8086",
+        "protocol": "http",
+        "database": "caxton",
+        "name": "PUNL-caxtonLive-forever",
+        "usetls": true,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://eu-central-1-1.aws.cloud2.influxdata.com",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "fc5756df616577df",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-light",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#0094CE",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#4B7930",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#0094CE",
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#0094CE",
+                    "edited": false
+                },
+                "page-backgroundColor": {
+                    "value": "#fafafa",
+                    "edited": false
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-textColor": {
+                    "value": "#1bbfff",
+                    "edited": false
+                },
+                "group-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "group-backgroundColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "widget-textColor": {
+                    "value": "#111111",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0094ce",
+                    "edited": false
+                },
+                "widget-borderColor": {
+                    "value": "#ffffff",
+                    "edited": false
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey",
+                "palette": "light"
+            }
+        },
+        "site": {
+            "name": "Caxton house",
+            "hideToolbar": "true",
+            "allowSwipe": "mouse",
+            "lockMenu": "icon",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 0,
+                "gy": 0,
+                "cx": 0,
+                "cy": 0,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "d13f657bb21cf60b",
+        "type": "ui_tab",
+        "name": "Tab 2",
+        "icon": "dashboard",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "ca082d2653ec9647",
+        "type": "ui_group",
+        "name": "Temperatures",
+        "tab": "d13f657bb21cf60b",
+        "order": 1,
+        "disp": true,
+        "width": "4",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "9d1ae28e263fad2a",
+        "type": "mqtt-broker",
+        "name": "mosquitto",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "7d7a9bc368fd645d",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "local-influx",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "1.8-flux",
+        "url": "http://localhost:8086",
+        "rejectUnauthorized": false
+    },
+    {
+        "id": "b98f35a2fb7e0ecc",
+        "type": "ui_group",
+        "name": "Link quality",
+        "tab": "d13f657bb21cf60b",
+        "order": 2,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "9a98fe065fa4983d",
+        "type": "ui_group",
+        "name": "Link quality 2",
+        "tab": "d13f657bb21cf60b",
+        "order": 3,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "09d12ddef49ef471",
+        "type": "ui_group",
+        "name": "Link quality",
+        "tab": "0e4f818d96f95d81",
+        "order": 3,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "36d8114ce89b110c",
+        "type": "ui_group",
+        "name": "Battery",
+        "tab": "0e4f818d96f95d81",
+        "order": 4,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "8419219ab0a3753a",
+        "type": "ui_group",
+        "name": "Location",
+        "tab": "0e4f818d96f95d81",
+        "order": 1,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5609fe8f06e93799",
+        "type": "ui_group",
+        "name": "°C",
+        "tab": "0e4f818d96f95d81",
+        "order": 2,
+        "disp": true,
+        "width": 4,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cb16ba9be27b8f82",
+        "type": "ui_group",
+        "name": "Table dense",
+        "tab": "309668f104077761",
+        "order": 1,
+        "disp": true,
+        "width": "14",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0e4f818d96f95d81",
+        "type": "ui_tab",
+        "name": "Table working",
+        "icon": "dashboard",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "309668f104077761",
+        "type": "ui_tab",
+        "name": "Tab 3",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "adab1244e77b6fc9",
+        "type": "ui_group",
+        "name": "Schedule",
+        "tab": "4443254c6e9b9368",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "4443254c6e9b9368",
+        "type": "ui_tab",
+        "name": "Schedule",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "6db0e35f8056298a",
+        "type": "serial-port",
+        "name": "USB0",
+        "serialport": "/dev/ttyUSB0",
+        "serialbaud": "19200",
+        "databits": "8",
+        "parity": "none",
+        "stopbits": "1",
+        "waitfor": "",
+        "dtr": "none",
+        "rts": "none",
+        "cts": "none",
+        "dsr": "none",
+        "newline": "100",
+        "bin": "bin",
+        "out": "interbyte",
+        "addchar": "",
+        "responsetimeout": "10000"
+    },
+    {
+        "id": "c6b56e0744603b80",
+        "type": "modbus-client",
+        "name": "ashp0-modbus",
+        "clienttype": "tcp",
+        "bufferCommands": true,
+        "stateLogEnabled": false,
+        "queueLogEnabled": true,
+        "failureLogEnabled": true,
+        "tcpHost": "192.168.1.240",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB",
+        "serialType": "RTU-BUFFERD",
+        "serialBaudrate": "9600",
+        "serialDatabits": "8",
+        "serialStopbits": "1",
+        "serialParity": "none",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": 1,
+        "commandDelay": 1,
+        "clientTimeout": 10000,
+        "reconnectOnTimeout": false,
+        "reconnectTimeout": 10000,
+        "parallelUnitIdsAllowed": true,
+        "showErrors": false,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
+        "id": "ab1ab0d04bdd3b34",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "caxton30d",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "https://eu-central-1-1.aws.cloud2.influxdata.com",
+        "rejectUnauthorized": true
+    },
+    {
+        "id": "3bf5edcf0ab1a992",
+        "type": "function",
+        "z": "0ada38113f2dc695",
+        "name": "30 sec RC + 20",
+        "func": "// @ts-nocheck\n// Applies a simple RC low pass filter to incoming payload values\nvar tc = 30*1000;       // time constant in milliseconds\n\nvar lastValue = context.get('lastValue');\nif (typeof lastValue == \"undefined\") lastValue = msg.payload;\nvar lastTime = context.get('lastTime') || null;\nvar now = new Date();\nvar currentValue = msg.payload;\nif (lastTime === null) {\n    // first time through\n    newValue = currentValue;\n} \nelse {\n    var dt = now - lastTime;\n    var newValue;\n    \n    if (dt > 0) {\n        var dtotc = dt / tc;\n        newValue = lastValue * (1 - dtotc) + currentValue * dtotc;\n    } else {\n        // no time has elapsed leave output the same as last time\n        newValue = lastValue;\n    }\n}\ncontext.set('lastValue', newValue);\ncontext.set('lastTime', now);\n\nmsg.payload = newValue + 2;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 626.5,
+        "y": 207,
+        "wires": [
+            [
+                "f7ed1a411069eb16"
+            ]
+        ]
+    },
+    {
+        "id": "e94100a68efcf2f1",
+        "type": "inject",
+        "z": "0ada38113f2dc695",
+        "name": "Inject -0.2 at start",
+        "props": [
+            {
+                "p": "payload",
+                "v": "-0.2",
+                "vt": "num"
+            },
+            {
+                "p": "topic",
+                "v": "",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "topic": "",
+        "payload": "-0.2",
+        "payloadType": "num",
+        "x": 134.5,
+        "y": 30,
+        "wires": [
+            [
+                "5198a3b093941629"
+            ]
+        ]
+    },
+    {
+        "id": "93d213fc305f7484",
+        "type": "function",
+        "z": "0ada38113f2dc695",
+        "name": "10 sec RC",
+        "func": "// Applies a simple RC low pass filter to incoming payload values\nvar tc = 10*1000;       // time constant in milliseconds\n\nvar lastValue = context.get('lastValue');\nif (typeof lastValue == \"undefined\") lastValue = msg.payload;\nvar lastTime = context.get('lastTime') || null;\nvar now = new Date();\nvar currentValue = msg.payload;\nif (lastTime === null) {\n    // first time through\n    newValue = currentValue;\n} else {\n    var dt = now - lastTime;\n    var newValue;\n    \n    if (dt > 0) {\n        var dtotc = dt / tc;\n        newValue = lastValue * (1 - dtotc) + currentValue * dtotc;\n    } else {\n        // no time has elapsed leave output the same as last time\n        newValue = lastValue;\n    }\n}\ncontext.set('lastValue', newValue);\ncontext.set('lastTime', now);\n\nmsg.payload = newValue;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 451,
+        "y": 207,
+        "wires": [
+            [
+                "3bf5edcf0ab1a992"
+            ]
+        ]
+    },
+    {
+        "id": "5198a3b093941629",
+        "type": "delay",
+        "z": "0ada38113f2dc695",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "outputs": 1,
+        "x": 268,
+        "y": 104,
+        "wires": [
+            [
+                "516bbc56d2b3415c"
+            ]
+        ]
+    },
+    {
+        "id": "7cd9046544592499",
+        "type": "function",
+        "z": "0ada38113f2dc695",
+        "name": "2 msg transport delay",
+        "func": "// stores messages in a fifo until the specified number have been received, \n// then releases them as new messages are received.\n// during the filling phase the earliest message is passed on each time \n// a message is received, but it is also left in the fifo\nvar fifoMaxLength = 2;\nvar fifo = context.get('fifo') || [];\n// push the new message onto the top of the array, messages are shifted down and\n// drop off the front\nvar length = fifo.push(msg);  // returns new length\nif (length > fifoMaxLength) {\n    newMsg = fifo.shift();\n} else {\n    // not full yet, make a copy of the msg and pass it on\n    var newMsg = JSON.parse(JSON.stringify(fifo[0]));\n}\ncontext.set('fifo', fifo);\nreturn newMsg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 258,
+        "y": 208,
+        "wires": [
+            [
+                "93d213fc305f7484"
+            ]
+        ]
+    },
+    {
+        "id": "f7ed1a411069eb16",
+        "type": "function",
+        "z": "0ada38113f2dc695",
+        "name": "Clear all except payload",
+        "func": "var msg2 = {payload: msg.payload};\nreturn msg2;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 545,
+        "y": 293,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "516bbc56d2b3415c",
+        "type": "range",
+        "z": "0ada38113f2dc695",
+        "minin": "0",
+        "maxin": "10",
+        "minout": "0",
+        "maxout": "10",
+        "action": "scale",
+        "round": false,
+        "property": "payload",
+        "name": "10-10",
+        "x": 77,
+        "y": 208,
+        "wires": [
+            [
+                "7cd9046544592499"
+            ]
+        ]
+    },
+    {
+        "id": "01189677a0099e03",
+        "type": "mqtt out",
+        "z": "fce55c80ba409b3d",
+        "name": "hive",
+        "topic": "",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "2ce60664f6ba7120",
+        "x": 650,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "b71d646d0524d860",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "globalise",
+        "func": "\nlet config = global.get(\"site-config\");\nmsg.topic = config.site + '/' + msg.topic ;\n\nlet ot =  msg.hasOwnProperty('originalTopic') ? msg.originalTopic : '' ; \nif (ot == msg.topic)\n{\n    //node.log(msg.topic + ' Suppressing echoing')\n    return null ; \n} \nreturn msg ;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 220,
+        "wires": [
+            [
+                "91e4421d067a2d1b",
+                "01189677a0099e03"
+            ]
+        ]
+    },
+    {
+        "id": "06aca66c9580d0d3",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "localise",
+        "func": "\nmsg.topic =  'local' + '/' + msg.topic ;\n/*\nlet uc =  msg.hasOwnProperty('useCount') ?  msg.useCount : 0 ;\nif (uc > 2) \n    return null ;\n*/\n\nlet ot =  msg.hasOwnProperty('originalTopic') ? msg.originalTopic : '' ; \nif (ot == msg.topic)\n{\n    //node.log(msg.topic + ' Suppressing echo')\n    return null ; \n} \nreturn msg ;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 280,
+        "wires": [
+            [
+                "91e4421d067a2d1b",
+                "56dc2cb7060287ab"
+            ]
+        ]
+    },
+    {
+        "id": "56dc2cb7060287ab",
+        "type": "mqtt out",
+        "z": "fce55c80ba409b3d",
+        "name": "mosquitto",
+        "topic": "",
+        "qos": "0",
+        "retain": "false",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "9d1ae28e263fad2a",
+        "x": 640,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "6ac4b5a2620be04c",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "to MQTT",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f5ee308ca04a95f3",
+        "type": "mqtt in",
+        "z": "fce55c80ba409b3d",
+        "name": "hive",
+        "topic": "+/+/request/#",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "2ce60664f6ba7120",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 70,
+        "y": 40,
+        "wires": [
+            [
+                "3fff4148fd6087dd"
+            ]
+        ]
+    },
+    {
+        "id": "334d436609f20f3a",
+        "type": "mqtt in",
+        "z": "fce55c80ba409b3d",
+        "name": "mosquitto",
+        "topic": "#",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "9d1ae28e263fad2a",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 80,
+        "y": 100,
+        "wires": [
+            [
+                "3fff4148fd6087dd"
+            ]
+        ]
+    },
+    {
+        "id": "169352bc32f5bbd4",
+        "type": "switch",
+        "z": "fce55c80ba409b3d",
+        "name": "dispatch",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "app\\/",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "bridge\\/response",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "bridge\\/request",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "bridge",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^[adrsgmt][^\\d]*[\\d]{1,2}$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 6,
+        "x": 100,
+        "y": 200,
+        "wires": [
+            [
+                "7b7a4dd23fba8082"
+            ],
+            [
+                "b71d646d0524d860"
+            ],
+            [
+                "06aca66c9580d0d3"
+            ],
+            [
+                "b71d646d0524d860"
+            ],
+            [
+                "e5c04e4bbe660ab9"
+            ],
+            [
+                "aca5d197ea67d78a"
+            ]
+        ],
+        "info": "the regex here \n\nhttps://regex101.com/r/wlRMWz/1"
+    },
+    {
+        "id": "3fff4148fd6087dd",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "check-in",
+        "func": "msg.originalTopic = msg.topic ;\nlet pos = msg.topic.indexOf('/') ;\nmsg.prefix = msg.topic.substring(0,pos);\nmsg.topic = msg.topic.substring(pos+1);\n\n\n// make sure the message is for us\nlet config = global.get(\"site-config\")\n\nif (!([config.site, 'local', 'bridge'].includes(msg.prefix)))\n{\n  node.error(msg.originalTopic + ' unrecognised prefix, expected to local or ' + config.site + ', retain ' + msg.retain + \" \" + msg.payload);\n  return null ;   // it is not\n}\nnode.status({ fill: \"green\", shape: \"dot\", text: `${msg.originalTopic}`});\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 60,
+        "wires": [
+            [
+                "169352bc32f5bbd4",
+                "5dc2383d434c6970"
+            ]
+        ]
+    },
+    {
+        "id": "9c0f3e23e9286b36",
+        "type": "influxdb out",
+        "z": "fce55c80ba409b3d",
+        "influxdb": "ab1ab0d04bdd3b34",
+        "name": "influx cloud",
+        "measurement": "",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "database",
+        "precisionV18FluxV20": "s",
+        "retentionPolicyV18Flux": "",
+        "org": "PUNL-30d",
+        "bucket": "caxton30d",
+        "x": 630,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "75bac89abeeb5a27",
+        "type": "influxdb out",
+        "z": "fce55c80ba409b3d",
+        "influxdb": "7d7a9bc368fd645d",
+        "name": "influx local",
+        "measurement": "",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "caxtonLive",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "organisation",
+        "bucket": "bucket",
+        "x": 630,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "aca5d197ea67d78a",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "discarded",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 100,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "dd793b9131285a2d",
+        "type": "file in",
+        "z": "fce55c80ba409b3d",
+        "name": "read config file",
+        "filename": "/mnt/dietpi_userdata/site-config.yaml",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 280,
+        "y": 680,
+        "wires": [
+            [
+                "8e01751ffc91da73"
+            ]
+        ]
+    },
+    {
+        "id": "8e01751ffc91da73",
+        "type": "yaml",
+        "z": "fce55c80ba409b3d",
+        "property": "payload",
+        "name": "",
+        "x": 450,
+        "y": 680,
+        "wires": [
+            [
+                "5e632bcd3eb2c3ec"
+            ]
+        ]
+    },
+    {
+        "id": "e45e88337a59659f",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "config",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "5e632bcd3eb2c3ec",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "set config",
+        "func": "let config = msg.payload;\nglobal.set(\"site-config\", config);\nnode.log('Site config loaded for ' + config.site);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 740,
+        "wires": [
+            [
+                "e45e88337a59659f"
+            ]
+        ]
+    },
+    {
+        "id": "b059487bc1ff0a2b",
+        "type": "link in",
+        "z": "fce55c80ba409b3d",
+        "name": "MQTT local",
+        "links": [
+            "0a9719bd77581975",
+            "577231c552842134"
+        ],
+        "x": 265,
+        "y": 360,
+        "wires": [
+            [
+                "06aca66c9580d0d3"
+            ]
+        ]
+    },
+    {
+        "id": "ae83978daa30c005",
+        "type": "link in",
+        "z": "fce55c80ba409b3d",
+        "name": "MQTT cloud",
+        "links": [
+            "293ae4963a27a257",
+            "8e6fb5fdc6f0bef1"
+        ],
+        "x": 265,
+        "y": 320,
+        "wires": [
+            [
+                "b71d646d0524d860"
+            ]
+        ]
+    },
+    {
+        "id": "d544888678a2bcd7",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "influx",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "9b111b1a593b741c",
+        "type": "inject",
+        "z": "fce55c80ba409b3d",
+        "name": "initialize",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.0",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 680,
+        "wires": [
+            [
+                "dd793b9131285a2d"
+            ]
+        ]
+    },
+    {
+        "id": "e5c04e4bbe660ab9",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "unpack",
+        "func": "/**\n * handle incoming traffic from sensors\n * serialize all the properties into single msgs\n */\n\n\nconst source = msg.topic; // e.g. s3\n\n// look up sensor location\n\nconst config = global.get(\"site-config\");\n\nconst location = config.sensorMap.hasOwnProperty(source) \n               ? config.sensorMap[source] : source;  // e.g. s3\n\nconst stream = [] \n\nconst fieldList = ['battery','humidity','linkquality','temperature','voltage','windSpeed','windDirection'];\n\nconst m = {}   // Object.assign({}, msg);\n\nm.originalTopic = msg.originalTopic\nm.payload = {}\nm.prefix = msg.prefix \n\n// push out new message for every property in \n// the fileList.\n\nfor (const property in msg.payload) {\n    const n = Object.assign({}, m);\n    n.payload = Object.assign({}, m.payload);\n    if (fieldList.includes(property))\n    {\n        n.topic = source + '/' + property\n        n.measurement = property\n        n.source = source \n        n.location = location\n        n.payload = msg.payload[property]\n        n.timestamp = msg.timestamp \n        n.writeThrough = true ;\n        stream.push(n)\n    }\n}\nreturn [stream]",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 400,
+        "wires": [
+            [
+                "2447196ebfeb6d69"
+            ]
+        ]
+    },
+    {
+        "id": "3a0b7c61797ade28",
+        "type": "link in",
+        "z": "fce55c80ba409b3d",
+        "name": "sensors",
+        "links": [
+            "298f4d77b929e02a",
+            "57a65d7e6a100b88"
+        ],
+        "x": 55,
+        "y": 600,
+        "wires": [
+            [
+                "2447196ebfeb6d69",
+                "11cd67874a91f2ba"
+            ]
+        ]
+    },
+    {
+        "id": "5dc2383d434c6970",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "dispatch 4",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "4db6202e94cea612",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "tag for influx",
+        "func": "if (['local'].includes(msg.prefix) == false) {\n  node.error(msg.topic + \" only storing 'local' sensors \");\n  return null;   // it is not.  Use hops in future?\n}\n\n/*  \n  strip out the known tag fields and place in second array in payload. \n  this is the standard reporting format for influx.\n*/\n\nconst tagList = ['source'];\nconst fieldList = ['battery', 'humidity', 'linkquality', 'temperature', 'voltage', 'windSpeed', 'windDirection'];\nconst fields = {};\nconst tags = {};\n\nfields[msg.location] = msg.payload; \ntags['source'] = msg.source ;  \nmsg.payload = [fields,tags]\n\n//node.status({ fill: \"green\", shape: \"dot\", text: `${msg.measurement} ${msg.topic}=${param}` });\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 500,
+        "wires": [
+            [
+                "d544888678a2bcd7",
+                "9c0f3e23e9286b36",
+                "75bac89abeeb5a27"
+            ]
+        ]
+    },
+    {
+        "id": "7e810e9aa6aab8ad",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "sampler out",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "2447196ebfeb6d69",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "downsample",
+        "func": "/** rework so it operates on all fields in the payload */\n\nfunction toFix(num, precision)\n{\n    return (Math.trunc(num * (10 ** precision)))/ (10 ** precision) ;\n}\n\nconst store0 = {\n    payload: 0.0,\n    lastPayload : 0.0, \n    avg : 0.0,\n    lastAvg : 0.0,\n    numSamples: 0,\n    beginTransition: true\n}\n\nfunction deliver(msg)\n{\n    let store = context.get(msg.topic) || store0 ;\n    if ((msg.writeThrough == false) && (store.payload == msg.payload))\n        return null ;\n                    // red : digest, yellow : update, green : writeThrough    \n\n    let colour = msg.writeThrough ? 'green' : 'yellow' ;    \n    node.status({ fill: colour, shape: \"dot\", text: `${msg.topic} ${store.payload}=>${msg.payload}`});\n    store.payload = msg.payload ;\n    context.set(msg.topic, msg);  \n    return msg ;  \n}\n// ver 1.0 checked 22-09-2024\n\nfunction digest(msg) {\n\n    if (msg.reportOnDiff === undefined)\n        msg.reportOnDiff = 1 ; \n    if (msg.windowSize === undefined)\n        msg.windowSize = 10 ;   // arbitrary number\n\n    let store = context.get(msg.topic);\n    if (store === undefined)\n        store = store0;\n\n    const beginTransition = store.beginTransition;\n    store.beginTransition = false;\n\n    const valueDiff = store.numSamples ? Math.abs(msg.payload - store.lastAvg) : 0.0;\n    const percentageDiff = store.numSamples ? (msg.payload - store.lastAvg) * 100 * 2 / (msg.payload + store.lastAvg) : 0.0;\n\n    const endTransition = msg.writeThrough\n                || (valueDiff >= msg.reportOnDiff) \n                || (store.numSamples + 1 >= msg.windowSize);  // write every maxGap  \n    const outputAvg = beginTransition || endTransition;\n\n    store.payload = msg.lastPayload = msg.payload;\n    store.avg = (store.avg * store.numSamples + msg.payload) / (store.numSamples + 1);   // correct? \n    store.avg = toFix(store.avg, 2);\n    store.numSamples += 1;\n    msg.numSamples = store.numSamples;\n\n    if (endTransition) \n    {\n        node.status({ fill: \"red\", shape: \"dot\", text: `${msg.topic} ${msg.payload}  avg:${store.avg} num:${store.numSamples} `});\n    }\n    /*\n    node.log(`${msg.topic} ${msg.lastPayload} avg: ${store.avg.toFixed(2)}, `\n        + `diff% ${percentageDiff}% diff:${valueDiff} numSamples:${msg.numSamples} `\n        + `bt ${beginTransition} et ${ endTransition }`);\n    */\n    if (outputAvg) {\n        msg.payload = store.avg;\n        store.numSamples = 0;\n        if (endTransition)\n        {\n            store.lastAvg = store.avg;\n            store.beginTransition = true;\n        }\n    }\n\n    context.set(msg.topic, store);\n    return outputAvg ? msg : null;\n}\n\nreturn msg.digest ?  digest(msg) : deliver(msg);",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 190,
+        "y": 500,
+        "wires": [
+            [
+                "b71d646d0524d860",
+                "2384d6ea06ea6969",
+                "4db6202e94cea612",
+                "7e810e9aa6aab8ad"
+            ]
+        ]
+    },
+    {
+        "id": "2384d6ea06ea6969",
+        "type": "link out",
+        "z": "fce55c80ba409b3d",
+        "name": "downsampler out",
+        "mode": "link",
+        "links": [
+            "05fd8e378b5f7d83",
+            "6e4f4737d3d2738b",
+            "00c4ccd08c5fc11a"
+        ],
+        "x": 605,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "8b799875a8ef011e",
+        "type": "link in",
+        "z": "fce55c80ba409b3d",
+        "name": "MQTT both",
+        "links": [
+            "f07bdf58f4238213"
+        ],
+        "x": 265,
+        "y": 280,
+        "wires": [
+            [
+                "b71d646d0524d860",
+                "06aca66c9580d0d3"
+            ]
+        ]
+    },
+    {
+        "id": "7b7a4dd23fba8082",
+        "type": "link out",
+        "z": "fce55c80ba409b3d",
+        "name": "MQTT to app",
+        "mode": "link",
+        "links": [
+            "3d273fe27e049b65"
+        ],
+        "x": 445,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "a2eff66e24c128f6",
+        "type": "link in",
+        "z": "fce55c80ba409b3d",
+        "name": "serialised sensors",
+        "links": [
+            "f28841e54458294f"
+        ],
+        "x": 75,
+        "y": 400,
+        "wires": [
+            [
+                "e5c04e4bbe660ab9"
+            ]
+        ]
+    },
+    {
+        "id": "11cd67874a91f2ba",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "sampler in",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 290,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "2d28df211ec8ace4",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "response/siteConfig",
+        "func": "msg.topic = msg.topic.replace('request', 'response');\nlet config = global.get(\"site-config\");\nmsg.payload = config ;\nreturn msg ;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/*\nvar defaultSensorMap = {\n    s0: 'outside',\n    s1: '1stFloor-hallway',\n    s2: 'entrance-hallway',\n    s3: 'bedroom2',\n    s4: 'unmapped',\n    s5: 'unmapped',\n    s6: 'unmapped',        \n    s10: 'test-location'\n};\n\nflow.set(\"sensorMap\", defaultSensorMap);\n\nvar defaultSite = '40hg';\nflow.set(\"site\"     , defaultSite);\n*/",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 180,
+        "wires": [
+            [
+                "f07bdf58f4238213"
+            ]
+        ]
+    },
+    {
+        "id": "b9659d5bd127c327",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "response/IP",
+        "func": "msg.topic = msg.topic.replace('request', 'response');\n// extract ip address from the results of a bash \n// ip command showing the interefaces.\nvar ifaceList = JSON.parse(msg.payload) ;\nmsg.measurement = 'health' ;\nvar ip = '?.?.?.?' ;\nfor (const [i, iface] of Object.entries(ifaceList))\n{\n    msg.payload = {\n\n        ip: iface.addr_info[0].local,\n        operstate: iface.operstate,\n        topic: msg.topic,\n        source: \"wyse2\", \n        location : null \n    };\n    if (iface.operstate == 'UP')\n        break ;\n}\nreturn msg ;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\nreturn(null)",
+        "finalize": "// Code added here will be run when the\n// node is being stopped or re-deployed.\n\nvar mout = {};\nmout.topic = 'cax/link';\nmout.payload = [{\n\n    operstate: 'DOWN'\n},\n{\n    topic: mout.topic,\n    source: \"cax/wyse0\"\n}];\nreturn mout;",
+        "libs": [],
+        "x": 610,
+        "y": 120,
+        "wires": [
+            [
+                "f07bdf58f4238213"
+            ]
+        ]
+    },
+    {
+        "id": "50733ff690d8c396",
+        "type": "exec",
+        "z": "a39c97029f2c005f",
+        "command": "ip  -f inet -4 -json  address",
+        "addpay": "",
+        "append": "",
+        "useSpawn": "false",
+        "timer": "5",
+        "winHide": false,
+        "oldrc": false,
+        "name": "request/IP",
+        "x": 430,
+        "y": 120,
+        "wires": [
+            [
+                "b9659d5bd127c327"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "3576a0b9dd48029d",
+        "type": "http request",
+        "z": "a39c97029f2c005f",
+        "name": "get weather",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://api.openweathermap.org/data/2.5/weather?q=London,uk&units=metric&APPID=02d6849de8880c4335b3a8b50c016843",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": true,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 410,
+        "y": 60,
+        "wires": [
+            [
+                "5329666e4bcd40e1"
+            ]
+        ]
+    },
+    {
+        "id": "5329666e4bcd40e1",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "weather sensor",
+        "func": "msg.topic = 'weather';\nmsg.originalTopic = 'open/weather'\nmsg.prefix = 'local' ;\nmsg.payload = {\n    temperature: Number(msg.payload.main.temp),\n    humidity: Number(msg.payload.main.humidity),\n    windSpeed: Number(msg.payload.wind.speed),\n    windDirection: Number(msg.payload.wind.deg)\n};\n//node.warn(`topic ${msg.topic}, temperature ${msg.payload.temperature}`);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 60,
+        "wires": [
+            [
+                "f28841e54458294f"
+            ]
+        ]
+    },
+    {
+        "id": "73f3bd8747e9b9e9",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "bridge responses out",
+        "mode": "link",
+        "links": [
+            "3ae42568f19fb87e",
+            "95659a05514705b8"
+        ],
+        "x": 485,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "a9eb5943c4a448fd",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "30 min weather",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "1800",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "s0",
+        "x": 190,
+        "y": 60,
+        "wires": [
+            [
+                "3576a0b9dd48029d"
+            ]
+        ]
+    },
+    {
+        "id": "9cb37ce3eb45e324",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "IP",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "3000",
+        "topic": "wakeup",
+        "x": 150,
+        "y": 120,
+        "wires": [
+            [
+                "50733ff690d8c396"
+            ]
+        ]
+    },
+    {
+        "id": "a0072afbb111de1d",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "msg fetch",
+        "func": "\nconst instrumentation = flow.get(\"instrumentation\") || {}\nlet ar = Object.values(instrumentation)\nnode.status({ fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items`});\nreturn [ar] ;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 380,
+        "y": 460,
+        "wires": [
+            [
+                "c7515d6ac70f764e",
+                "293ae4963a27a257"
+            ]
+        ]
+    },
+    {
+        "id": "cdc2849e83ce87c7",
+        "type": "switch",
+        "z": "a39c97029f2c005f",
+        "name": "app dispatch",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "app\\/request\\/s0",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request\\/IP",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request\\/siteConfig",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request\\/ashp0\\/",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/response\\/",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request/networkmap",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request/refresh",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request/schedule\\/",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 8,
+        "x": 190,
+        "y": 300,
+        "wires": [
+            [
+                "3576a0b9dd48029d"
+            ],
+            [
+                "50733ff690d8c396"
+            ],
+            [
+                "2d28df211ec8ace4"
+            ],
+            [
+                "99970d5033f5f26f"
+            ],
+            [
+                "73f3bd8747e9b9e9"
+            ],
+            [
+                "0c1d94776d82f5d4"
+            ],
+            [
+                "a0072afbb111de1d",
+                "c7515d6ac70f764e",
+                "bacb43412f50be7f"
+            ],
+            [
+                "bacb43412f50be7f"
+            ]
+        ],
+        "info": "the regex here \n\nhttps://regex101.com/r/wlRMWz/1"
+    },
+    {
+        "id": "0c1d94776d82f5d4",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "app/request/networkmap",
+        "mode": "link",
+        "links": [
+            "aa15016c69354ddd"
+        ],
+        "x": 705,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "c7515d6ac70f764e",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "refresh request",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "293ae4963a27a257",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "MQTT cloud",
+        "mode": "link",
+        "links": [
+            "ae83978daa30c005"
+        ],
+        "x": 575,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "bacb43412f50be7f",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "scheduler",
+        "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date();\n  let hours = addZero(d.getHours());\n  let mins = addZero(d.getMinutes());\n  let secs = addZero(d.getSeconds());\n  let timeNow = `${hours}:${mins}:${secs}`\n  return timeNow ;\n}\n\n/// copied from other modbus related node\nfunction lookupRegister(subTopic) {\n  const registers = global.get(\"modbus\");\n  for (const row of registers) {\n    if (row.Parameter == subTopic)\n      return row;\n  }\n  node.error('unable to parse ' + subTopic)\n  return null;\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\n\nconst schedule = flow.get(\"schedule\") || { start : null, stop : null, unit : null }\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n// text string comparison\nlet unitShouldBeOn = schedule.start < timeNow && timeNow < schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ? schedule.start : '' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ? schedule.stop : '' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `start:${schedule.start} now:${timeNow}  stop:${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n  \n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n//  node.status({ fill: \"yellow\", shape: \"ring\", text: `${timeNow}: ${schedule.start} to ${schedule.stop}`});\n}\n\nlet control = null\nif (schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [timeChange ? response : null, control ? control : null];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//flow.set(\"schedule\", { start: '06:00', stop: '16:30', unit: {} })",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 560,
+        "wires": [
+            [
+                "b8d9de514450140a",
+                "293ae4963a27a257"
+            ],
+            [
+                "207bd26d97d91d04",
+                "99970d5033f5f26f"
+            ]
+        ]
+    },
+    {
+        "id": "ee6878a5cca418a8",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "10",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bump",
+        "x": 140,
+        "y": 560,
+        "wires": [
+            [
+                "bacb43412f50be7f"
+            ]
+        ]
+    },
+    {
+        "id": "99970d5033f5f26f",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "modbus in",
+        "mode": "link",
+        "links": [
+            "f61b76784c425ebd"
+        ],
+        "x": 575,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "207bd26d97d91d04",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "control",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "b8d9de514450140a",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "response",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "3d273fe27e049b65",
+        "type": "link in",
+        "z": "a39c97029f2c005f",
+        "name": "dispatch to app",
+        "links": [
+            "7b7a4dd23fba8082"
+        ],
+        "x": 65,
+        "y": 360,
+        "wires": [
+            [
+                "cdc2849e83ce87c7"
+            ]
+        ]
+    },
+    {
+        "id": "f07bdf58f4238213",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "MQTT both",
+        "mode": "link",
+        "links": [
+            "8b799875a8ef011e"
+        ],
+        "x": 695,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "95191d0245230bea",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "data store",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "46d23788ce3bdc8f",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "msg store",
+        "func": "\n\nconst instrumentation = flow.get(\"instrumentation\") || {}\n\n// don't store items that are not objects \n\nif (typeof msg !== 'object') \n{\n    node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, not an object` });\n    return null ;\n}\n\nif (msg.payload === undefined) \n{\n    node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, no payload` });\n    return null ;\n}\n\ninstrumentation[msg.topic] = msg;\nflow.set(\"instrumentation\", instrumentation );\nnode.status({ fill: \"green\", shape: \"dot\", text: `stored ${Object.keys(instrumentation).length} items`}); \nlet m = {}\nm.topic = 'instrumentation'\nm.payload = instrumentation ;\nreturn m;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n// uncomment once if you need to clear store\n\n// flow.set(\"instrumentation\", {});",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 760,
+        "wires": [
+            [
+                "95191d0245230bea"
+            ]
+        ]
+    },
+    {
+        "id": "6e4f4737d3d2738b",
+        "type": "link in",
+        "z": "a39c97029f2c005f",
+        "name": "data in",
+        "links": [
+            "2384d6ea06ea6969"
+        ],
+        "x": 175,
+        "y": 760,
+        "wires": [
+            [
+                "46d23788ce3bdc8f"
+            ]
+        ]
+    },
+    {
+        "id": "95732ec3fceeeced",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "msg clear",
+        "func": "flow.set(\"instrumentation\", {});\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "60b4266997bd589a",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 240,
+        "y": 680,
+        "wires": [
+            [
+                "95732ec3fceeeced"
+            ]
+        ]
+    },
+    {
+        "id": "f28841e54458294f",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "sensors",
+        "mode": "link",
+        "links": [
+            "a2eff66e24c128f6"
+        ],
+        "x": 785,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "e8b29f091693fa42",
+        "type": "inject",
+        "z": "d6d8802f46b4aa03",
+        "name": "every 20 secs",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "writeThrough",
+                "v": "false",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "20",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "pollAll",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 340,
+        "wires": [
+            [
+                "f176f6507293d547"
+            ]
+        ]
+    },
+    {
+        "id": "f176f6507293d547",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "poll modbus",
+        "func": "\n// specify explicit register using msg.topic else get them all\n\n\n// 01: Coils (FC=01)\n// 02: Discrete Inputs (FC=02)\nconst HR = 3 // Multiple Holding Registers (FC=03)\nconst IR = 4 // Input Registers (FC=04)\n// 05: Single Coil (FC=05)\n// 06: Single Holding Register (FC=06)\n// 0F: Multiple Coils (FC=15)\n// 10: Multiple Holding Registers (FC=16)\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = global.get(\"modbus\");\n    for (const row of registers) {\n        if (row.Parameter == subTopic)\n            return row;\n    }\n    node.error('unable to parse ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"SETPOINT_hsp1\" },\n        { name: \"SETPOINT_hsp2\" },\n\n        { name: \"RESETCFG_hr_deg\" },\n        { name: \"RESETCFG_oat_hrfu\" },\n        { name: \"RESETCFG_oat_hrno\" },\n\n        { name: \"PROTOCOL_DEM_LIM\" }        \n    ];\n\nconst temperature =\n    [\n        { name: \"GENUNIT_SP\" },\n        { name: \"GENUNIT_CTRL_PNT\" },\n        { name: \"GENUNIT_CTRL_TYP\" },\n\n        { name: \"TEMP_EWT\", reportOnDiff: 2 },  // override the 0.25 \n        { name: \"TEMP_LWT\", reportOnDiff: 2 },  // override the 0.25 \n        { name: \"TEMP_OAT\" },\n    ];\n\nconst pressure =\n    [\n        { name: \"PRESSURE_PUMP_EWP\"  },\n        { name: \"PRESSURE_PUMP_LWP\"  },\n        { name: \"PUMPSTAT_WAT_FLOW\"  }\n    ];\n\nconst state =  \n    [\n        { name: \"UNIT_STATUS\" },\n        { name: \"PROTOCOL_CHIL_S_S\" },  //off on\n        { name: \"PROTOCOL_SP_SEL\" }, \n        { name: \"PROTOCOL_SP_OCC\" },\n        { name: \"PROTOCOL_CHIL_OCC\" },\n\n        { name: \"PUMPSTAT_PUMP_1\" },\n        { name: \"PUMPSTAT_PUMP_2\"},\n    ];\n\n const pump = \n    [   \n        { name: \"GENUNIT_CAP_T\" , reportOnDiff : 10 },   // 0% to 100%\n\n        { name: \"PUMPSTAT_VPMP_CMD\"},\n        { name: \"PUMPSTAT_CAPPOWER\", reportOnDiff : 5 },\n        { name: \"PUMPSTAT_WAT_FLOW\", reportOnDiff: 0.5  },        \n    ];\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);  \n\n\nlet regList         = { input: input, temperature: temperature, pressure: pressure, state: state, pump: pump};\nlet reportOnDiff    = {               temperature: 1.0,         pressure: 15 ,                    pump: 0.5 };\n\nlet sequences = [] ;\n\nconst fc = { HR : 3, IR : 4 }\n\nfor (const [measurement, group] of Object.entries(regList)) {    \n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name)\n        {\n            const row = lookupRegister(e.name);\n            if (row)\n            {\n                const m = {} ;\n                m.prefix = 'local';\n                m.source = 'ashp0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address ;\n                m.measurement = measurement;\n                m.fc = fc[row.Type] ;\n                m.quantity = row['Reg. N°'];\n                m.unitid = 1;\n\n\n                m.modbusRow = row ;\n                m.writeThrough = msg.writeThrough ;\n                \n                const groupReportOnDifference = reportOnDiff[measurement] === undefined ?\n                    0 : reportOnDiff[measurement]  \n\n                m.reportOnDiff = e.reportOnDiff === undefined ? \n                    groupReportOnDifference : e.reportOnDiff;                \n\n                m.digest = (msg.writeThrough == false) && (m.reportOnDiff != 0)  \n                //node.error('digest ' + m.digest)\n\n                m.windowSize = 3 * 30 ;  \n\n                //node.error(e)\n                // red : digest, yellow : update, green : writeThrough    \n\n                let colour = m.digest ? 'red': (m.writeThrough ? 'green' : 'yellow') ;\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0)\n{\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null ;\n}\nif (msg.sequences.length > 1)\n{\n    node.status({ fill: \"green\", shape: \"ring\", text: `:${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//const fs = require('fs');\n//const csv = require('csv-parser');\n\n/*\nconst filePath = 'AQUACIAT-Modbus.csv'; // Replace with your actual file path\n\nconst data = [];\n\nfs.createReadStream(filePath)\n    .pipe(csv())\n    .on('data', (row) => {\n        data.push(row);\n    })\n    .on('end', () => {\n        console.log('CSV data parsed successfully!');\n        context.put('aquaciat', data);\n        node.status({ fill: \"green\", shape: \"dot\", text: `CSV file loaded` });\n\n\n    })\n    .on('error', (err) => {\n        console.error('Error parsing CSV:', err);\n    });\n\n*/",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 340,
+        "wires": [
+            [
+                "3bdc23fc1f16c1bb"
+            ]
+        ]
+    },
+    {
+        "id": "fd7087714f1e7e46",
+        "type": "modbus-flex-connector",
+        "z": "d6d8802f46b4aa03",
+        "name": "flex-connector",
+        "maxReconnectsPerMinute": 4,
+        "emptyQueue": false,
+        "showStatusActivities": true,
+        "showErrors": true,
+        "server": "c6b56e0744603b80",
+        "x": 540,
+        "y": 260,
+        "wires": [
+            [
+                "a78a112a810b69ea"
+            ]
+        ]
+    },
+    {
+        "id": "3bdc23fc1f16c1bb",
+        "type": "modbus-flex-sequencer",
+        "z": "d6d8802f46b4aa03",
+        "name": "flex-sequence1",
+        "sequences": [
+            {
+                "name": "sequence0",
+                "unitid": "1",
+                "fc": "FC1",
+                "address": "0",
+                "quantity": "1"
+            }
+        ],
+        "server": "c6b56e0744603b80",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": true,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 580,
+        "y": 340,
+        "wires": [
+            [
+                "a78a112a810b69ea"
+            ],
+            [
+                "6dbcbc44b8105773"
+            ]
+        ]
+    },
+    {
+        "id": "a78a112a810b69ea",
+        "type": "debug",
+        "z": "d6d8802f46b4aa03",
+        "name": "raw modbus",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "687f474619f0cc8b",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "collateResponses",
+        "func": "function getFloat32(xb)\n{\n    const u8 = Uint8Array.from([xb[2], xb[3], xb[0], xb[1]]);\n    const view1 = new DataView(u8.buffer);\n    return(view1.getFloat32(0));\n}\n\nconst registers = context.get(\"registers\") || {} ; \nregisters[msg.modbusRequest.name] = getFloat32(msg.payload.buffer);\ncontext.set(\"registers\", registers);\n\nmsg.prefix = 'local' ; \nmsg.topic = 'ashp0' ;\nmsg.payload = registers ;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 600,
+        "wires": [
+            [
+                "967d9f1b23ef6ef6"
+            ]
+        ]
+    },
+    {
+        "id": "bb16735a0cac5286",
+        "type": "debug",
+        "z": "d6d8802f46b4aa03",
+        "name": "payload",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "967d9f1b23ef6ef6",
+        "type": "delay-topic-message",
+        "z": "d6d8802f46b4aa03",
+        "delay": "3",
+        "x": 540,
+        "y": 600,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "298f4d77b929e02a",
+        "type": "link out",
+        "z": "d6d8802f46b4aa03",
+        "name": "sensors",
+        "mode": "link",
+        "links": [
+            "3a0b7c61797ade28"
+        ],
+        "x": 755,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "6dbcbc44b8105773",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "type conversions",
+        "func": "\n// float32lib.js  rev 1.0 22/09/2024\n\nfunction swapEndian(xb) {\n    return [xb[1], xb[0], xb[3], xb[2]]\n}\n\nfunction float32ToBytes(fl) {\n    const f32 = new Float32Array(1); f32[0] = fl;\n    const ui8 = new Uint8Array(f32.buffer);\n    return swapEndian((Array.from(ui8)));\n}\n\n// this still works on incoming data\n// float32ToBytes bytes = 15,219,64,73 getFloat32 = 3.14\n\nfunction bytesToFloat32(xb) {\n    const ui8 = Uint8Array.from((swapEndian(xb)));\n    //console.log(`ui8: ${ui8}  ui8.buffer ${ui8.buffer}`);\n    const fl = new Float32Array(ui8.buffer);\n    return Math.trunc(fl[0] * 100) / 100;\n}\n\n\nfunction bytesToUint32(xb) {\n    const ui8 = Uint8Array.from((swapEndian(xb)));\n    //console.log(`ui8: ${ui8}  ui8.buffer ${ui8.buffer}`);\n\n    var dataView = new DataView(ui8.buffer);\n    return dataView.getUint32(0, true); // false for big-endian\n}\n\n\nlet value = null ;\n\nswitch (msg.modbusRow['Display Mode'])\n{\n    case '32bits FLOAT' :\n        value = bytesToFloat32(msg.payload.buffer);\n        break ;\n\n    case '32bits UINT' :   \n        value = bytesToUint32(msg.payload.buffer);\n        value = msg.modbusRow['Max.'] == 1 ? value * 100 : value ; // boolean\n        break ;\n    \n    default : \n        node.status({ fill: \"red\", shape: \"dot\", text: `${msg.topic}:${msg.payload} unrecognised dm: ${msg.modbusRow['Display Mode']}`})\n        return null ;\n}\n\nmsg.units = msg.modbusRow['Unit']\nmsg.payload = value;\n\n// red : digest, yellow : update, green : writeThrough    \n\nlet colour = msg.digest ? 'red': (msg.writeThrough ? 'green' : 'yellow') ;\n\nnode.status({ fill: colour, shape: \"dot\", text: `${msg.topic}:${msg.payload}` });\nreturn msg  ;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 270,
+        "y": 460,
+        "wires": [
+            [
+                "bb16735a0cac5286",
+                "298f4d77b929e02a"
+            ]
+        ]
+    },
+    {
+        "id": "e3f5b1582fd58943",
+        "type": "modbus-flex-write",
+        "z": "d6d8802f46b4aa03",
+        "name": "flex-write",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "server": "c6b56e0744603b80",
+        "emptyMsgOnFail": false,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 780,
+        "y": 120,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "faf9c12a90fda8f1",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "create modbus request",
+        "func": "/*\nFunction node code example for single write:\n\nmsg.payload = { value: msg.payload, 'fc': 5, 'unitid': 1, 'address': 0 , 'quantity': 1 } return msg ;\n\nFunction node code example for multiple write:\n\nmsg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 } return msg ;\n*/\n\n\nfunction swapEndian(xb) {\n    return [xb[1], xb[0], xb[3], xb[2]]\n}\n\nfunction float32ToBytes(fl) {\n    const f32 = new Float32Array(1); f32[0] = fl;\n    const ui8 = new Uint8Array(f32.buffer);\n    return swapEndian((Array.from(ui8)));\n}\n\nfunction uint32ToBytes(ui) {\n    const ui32 = new Uint32Array(1); ui32[0] = ui;\n    const ui8 = new Uint8Array(ui32.buffer);\n    return swapEndian((Array.from(ui8)));\n}\n\n\n\n// this still works on incoming data\n// float32ToBytes bytes = 15,219,64,73 getFloat32 = 3.14\n\nfunction bytesToFloat32(xb) {\n    const ui8 = Uint8Array.from((swapEndian(xb)));\n    const fl = new Float32Array(ui8.buffer);\n    return Math.trunc(fl[0] * 100) / 100;\n}\n\n/*\nconst f32val = msg.payload ;\nconst ba = float32ToBytes(f32val);\nconst f32check = bytesToFloat32(ba);\n\nif (f32check != f32val)\n{\n    node.error(`values ${f32val} ${f32check} do not match`)\n    return null ;\n}\n*/\n\nlet numericPayload = Number(msg.payload);\n\nlet ba = null ; \nswitch (msg.modbusRow['Display Mode']) \n{\n    case '32bits FLOAT':\n        ba = float32ToBytes(numericPayload);\n        break;\n\n    case '32bits UINT':\n        ba = uint32ToBytes(Math.round(numericPayload));\n        //value = msg.modbusRow['Max.'] == 1 ? value * 100 : value; // boolean\n        break;\n\n    default:\n        node.error(`${msg.topic}:${numericPayload} dm: ${msg['Display Mode']}`)\n        return null;\n}\n\nvar ui16 = [(ba[0] * 256 + ba[1]), (ba[2] * 256) + ba[3]] ;\n\nmsg.payload = { 'address': msg.address, value: ui16, 'fc': 16, 'unitid': 1,  'quantity': 2 };\n\nnode.status({ fill: \"yellow\", shape: \"dot\", text: `${msg.topic}  ${ui16}` });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 120,
+        "wires": [
+            [
+                "e3f5b1582fd58943",
+                "13536d367730f4cf"
+            ]
+        ]
+    },
+    {
+        "id": "ab26331b697a1a23",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "map aquaciat register",
+        "func": "/**\n * \n */\n\n\n// ver 1.0\nfunction lookupRegister(topic)\n{\n    const tokens = topic.split(/[\\/]/);\n    const subTopic = tokens.at(-1);     \n\n    const registers = global.get(\"modbus\");\n    for (const row of registers)\n    {\n        if (row.Parameter == subTopic)\n            return row ;\n    }   \n    return null ;\n}\n\nconst row = lookupRegister(msg.topic)\nif (row)\n{   \n    msg.address = row.Address;\n    msg.writeThrough = true ;\n    msg.modbusRow = row ;\n    node.status({ fill: \"green\", shape: \"dot\", text: `${msg.topic} ${msg.address} ${msg.payload}` });\n    return msg  ;\n}\nelse\n{\n    node.status({ fill: \"red\", shape: \"dot\", text: `unmatched command: ${msg.topic}` });\n    return null ;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 40,
+        "wires": [
+            [
+                "657e75936deb6112"
+            ]
+        ]
+    },
+    {
+        "id": "0a78c00fb80d7ae9",
+        "type": "debug",
+        "z": "d6d8802f46b4aa03",
+        "name": "power",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 810,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "0b3d1bb1f851d520",
+        "type": "delay",
+        "z": "d6d8802f46b4aa03",
+        "name": "refresh in 500ms",
+        "pauseType": "delay",
+        "timeout": "500",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 180,
+        "wires": [
+            [
+                "f176f6507293d547"
+            ]
+        ]
+    },
+    {
+        "id": "ea336da82fe8e44a",
+        "type": "inject",
+        "z": "d6d8802f46b4aa03",
+        "name": "set hsp1 to 45",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "writeThrough",
+                "v": "True",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "SETPOINT_hsp1",
+        "payload": "45.0",
+        "payloadType": "num",
+        "x": 110,
+        "y": 160,
+        "wires": [
+            [
+                "ab26331b697a1a23"
+            ]
+        ]
+    },
+    {
+        "id": "b3d979820e956933",
+        "type": "inject",
+        "z": "d6d8802f46b4aa03",
+        "name": "modbus writeThrough",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "writeThrough",
+                "v": "true",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "pollAll",
+        "payload": "",
+        "payloadType": "date",
+        "x": 140,
+        "y": 280,
+        "wires": [
+            [
+                "f176f6507293d547"
+            ]
+        ]
+    },
+    {
+        "id": "9d367957e63e214a",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "fix payload €",
+        "func": "return msg ;\n\n/*\nmsg.previousTopic = msg.topic ;\n//let paramName  = msg.topic.replaceAll('_', '€');\n\nlet source = 'ashp0'\nmsg.topic = source + '/' + paramName ;\nmsg.source = source ; \n\nnode.log(`${msg.topic} ${msg.payload}`);\nreturn msg;\n*/",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "68c8ab1782efcbe6",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "power calculator",
+        "func": "/** \n * calculate power flow from water temp difference and water flow \n */\n\n\nfunction calculatePower(writeThrough)\n{ \n    node.status({ fill: \"red\", shape: \"dot\", text: `${msg.topic}` });\n\n    const instrumentation = global.get(\"instrumentation\") || {}\n    instrumentation[msg.topic] = msg.payload;\n\n    const waterFlow = instrumentation[\"ashp0/PUMPSTAT_WAT_FLOW\"] ;\n    const ewt = instrumentation[\"ashp0/TEMP_EWT\"];\n    const lwt = instrumentation[\"ashp0/TEMP_LWT\"];\n    \n    if (waterFlow !== undefined && ewt !== undefined && lwt !== undefined)\n    {\n        let power = (lwt - ewt) * waterFlow * 4.2 ;\n        power = (Math.trunc(power * 100))/100 ; \n\n        instrumentation['ashp0/PUMPSTAT_CALC_POWER'] = power ;\n\n        global.set(\"instrumentation\", instrumentation);\n\n        msg = { \n                prefix: 'local',\n                topic: 'ashp0/PUMPSTAT_CALC_POWER', \n                source : 'ashp0', \n                location: 'PUMPSTAT_CALC_POWER', \n                measurement: 'pump',                \n                payload: power, \n                writeThrough : writeThrough,\n        }\n\n        node.status({ fill: \"green\", shape: \"dot\", text: `power: ${power}kW` });\n\n        return msg;\n    }\n    return null ;\n} \n\n\n\nswitch(msg.topic)\n{\n    case \"ashp0/PUMPSTAT_WAT_FLOW\" :\n    case \"ashp0/TEMP_EWT\" :\n    case \"ashp0/TEMP_LWT\":\n        return calculatePower(msg.writeThrough)\n    default :\n        return null ;\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 420,
+        "wires": [
+            [
+                "bb16735a0cac5286",
+                "0a78c00fb80d7ae9"
+            ]
+        ]
+    },
+    {
+        "id": "dcad49ce97d38715",
+        "type": "file in",
+        "z": "d6d8802f46b4aa03",
+        "name": "read modbus file",
+        "filename": "/mnt/dietpi_userdata/AQUACIAT-LD_ILD_150R-600R_Modbus.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 290,
+        "y": 740,
+        "wires": [
+            [
+                "42ec723fea505d70"
+            ]
+        ]
+    },
+    {
+        "id": "55bcf23565930b54",
+        "type": "debug",
+        "z": "d6d8802f46b4aa03",
+        "name": "config",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "fa32f5503e51738d",
+        "type": "function",
+        "z": "d6d8802f46b4aa03",
+        "name": "set modbus array",
+        "func": "let registers = msg.payload;\nglobal.set(\"modbus\", registers);\nnode.log('Modbus config loaded for ' + registers);\nnode.error(registers);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 820,
+        "wires": [
+            [
+                "55bcf23565930b54"
+            ]
+        ]
+    },
+    {
+        "id": "dbb1e36af2878840",
+        "type": "inject",
+        "z": "d6d8802f46b4aa03",
+        "name": "initialize",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.0",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 100,
+        "y": 740,
+        "wires": [
+            [
+                "dcad49ce97d38715"
+            ]
+        ]
+    },
+    {
+        "id": "42ec723fea505d70",
+        "type": "csv",
+        "z": "d6d8802f46b4aa03",
+        "name": "load CSV",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": true,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 500,
+        "y": 740,
+        "wires": [
+            [
+                "fa32f5503e51738d"
+            ]
+        ]
+    },
+    {
+        "id": "dec62f1238d75d0e",
+        "type": "inject",
+        "z": "d6d8802f46b4aa03",
+        "name": "chill occ on",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "writeThrough",
+                "v": "True",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "PROTOCOL_CHIL_OCC",
+        "payload": "1",
+        "payloadType": "num",
+        "x": 100,
+        "y": 60,
+        "wires": [
+            [
+                "ab26331b697a1a23"
+            ]
+        ]
+    },
+    {
+        "id": "be7a26c62fd75ed2",
+        "type": "inject",
+        "z": "d6d8802f46b4aa03",
+        "name": "chill occ off",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "writeThrough",
+                "v": "True",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "PROTOCOL_CHIL_OCC",
+        "payload": "0",
+        "payloadType": "num",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "ab26331b697a1a23"
+            ]
+        ]
+    },
+    {
+        "id": "13536d367730f4cf",
+        "type": "debug",
+        "z": "d6d8802f46b4aa03",
+        "name": "updates",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "f61b76784c425ebd",
+        "type": "link in",
+        "z": "d6d8802f46b4aa03",
+        "name": "modbus in",
+        "links": [
+            "e21e2f5c25ffebce",
+            "99970d5033f5f26f"
+        ],
+        "x": 135,
+        "y": 20,
+        "wires": [
+            [
+                "ab26331b697a1a23"
+            ]
+        ]
+    },
+    {
+        "id": "00c4ccd08c5fc11a",
+        "type": "link in",
+        "z": "ce7503bf65214c43",
+        "name": "telemetry",
+        "links": [
+            "2384d6ea06ea6969"
+        ],
+        "x": 135,
+        "y": 200,
+        "wires": [
+            [
+                "e7b0483db52f11f9",
+                "4dcbf2f32c1a1504"
+            ]
+        ]
+    },
+    {
+        "id": "e7b0483db52f11f9",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "collector",
+        "func": "\n// absorb all the data from the heating system and work out\n// optimium start time etc \n\nlet instrumentation = null\n\nfunction getHHMM(millis) {\n  const d = new Date(millis)\n  return d.toTimeString().substring(0, 5)\n}\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 1 },\n    { name: 'm0', weight: 1 },\n    { name: 'm3', weight: 1 },\n    { name: 't0', weight: 1 }\n  ]\n\n\nfunction calculateBuildingTemperature() {\n  const rejects = []\n  const temps = sensorWeight\n    .filter((e) => (instrumentation[e.name] !== undefined))\n    .map((e) => ({ name: e.name, t: instrumentation[e.name] * e.weight }))\n    //.filter((e) =>  17 < e.t && e.t < 23 && e.t != 22 ) // clean \n    .filter((e) => {\n      const include = 17 < e.t && e.t < 23 && e.t != 22\n      if (!include) rejects.push(e.name);\n      return (include)\n    })\n    .map((e) => e.t)\n  \n  const buildingTemperature = temps.reduce((sum, t, idx) => (t + sum)) / temps.length\n\n  node.status({ fill: \"yellow\", shape: \"dot\", \n    text: `bt: ${buildingTemperature.toFixed(2)} rej:${rejects.join(\",\")}` });\n  return buildingTemperature\n}\n\n// this isn't working \n\nfunction intergrateZero(instrumentation, key)\n{\n  const timeNow = Date.now();\n  const en = { vt: 0, s: timeNow, e: 0, n: -1 }  // code duplicatiion need class\n  instrumentation[key] = en\n}\n\nfunction integrate(instrumentation, key, value) {\n  const timeNow = Date.now();\n  const entry = instrumentation[key] || { vt: 0, s: timeNow, e: 0, n: -1 }\n  // first value ignored, just using timestamp\n  const elapsed = timeNow - entry.s\n  const vt = entry.vt + value * (elapsed - entry.e)\n  const vth = vt / (60 * 60 * 1000)\n\n  const en = { v: value, vt: vt, s: entry.s, e: elapsed, n: entry.n + 1 }\n\n  const avg = elapsed ? en.vt / elapsed : 0\n  instrumentation[key] = en\n  const elapsedSecs = Math.floor(elapsed / 1000)\n  node.status({\n    fill: \"red\", shape: \"dot\",\n    text: `${key} s:${getHHMM(en.s)} e:${elapsedSecs} ∫:${vt} avg:${avg.toFixed(2)} ∫h:${vth.toFixed(2)}`\n  });\n  return avg\n}\n\n/**\n* @param {NodeMessage} msg\n* @param {{ energy: any; }} instrumentation\n*/\n\nfunction collectData(msg, instrumentation) {\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let m = null\n\n  if (['temperature', \"PUMPSTAT_CAPPOWER\", \"zeroCounters\"].includes(sensorProperty)) {\n\n    let avg = integrate(instrumentation, sensorName, Number(msg.payload))\n    switch (sensorProperty) {\n      case \"PUMPSTAT_CAPPOWER\":\n        //node.error('hhh II ' + msg.topic + \" \" + sensorProperty + \" \" + instrumentation['ashp0/today/kWh'])\n\n        let elapsedHours = instrumentation[sensorName].e / (1000 * 3600)\n        let kWh = avg * elapsedHours\n        instrumentation['ashp0/today/kWh'] = kWh // save to move to yesterday\n        m = {\n          topic: `ashp0/today/kWh`,  // update on each kWh consumed\n          payload: Math.floor(kWh),\n          digest: false\n        }                // send update for each kWh\n        break\n\n      case \"zeroCounters\":\n\n        node.status({ fill: \"yellow\", shape: \"dot\", text: `midnight : counter reset` });\n        \n        instrumentation['ashp0/yesterday/kWh'] = instrumentation['ashp0/today/kWh']\n        instrumentation['ashp0/today/kWh'] = 0\n        intergrateZero(instrumentation, 'ashp0/PUMPSTAT_CAPPOWER')\n\n        m = {\n          topic: `ashp0/yesterday/kWh`,\n          payload: Math.floor(instrumentation['ashp0/yesterday/kWh']),\n          digest: false\n        }\n        break\n\n      case \"temperature\":\n        if (sensorName in sensorWeight) {\n          instrumentation[sensorName] = Number(msg.payload)\n          const bt = calculateBuildingTemperature()\n          m = {\n            topic: `building/temperature`,\n            payload: Math.round(10 * bt) / 10,   // update on 0.1 increments \n            digest: false\n          }\n        }\n        break\n    }\n  }\n  return m\n}\n\n//flow.set(\"history\", {})\n\ninstrumentation = flow.get(\"history\") || {}\n\nlet m = collectData(msg, instrumentation)\nflow.set(\"history\", instrumentation)\n\n//node.error(\"my error message\" + instrumentation);\n\nreturn m   ",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n//flow.set(\"history\", null); ",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 200,
+        "wires": [
+            [
+                "a75b643512b299db",
+                "57a65d7e6a100b88"
+            ]
+        ]
+    },
+    {
+        "id": "a75b643512b299db",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4958cf804f325997",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "bump",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bump/temperature",
+        "payload": "10",
+        "payloadType": "num",
+        "x": 130,
+        "y": 300,
+        "wires": [
+            [
+                "e7b0483db52f11f9"
+            ]
+        ]
+    },
+    {
+        "id": "57a65d7e6a100b88",
+        "type": "link out",
+        "z": "ce7503bf65214c43",
+        "name": "link out 1",
+        "mode": "link",
+        "links": [
+            "3a0b7c61797ade28"
+        ],
+        "x": 445,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "1cedb9f5eba2566a",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "kWh",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "digest",
+                "v": "false",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "asph0/kWh",
+        "payload": "5",
+        "payloadType": "num",
+        "x": 130,
+        "y": 460,
+        "wires": [
+            [
+                "a75b643512b299db"
+            ]
+        ]
+    },
+    {
+        "id": "4dcbf2f32c1a1504",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "debug 5",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "385e9b789e654128",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "midnight",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "00 00 * * *",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "history/zeroCounters",
+        "payload": "false",
+        "payloadType": "bool",
+        "x": 140,
+        "y": 380,
+        "wires": [
+            [
+                "e7b0483db52f11f9"
+            ]
+        ]
+    },
+    {
+        "id": "4022c2129e11b456",
+        "type": "switch",
+        "z": "0b049155917211c7",
+        "name": "bridge response",
+        "property": "originalTopic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "local\\/bridge\\/response\\/networkmap.*",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "local\\/bridge\\/response\\/.*",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "a3d605b9ae5235a1",
+                "2f07922ce4dbc1ad"
+            ],
+            [
+                "155294f4c40197eb"
+            ]
+        ]
+    },
+    {
+        "id": "f1b1556fc5209203",
+        "type": "file",
+        "z": "0b049155917211c7",
+        "name": "deviceMap write",
+        "filename": "/mnt/dietpi_userdata/map/devices.js",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 640,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "eba95f0550137e0d",
+        "type": "debug",
+        "z": "0b049155917211c7",
+        "name": "unretain",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "155294f4c40197eb",
+        "type": "debug",
+        "z": "0b049155917211c7",
+        "name": "bridge responses",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "a3d605b9ae5235a1",
+        "type": "function",
+        "z": "0b049155917211c7",
+        "name": "extract map",
+        "func": "\nmsg.visualtype = msg.payload.type ;\nmsg.payload = msg.payload.data.value ;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 240,
+        "wires": [
+            [
+                "f1b1556fc5209203",
+                "bcc835aea255e98e"
+            ]
+        ]
+    },
+    {
+        "id": "6d9def6dbe8948e8",
+        "type": "function",
+        "z": "0b049155917211c7",
+        "name": "retain = false",
+        "func": "msg.payload = {};\nif (msg.retain) \n{\n    msg.retain = false ;\n    return msg;\n}\nelse\n    return null;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 160,
+        "wires": [
+            [
+                "eba95f0550137e0d"
+            ]
+        ]
+    },
+    {
+        "id": "547b95c8141f6712",
+        "type": "inject",
+        "z": "0b049155917211c7",
+        "name": "retrieve map",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 580,
+        "wires": [
+            [
+                "7bc3703dda5645a6"
+            ]
+        ]
+    },
+    {
+        "id": "7bc3703dda5645a6",
+        "type": "file in",
+        "z": "0b049155917211c7",
+        "name": "deviceMap read",
+        "filename": "/mnt/dietpi_userdata/map/devices.js",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 380,
+        "y": 580,
+        "wires": [
+            [
+                "6f3c72f220a6ab5e"
+            ]
+        ]
+    },
+    {
+        "id": "6f3c72f220a6ab5e",
+        "type": "json",
+        "z": "0b049155917211c7",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 130,
+        "y": 500,
+        "wires": [
+            [
+                "bcc835aea255e98e"
+            ]
+        ]
+    },
+    {
+        "id": "bcc835aea255e98e",
+        "type": "function",
+        "z": "0b049155917211c7",
+        "name": "app/response/networkMap",
+        "func": "msg.topic = msg.topic.replace('bridge', 'app');\nmsg.topic = msg.topic.replace('request', 'response');\nvar units = msg.payload.nodes;\nvar links = msg.payload.links;\n\nvar nodeMap = {} ;\nfor (let i in units)\n{\n    nodeMap[units[i]['ieeeAddr']] = units[i]['friendlyName'];    \n}\n\n\nvar out=[]; \nlet dict = {};\n\n//out.push({ topic : 'link', payload : links.length});\nfor (let i in links)\n{\n    var src = nodeMap[links[i].sourceIeeeAddr]\n    var tar = nodeMap[links[i].targetIeeeAddr ]\n    var linkText = links[i].lqi + \" \" + src + \" -> \" + tar ;\n    out.push(linkText)\n    //out.push({ topic : 'link', payload : linkText });\n    let key = src   ; // + \"->\" + tar ; \n    dict[key] = links[i] ;\n}\nmsg.payload = dict ;\nreturn(msg);\nreturn([dict]);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 500,
+        "wires": [
+            [
+                "8b5e624bb5aaa19c",
+                "8e6fb5fdc6f0bef1"
+            ]
+        ]
+    },
+    {
+        "id": "95659a05514705b8",
+        "type": "link in",
+        "z": "0b049155917211c7",
+        "name": "bridge/response",
+        "links": [
+            "20ef51730ad6d439",
+            "73f3bd8747e9b9e9"
+        ],
+        "x": 45,
+        "y": 160,
+        "wires": [
+            [
+                "6d9def6dbe8948e8",
+                "4022c2129e11b456"
+            ]
+        ]
+    },
+    {
+        "id": "0a9719bd77581975",
+        "type": "link out",
+        "z": "0b049155917211c7",
+        "name": "mosquitto out",
+        "mode": "link",
+        "links": [
+            "b059487bc1ff0a2b"
+        ],
+        "x": 685,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "aa15016c69354ddd",
+        "type": "link in",
+        "z": "0b049155917211c7",
+        "name": "request/networkmap",
+        "links": [
+            "0c1d94776d82f5d4"
+        ],
+        "x": 45,
+        "y": 100,
+        "wires": [
+            [
+                "81a53326e4a74368"
+            ]
+        ]
+    },
+    {
+        "id": "81a53326e4a74368",
+        "type": "change",
+        "z": "0b049155917211c7",
+        "name": "request bridge network map in text",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "bridge/request/networkmap",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"type\":\"raw\",\"routes\":true}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 320,
+        "y": 100,
+        "wires": [
+            [
+                "0a9719bd77581975"
+            ]
+        ]
+    },
+    {
+        "id": "8b5e624bb5aaa19c",
+        "type": "debug",
+        "z": "0b049155917211c7",
+        "name": "app response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "8e6fb5fdc6f0bef1",
+        "type": "link out",
+        "z": "0b049155917211c7",
+        "name": "app responses",
+        "mode": "link",
+        "links": [
+            "ae83978daa30c005"
+        ],
+        "x": 695,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "d165bd02f725a40e",
+        "type": "file in",
+        "z": "0b049155917211c7",
+        "name": "fetch stored map",
+        "filename": "/mnt/dietpi_userdata/map/devices.js",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 630,
+        "y": 440,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e2294f8d9643f00e",
+        "type": "http in",
+        "z": "0b049155917211c7",
+        "name": "/map",
+        "url": "/map",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 40,
+        "wires": [
+            [
+                "0b2e219aa1b54a31"
+            ]
+        ]
+    },
+    {
+        "id": "0b2e219aa1b54a31",
+        "type": "change",
+        "z": "0b049155917211c7",
+        "name": "request bridge network map in graphviz",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "bridge/request/networkmap",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "{\"type\":\"graphviz\",\"routes\":true}",
+                "tot": "json"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 360,
+        "y": 40,
+        "wires": [
+            [
+                "0a9719bd77581975",
+                "2f07922ce4dbc1ad",
+                "8e6fb5fdc6f0bef1",
+                "5b55bedef897f381"
+            ]
+        ]
+    },
+    {
+        "id": "f3fb4d2769b463fb",
+        "type": "http response",
+        "z": "0b049155917211c7",
+        "name": "/map response",
+        "statusCode": "",
+        "headers": {},
+        "x": 620,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "a4df3453bc7ba8da",
+        "type": "template",
+        "z": "0b049155917211c7",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!doctype html>\n<meta charset=\"utf8\">\n<script src=\"/static/viz-standalone.js\"></script>\n<script>\n  \n  let visual = `{{{payload.data.value}}}`;\n\n  Viz.instance().then(function(viz) {\n    document.body.appendChild(viz.renderSVGElement(visual));\n  });\n  \n</script>",
+        "output": "str",
+        "x": 420,
+        "y": 360,
+        "wires": [
+            [
+                "f3fb4d2769b463fb"
+            ]
+        ]
+    },
+    {
+        "id": "154f1ee8c4c69a62",
+        "type": "debug",
+        "z": "0b049155917211c7",
+        "name": "bridge-debug2",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 260,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "55db0f5201cd5d76",
+        "type": "function",
+        "z": "0b049155917211c7",
+        "name": "map handler",
+        "func": "let queue = context.get('mapRequestQueue');\n\n// is this a response with a network map ? \nif (msg.topic == 'bridge/response/networkmap') {\n\n    if (msg.payload.data.type == 'graphviz'){\n        let payload = msg.payload ;\n\n// we're going to return the original message\n\n        msg = queue.shift();\n        if (msg == undefined)\n            return null ;\n        msg.payload = payload ;\n    }\n    else\n    {\n        node.error(\"no graphviz payload\", msg);\n        return null ;\n    }    \n} \nelse if (msg.topic == 'bridge/request/networkmap')\n{\n    if (msg.req && msg.res) {\n        queue.push(msg);\n    }\n    else\n    {\n        node.error(\"req or res not set\", msg);\n    }\n    return null ;\n}\nelse msg = null ;\n\ncontext.set('mapRequestQueue', queue);\nreturn msg ;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\ncontext.set('mapRequestQueue', []);",
+        "finalize": "",
+        "libs": [],
+        "x": 250,
+        "y": 360,
+        "wires": [
+            [
+                "a4df3453bc7ba8da"
+            ]
+        ]
+    },
+    {
+        "id": "5b55bedef897f381",
+        "type": "debug",
+        "z": "0b049155917211c7",
+        "name": "debug3",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "26750e33e337b7cc",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 11,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S0",
+        "label": "units",
+        "format": "{{msg.payload.temperature}}",
+        "min": "-5",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 120,
+        "wires": [],
+        "info": "ddomr  efjeio fefieh"
+    },
+    {
+        "id": "875d175f7ff6f2c6",
+        "type": "switch",
+        "z": "852c7fb3560fe3c5",
+        "name": "driver",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "s0",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "s1",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "s2",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "s3",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "s4",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "s5",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "s6",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 7,
+        "x": 230,
+        "y": 420,
+        "wires": [
+            [
+                "26750e33e337b7cc",
+                "c96ecd34dcdc4cd7",
+                "2349544066964a06"
+            ],
+            [
+                "260bf603c7355449",
+                "3ebf0423c994deb0",
+                "35bad29e813adc97",
+                "3c68b8c4f57262ea",
+                "9e6e6bf9c225efd7",
+                "fd18564d488ffe24"
+            ],
+            [
+                "509d7f548244cc47",
+                "7bd469b1032ffd42",
+                "49ae1be3c040127f",
+                "ead5d086fbae75e4",
+                "de22efe9777d905d",
+                "b188abb881f81d90"
+            ],
+            [
+                "4ccd55d9db3d21fe",
+                "402c01924fefcb66",
+                "477d037da0bbede6",
+                "91d9ac7e91eb872d",
+                "cfa06978c818f2b2",
+                "b4f7fbf8382d3811"
+            ],
+            [
+                "cf3c31f8faad41e3",
+                "3aa13f0b3cd2267d",
+                "9dba2d7193ab1356",
+                "1af4efaa1532a454",
+                "f9f8e9d30d88fad6",
+                "379ae0d7b50cf454"
+            ],
+            [
+                "5cd250c356c471b8",
+                "1bc0b5ad536eaa56",
+                "f52de32fb7559bb7",
+                "9d692880c69437aa",
+                "2eaff4086fd8f24e",
+                "5442cf3eb79781db"
+            ],
+            [
+                "704cd730a89f565e",
+                "15a327a26be5f8b4",
+                "cd0e53ee4310dd2d",
+                "c35b899e9b6304cf",
+                "e701daa55de11533",
+                "4f9183e0c5357f06"
+            ]
+        ]
+    },
+    {
+        "id": "260bf603c7355449",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S1",
+        "label": "units",
+        "format": "{{msg.payload.temperature}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "509d7f548244cc47",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S2",
+        "label": "units",
+        "format": "{{msg.payload.temperature}}",
+        "min": "10",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "4ccd55d9db3d21fe",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S3",
+        "label": "units",
+        "format": "{{msg.payload.temperature}}",
+        "min": "10",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "cf3c31f8faad41e3",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S4",
+        "label": "°C.",
+        "format": "{{msg.payload.temperature}}",
+        "min": "10",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "5cd250c356c471b8",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 9,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S5",
+        "label": "units",
+        "format": "{{msg.payload.temperature}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "704cd730a89f565e",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "ca082d2653ec9647",
+        "order": 10,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "S6",
+        "label": "units",
+        "format": "{{msg.payload.temperature}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 650,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "05fd8e378b5f7d83",
+        "type": "link in",
+        "z": "852c7fb3560fe3c5",
+        "name": "instrumentation",
+        "links": [
+            "2384d6ea06ea6969"
+        ],
+        "x": 95,
+        "y": 860,
+        "wires": [
+            [
+                "875d175f7ff6f2c6",
+                "76a2e1121469b718",
+                "9fc9b9be28c95789",
+                "03eea4a10c614d2c"
+            ]
+        ]
+    },
+    {
+        "id": "76a2e1121469b718",
+        "type": "debug",
+        "z": "852c7fb3560fe3c5",
+        "name": "instrumentation",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "9fc9b9be28c95789",
+        "type": "ui_chart",
+        "z": "852c7fb3560fe3c5",
+        "name": "temperature",
+        "group": "cb16ba9be27b8f82",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "temperature",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "no data yet",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "25",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 730,
+        "y": 940,
+        "wires": [
+            []
+        ],
+        "inputLabels": [
+            "temperature"
+        ]
+    },
+    {
+        "id": "2812b7408327b47f",
+        "type": "debug",
+        "z": "852c7fb3560fe3c5",
+        "name": "table input",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 710,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "3ebf0423c994deb0",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "b98f35a2fb7e0ecc",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "LQI 1",
+        "label": "units",
+        "format": "{{msg.payload.linkquality}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "7bd469b1032ffd42",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "b98f35a2fb7e0ecc",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "LQI 2",
+        "label": "units",
+        "format": "{{msg.payload.linkquality}}",
+        "min": "10",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "402c01924fefcb66",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "b98f35a2fb7e0ecc",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "LQI 3",
+        "label": "units",
+        "format": "{{msg.payload.linkquality}}",
+        "min": "10",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3aa13f0b3cd2267d",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "9a98fe065fa4983d",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "LQI 4",
+        "label": "°C.",
+        "format": "{{msg.payload.linkquality}}",
+        "min": "10",
+        "max": "25",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "1bc0b5ad536eaa56",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "9a98fe065fa4983d",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "LQI 5",
+        "label": "units",
+        "format": "{{msg.payload.linkquality}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "15a327a26be5f8b4",
+        "type": "ui_gauge",
+        "z": "852c7fb3560fe3c5",
+        "name": "",
+        "group": "9a98fe065fa4983d",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "gtype": "donut",
+        "title": "LQI 6",
+        "label": "units",
+        "format": "{{msg.payload.linkquality}}",
+        "min": 0,
+        "max": 10,
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 810,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "35bad29e813adc97",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "09d12ddef49ef471",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Link quality 1",
+        "label": "",
+        "format": "{{msg.payload.linkquality}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 730,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "49ae1be3c040127f",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "09d12ddef49ef471",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Link quality 2",
+        "label": "",
+        "format": "{{msg.payload.linkquality}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 730,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "477d037da0bbede6",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "09d12ddef49ef471",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Link quality 3",
+        "label": "",
+        "format": "{{msg.payload.linkquality}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 730,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "9dba2d7193ab1356",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "09d12ddef49ef471",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "Link quality 4",
+        "label": "",
+        "format": "{{msg.payload.linkquality}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 730,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "f52de32fb7559bb7",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "09d12ddef49ef471",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "Link quality 5",
+        "label": "",
+        "format": "{{msg.payload.linkquality}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 730,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "cd0e53ee4310dd2d",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "09d12ddef49ef471",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "Link quality 6",
+        "label": "",
+        "format": "{{msg.payload.linkquality}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 730,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "3c68b8c4f57262ea",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "36d8114ce89b110c",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Battery 1",
+        "label": "",
+        "format": "{{msg.payload.battery}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 920,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "ead5d086fbae75e4",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "36d8114ce89b110c",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Battery 2",
+        "label": "",
+        "format": "{{msg.payload.battery}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 920,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "91d9ac7e91eb872d",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "36d8114ce89b110c",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Battery 3",
+        "label": "",
+        "format": "{{msg.payload.battery}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 920,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "1af4efaa1532a454",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "36d8114ce89b110c",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "Battery 4",
+        "label": "",
+        "format": "{{msg.payload.battery}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 920,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "9d692880c69437aa",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "36d8114ce89b110c",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "Battery 5",
+        "label": "",
+        "format": "{{msg.payload.battery}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 920,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "c35b899e9b6304cf",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "36d8114ce89b110c",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "Battery 6",
+        "label": "",
+        "format": "{{msg.payload.battery}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 920,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "9e6e6bf9c225efd7",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Location 1",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 390,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "de22efe9777d905d",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Location 2",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 390,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "cfa06978c818f2b2",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Location 3",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 390,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "f9f8e9d30d88fad6",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "Location 4",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 390,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "2eaff4086fd8f24e",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "Location 5",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 390,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "e701daa55de11533",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "Location 6",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 390,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "fd18564d488ffe24",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 1",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 560,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "b188abb881f81d90",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 2",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 560,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "b4f7fbf8382d3811",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 3",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 560,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "379ae0d7b50cf454",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 4",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 560,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "5442cf3eb79781db",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 5",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 560,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "4f9183e0c5357f06",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 6",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 560,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "c96ecd34dcdc4cd7",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "8419219ab0a3753a",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "Location 0",
+        "label": "",
+        "format": "{{msg.payload.location}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 390,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "2349544066964a06",
+        "type": "ui_text",
+        "z": "852c7fb3560fe3c5",
+        "group": "5609fe8f06e93799",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "Temp 0",
+        "label": "",
+        "format": "{{msg.payload.temperature}}",
+        "layout": "row-left",
+        "className": "",
+        "x": 560,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "a260c57aa4e271ff",
+        "type": "inject",
+        "z": "852c7fb3560fe3c5",
+        "name": "fake data",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "s8",
+        "payload": "{\"location\":\"johna\",\"temperature\":\"31\",\"humidity\":70}",
+        "payloadType": "json",
+        "x": 300,
+        "y": 1120,
+        "wires": [
+            [
+                "03eea4a10c614d2c"
+            ]
+        ]
+    },
+    {
+        "id": "8594422784f4566e",
+        "type": "inject",
+        "z": "852c7fb3560fe3c5",
+        "name": "fake data 1",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "s7",
+        "payload": "{\"location\":\"Johns\",\"temperature\":\"34\",\"humidity\":75}",
+        "payloadType": "json",
+        "x": 300,
+        "y": 1200,
+        "wires": [
+            [
+                "03eea4a10c614d2c"
+            ]
+        ]
+    },
+    {
+        "id": "7f5a1e28ca80664a",
+        "type": "inject",
+        "z": "852c7fb3560fe3c5",
+        "name": "clear data",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "clearData",
+        "payload": "",
+        "payloadType": "date",
+        "x": 300,
+        "y": 1300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "03eea4a10c614d2c",
+        "type": "function",
+        "z": "852c7fb3560fe3c5",
+        "name": "data store",
+        "func": "// only process sensor readings, no slashes in topic\nlet m = msg.topic.search(/^[A-Za-z]*[\\d]$/);\n\n//console.warn('ok ' + m);\n\nif (m != 0)\n    return(null);\n\nlet chartPoint = { topic: msg.topic, payload: msg.payload.temperature };\n\nlet source = msg.topic ;\n\nlet sensorData = flow.get(\"sensorData\");\nif (sensorData == null) \n    sensorData = {} \n\nif (!Array.isArray(sensorData[source])) \n    sensorData[source] = []\n\n//console.warn(source + \"..a..\" + JSON.stringify(sensorData), null, 4);\n\n// only process sensor readings\nlet d = new Date()\nmsg.payload['source'] = source ;    \nmsg.payload['timestamp'] = d.toLocaleTimeString();\nlet len = sensorData[source].unshift(msg.payload) ;\nif (len > 10)  // throw away last/end value\n    sensorData[source].pop();\n\n//console.warn(source + \"..b..\" + JSON.stringify(sensorData), null, 4);\n\nflow.set(\"sensorData\", sensorData);\n\nlet tablePoints = { topic : 'dataPoints', payload :  [] } ;\n\nfor (const [k, v] of Object.entries(sensorData))\n{ \n    tablePoints.payload = tablePoints.payload.concat(v);\n}\n\nreturn [chartPoint, tablePoints];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//flow.set(\"sensorData\", {});",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 1060,
+        "wires": [
+            [
+                "9fc9b9be28c95789",
+                "c7df2bcd8117b8ac"
+            ],
+            [
+                "d8c9fe5d3202c415"
+            ]
+        ]
+    },
+    {
+        "id": "17424e81709a438d",
+        "type": "ui_table",
+        "z": "852c7fb3560fe3c5",
+        "group": "cb16ba9be27b8f82",
+        "name": "",
+        "order": 1,
+        "width": "12",
+        "height": "10",
+        "columns": [
+            {
+                "field": "location",
+                "title": "Location",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "topic",
+                "title": "Sensor",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "temperature",
+                "title": "°C",
+                "width": "10%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "humidity",
+                "title": "Hum",
+                "width": "10%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "lqi",
+                "title": "🛜",
+                "width": "10%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "battery",
+                "title": "🔋",
+                "width": "10%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "voltage",
+                "title": "⚡",
+                "width": "10%",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "timestamp",
+                "title": "Time",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 730,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "c7df2bcd8117b8ac",
+        "type": "debug",
+        "z": "852c7fb3560fe3c5",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "8a70386e56a28d02",
+        "type": "inject",
+        "z": "892c223a74ad0925",
+        "name": "bridge health check",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bridge/request/health_check",
+        "payload": "{}",
+        "payloadType": "jsonata",
+        "x": 170,
+        "y": 80,
+        "wires": [
+            [
+                "2b42a705743e033e"
+            ]
+        ]
+    },
+    {
+        "id": "71fb77d41d8abc20",
+        "type": "debug",
+        "z": "892c223a74ad0925",
+        "name": "requests queued",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "ac54334f6b9f55b8",
+        "type": "inject",
+        "z": "892c223a74ad0925",
+        "name": "graphiz network map",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload.type",
+                "v": "graphviz",
+                "vt": "str"
+            },
+            {
+                "p": "payload.routes",
+                "v": "true",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bridge/request/networkmap",
+        "x": 170,
+        "y": 120,
+        "wires": [
+            [
+                "2b42a705743e033e"
+            ]
+        ]
+    },
+    {
+        "id": "bf70a025a355e1da",
+        "type": "inject",
+        "z": "892c223a74ad0925",
+        "name": "raw network map",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload.type",
+                "v": "raw",
+                "vt": "str"
+            },
+            {
+                "p": "payload.routes",
+                "v": "true",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bridge/request/networkmap",
+        "x": 160,
+        "y": 160,
+        "wires": [
+            [
+                "2b42a705743e033e"
+            ]
+        ]
+    },
+    {
+        "id": "69cc50e848ca448c",
+        "type": "inject",
+        "z": "892c223a74ad0925",
+        "name": "OTA update socket",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bridge/request/device/ota_update/update",
+        "payload": "socketXXX",
+        "payloadType": "str",
+        "x": 170,
+        "y": 200,
+        "wires": [
+            [
+                "2b42a705743e033e"
+            ]
+        ]
+    },
+    {
+        "id": "7a6fc845733a5a89",
+        "type": "function",
+        "z": "892c223a74ad0925",
+        "name": "retain = false",
+        "func": "msg.payload = {};\nif (msg.retain) \n{\n    msg.retain = false ;  // looks wrong\n    return msg;\n}\nelse\n    return msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 80,
+        "wires": [
+            [
+                "a91a2376ace8413b"
+            ]
+        ]
+    },
+    {
+        "id": "a91a2376ace8413b",
+        "type": "debug",
+        "z": "892c223a74ad0925",
+        "name": "debug 1",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "669ba67bd6ee4e50",
+        "type": "serial in",
+        "z": "892c223a74ad0925",
+        "name": "energy-mon-in",
+        "serial": "6db0e35f8056298a",
+        "x": 150,
+        "y": 420,
+        "wires": [
+            [
+                "83e3c80df21d0aae",
+                "752b2f75aed1e5c8"
+            ]
+        ]
+    },
+    {
+        "id": "752b2f75aed1e5c8",
+        "type": "debug",
+        "z": "892c223a74ad0925",
+        "name": "serial out",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "83e3c80df21d0aae",
+        "type": "function",
+        "z": "892c223a74ad0925",
+        "name": "energyCalc",
+        "func": "\n// to do : send second sample when energy changes\n\n// code improved at St Marks.\n\nconst samplesPerMinute = 15  ;\nconst kWhPeriod =   30 ;   // minutes\nlet maxGapMinutes = 30 ;   // number of minutes between samples. \n\nlet e0 = {\n    amps : 0.0,\n    numSamples : 0,\n    numOfAmpsSamples : 0, \n    sumOfAmpsSamples : 0.0,\n    kWh : 0.0, \n    begin : true\n}\n\nfunction ampsToKW(amps)\n{\n    return(Math.round(amps * 240) / 1000);    // watts to kW \n}\n\nfunction calculatePower(ampsNow) {\n    let e = context.get(\"energy\");\n    if (e === undefined)\n        e = e0;\n\n    //let kWh = null;\n\n    e.sumOfAmpsSamples += ampsNow;\n    e.numOfAmpsSamples += 1;\n    let windowSize = samplesPerMinute * kWhPeriod;\n    if (e.numOfAmpsSamples >= windowSize) {\n        e.kWh = ampsToKW(e.sumOfAmpsSamples / e.numOfAmpsSamples);\n        e.numOfAmpsSamples = 0;\n        e.sumOfAmpsSamples = 0.0;\n    }\n\n    let beginTransition = e.begin;\n    e.begin = false;\n\n    let ampsDiff = e.numSamples ? ampsNow - e.amps : 0.0;\n    let percentageDiff = e.numSamples ? (ampsNow - e.amps) * 100 * 2 / (e.amps + ampsNow) : 0.0;\n\n    let endTransition = (Math.abs(ampsDiff) > 4 || e.numSamples >= 15 * maxGapMinutes);  // write every maxGap  \n    let writeSample = beginTransition || endTransition;\n\n    //let writeSample = percentageDiff > 60;\n    let numSamples1 = e.numSamples;\n    let kW = null;\n\n    let ampsAvg = ((e.amps * e.numSamples) + ampsNow) / (e.numSamples + 1);   // correct? \n    e.amps = ampsAvg;    // store the new average\n    e.numSamples += 1;\n\n    if (writeSample) {\n        kW = ampsToKW(ampsAvg);\n        e.numSamples = 0;\n        e.amps = 0.0;\n\n        if (endTransition)\n            e.begin = true;\n    }\n    if (false)\n        node.warn(\"now \" + ampsNow + \" avg= \" + ampsAvg.toFixed(2) + \", \"\n            + percentageDiff.toFixed(0) + \"%,  amps diff= \" + ampsDiff.toFixed(2)\n            + \" numSamples \" + numSamples1 + \" kWh \" + e.kWh + \" sum \" + e.sumOfAmpsSamples);\n\n    context.set(\"energy\", e) ;\n\n    // push out the last calculation of kWh \n    return kW ? { 'kW': kW, 'kWh': e.kWh, 'numSamples': numSamples1 } : null;\n}\n\n\n// calculate simple moving average\n// https://en.wikipedia.org/wiki/Moving_average\n// it's got a horrible shift in it.\n\nfunction calculateSMA(lastPoint, dataPoints, windowSize) {\n    let dataEmpty = {\n        points: [],\n        sum: 0.0,\n        sma: 0.0\n    }\n    const sma = 0;\n    let data = context.get(dataPoints);\n    if (data === undefined)\n        data = dataEmpty;\n\n    // add last point and remove first point\n    let numPoints = data.points.push(lastPoint); // returns new length\n\n    //let lastSMA = data.sma;\n    if (numPoints <= windowSize) {\n        data.sum += lastPoint;\n        data.sma = data.sum / numPoints;\n    }\n    else {\n        const firstPoint = data.points.shift();\n        numPoints -= 1;\n        data.sma += ((lastPoint - firstPoint) / (numPoints))\n    }\n    context.set(dataPoints, data);\n    return data.sma ;\n}\n\n\nlet ampsNow = parseFloat(msg.payload);  // parse buffer~\nmsg.topic = 'ashp0/energy'\nmsg.payload = calculatePower(ampsNow);\n\nlet kW = ampsToKW(ampsNow);\nlet sma = calculateSMA(kW, 'datapoints', samplesPerMinute * 30)\nif (msg.payload) \n    msg.payload.sma = sma ; \n\nreturn msg.payload ? msg : null ; ",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 420,
+        "wires": [
+            [
+                "577231c552842134"
+            ]
+        ]
+    },
+    {
+        "id": "e615ae11558e9741",
+        "type": "file",
+        "z": "892c223a74ad0925",
+        "name": "WriteEnergy",
+        "filename": "/mnt/dietpi_userdata/node-red/energy4.dat",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "false",
+        "encoding": "none",
+        "x": 370,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "577231c552842134",
+        "type": "link out",
+        "z": "892c223a74ad0925",
+        "name": "energy out",
+        "mode": "link",
+        "links": [
+            "b059487bc1ff0a2b"
+        ],
+        "x": 540,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "12bebcbb8cc265ce",
+        "type": "ui_time_scheduler",
+        "z": "892c223a74ad0925",
+        "group": "adab1244e77b6fc9",
+        "name": "scheduler",
+        "startDay": 0,
+        "refresh": 60,
+        "devices": [
+            "Zone 1",
+            "Zone 2"
+        ],
+        "singleOff": true,
+        "onlySendChange": false,
+        "customPayload": false,
+        "eventMode": false,
+        "eventOptions": [],
+        "sendTopic": false,
+        "lat": "",
+        "lon": "",
+        "customContextStore": "",
+        "outputs": 3,
+        "order": 7,
+        "width": "6",
+        "height": "12",
+        "x": 140,
+        "y": 640,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    }
+]
