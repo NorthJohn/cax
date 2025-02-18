@@ -32,10 +32,18 @@
         "env": []
     },
     {
+        "id": "78ad727ff3800ccd",
+        "type": "tab",
+        "label": "LAE0",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "0b049155917211c7",
         "type": "tab",
         "label": "bridge",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -51,7 +59,7 @@
         "id": "86219b48706129b6",
         "type": "tab",
         "label": "playspace",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -423,6 +431,36 @@
         "groupType": "default"
     },
     {
+        "id": "8a3ca6b2c6028d5b",
+        "type": "modbus-client",
+        "name": "LAE-AC1-27",
+        "clienttype": "serial",
+        "bufferCommands": true,
+        "stateLogEnabled": true,
+        "queueLogEnabled": false,
+        "failureLogEnabled": true,
+        "tcpHost": "127.0.0.1",
+        "tcpPort": "502",
+        "tcpType": "DEFAULT",
+        "serialPort": "/dev/ttyUSB0",
+        "serialType": "ASCII",
+        "serialBaudrate": "9600",
+        "serialDatabits": "7",
+        "serialStopbits": "1",
+        "serialParity": "even",
+        "serialConnectionDelay": "100",
+        "serialAsciiResponseStartDelimiter": "0x3A",
+        "unit_id": "1",
+        "commandDelay": "1",
+        "clientTimeout": "1000",
+        "reconnectOnTimeout": true,
+        "reconnectTimeout": "2000",
+        "parallelUnitIdsAllowed": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "showLogs": true
+    },
+    {
         "id": "3bf5edcf0ab1a992",
         "type": "function",
         "z": "0ada38113f2dc695",
@@ -651,7 +689,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "to MQTT",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -745,7 +783,13 @@
             },
             {
                 "t": "regex",
-                "v": "^[adrsgmt][^\\d]*[\\d]{1,2}$",
+                "v": "^[adprsgmt][^\\d]*[\\d]{1,2}$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^heatX\\/[\\w]{2,}$",
                 "vt": "str",
                 "case": false
             },
@@ -758,7 +802,7 @@
         ],
         "checkall": "false",
         "repair": false,
-        "outputs": 7,
+        "outputs": 8,
         "x": 100,
         "y": 220,
         "wires": [
@@ -779,6 +823,9 @@
             ],
             [
                 "e5c04e4bbe660ab9"
+            ],
+            [
+                "c6fd0ae9641d7484"
             ],
             [
                 "aca5d197ea67d78a"
@@ -802,8 +849,7 @@
         "y": 60,
         "wires": [
             [
-                "169352bc32f5bbd4",
-                "5dc2383d434c6970"
+                "169352bc32f5bbd4"
             ]
         ]
     },
@@ -970,7 +1016,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "influx",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1024,7 +1070,7 @@
         "finalize": "",
         "libs": [],
         "x": 300,
-        "y": 400,
+        "y": 420,
         "wires": [
             [
                 "2447196ebfeb6d69"
@@ -1038,7 +1084,8 @@
         "name": "downsample in",
         "links": [
             "298f4d77b929e02a",
-            "57a65d7e6a100b88"
+            "57a65d7e6a100b88",
+            "5d488e53c97b07ab"
         ],
         "x": 75,
         "y": 600,
@@ -1048,23 +1095,6 @@
                 "11cd67874a91f2ba"
             ]
         ]
-    },
-    {
-        "id": "5dc2383d434c6970",
-        "type": "debug",
-        "z": "fce55c80ba409b3d",
-        "name": "dispatch 4",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 610,
-        "y": 60,
-        "wires": []
     },
     {
         "id": "4db6202e94cea612",
@@ -1188,7 +1218,7 @@
             "f28841e54458294f"
         ],
         "x": 75,
-        "y": 400,
+        "y": 420,
         "wires": [
             [
                 "e5c04e4bbe660ab9"
@@ -1260,6 +1290,26 @@
         "x": 445,
         "y": 140,
         "wires": []
+    },
+    {
+        "id": "c6fd0ae9641d7484",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "heat exchange in",
+        "func": "// set source, location and topic \n\nlet pos = msg.topic.indexOf('/') ;\n\n// msg.topic remains unchanged\nmsg.source = msg.topic.substring(0,pos);\nmsg.location = msg.topic.substring(pos+1);\nmsg.measurement = 'temperature'\n\n// copying ashp configuration\n\n//msg.reportOnDiff = 1\n\n//msg.digest = (msg.writeThrough == false) && (m.reportOnDiff != 0)  \n//node.error('digest ' + m.digest)\n\nmsg.writeThrough = true  \n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 130,
+        "y": 340,
+        "wires": [
+            [
+                "2447196ebfeb6d69"
+            ]
+        ]
     },
     {
         "id": "2d28df211ec8ace4",
@@ -1460,7 +1510,19 @@
         "rules": [
             {
                 "t": "regex",
+                "v": "app\\/request\\/lae0\\/",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
                 "v": "app\\/request\\/ashp0\\/",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "app\\/request\\/pid0\\/",
                 "vt": "str",
                 "case": false
             },
@@ -1509,12 +1571,18 @@
         ],
         "checkall": "false",
         "repair": false,
-        "outputs": 8,
+        "outputs": 10,
         "x": 190,
         "y": 300,
         "wires": [
             [
+                "a2ff14d6d3cab8f1"
+            ],
+            [
                 "99970d5033f5f26f"
+            ],
+            [
+                "58d70b01b04781c8"
             ],
             [
                 "3576a0b9dd48029d"
@@ -1531,7 +1599,8 @@
             [
                 "a0072afbb111de1d",
                 "c7515d6ac70f764e",
-                "bacb43412f50be7f"
+                "bacb43412f50be7f",
+                "58d70b01b04781c8"
             ],
             [
                 "bacb43412f50be7f"
@@ -1590,7 +1659,7 @@
         "type": "function",
         "z": "a39c97029f2c005f",
         "name": "scheduler",
-        "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date()\n  return d.toTimeString().substring(0, 5)\n}\n\n/// copied from other modbus related node\nfunction lookupRegister(subTopic) {\n  const registers = global.get(\"modbus\");\n  for (const row of registers) {\n    if (row.Parameter == subTopic)\n      return row;\n  }\n  node.error('unable to parse ' + subTopic)\n  return null;\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet schedule = flow.get(\"schedule\") || { start: '05:00', stop: '16:30', unit: { status : null} }\n\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n// text string comparison\nlet unitShouldBeOn = schedule.start < timeNow && timeNow < schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `${timeNow}:  ${schedule.start} -> ${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n\n  node.error(s.payload);\n}\n\n\n\nlet control = null\nif (schedule && schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  // unit status is unchanged\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [response ?? null, control ?? null];\n",
+        "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date()\n  return d.toTimeString().substring(0, 5)\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet schedule = flow.get(\"schedule\") || { start: '00:00', stop: '23:59', unit: { status : null} }\n\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n// text string comparison\nlet unitShouldBeOn = schedule.start < timeNow && timeNow < schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `${timeNow}:  ${schedule.start} -> ${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n\n  node.error(s.payload);\n}\n\n\n\nlet control = null\nif (schedule && schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  // unit status is unchanged\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [response ?? null, control ?? null];\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -1601,12 +1670,10 @@
         "y": 560,
         "wires": [
             [
-                "b8d9de514450140a",
-                "293ae4963a27a257"
+                "b8d9de514450140a"
             ],
             [
-                "207bd26d97d91d04",
-                "99970d5033f5f26f"
+                "207bd26d97d91d04"
             ]
         ]
     },
@@ -1638,7 +1705,7 @@
         "id": "99970d5033f5f26f",
         "type": "link out",
         "z": "a39c97029f2c005f",
-        "name": "modbus in",
+        "name": "ASHP0",
         "mode": "link",
         "links": [
             "f61b76784c425ebd"
@@ -1970,6 +2037,43 @@
         "wires": []
     },
     {
+        "id": "a2ff14d6d3cab8f1",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "LAE0",
+        "mode": "link",
+        "links": [
+            "067d0e710c60a2bf",
+            "b27cee27b9d6f4b1"
+        ],
+        "x": 705,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "5049733e750477f4",
+        "type": "comment",
+        "z": "a39c97029f2c005f",
+        "name": "Note that the scheduler has been disconnected from ashp",
+        "info": "",
+        "x": 270,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "58d70b01b04781c8",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "request/PID0",
+        "mode": "link",
+        "links": [
+            "b27cee27b9d6f4b1"
+        ],
+        "x": 705,
+        "y": 240,
+        "wires": []
+    },
+    {
         "id": "e8b29f091693fa42",
         "type": "inject",
         "z": "d6d8802f46b4aa03",
@@ -2008,7 +2112,7 @@
         "type": "function",
         "z": "d6d8802f46b4aa03",
         "name": "poll modbus",
-        "func": "\n// specify explicit register using msg.topic else get them all\n\n\n// 01: Coils (FC=01)\n// 02: Discrete Inputs (FC=02)\nconst HR = 3 // Multiple Holding Registers (FC=03)\nconst IR = 4 // Input Registers (FC=04)\n// 05: Single Coil (FC=05)\n// 06: Single Holding Register (FC=06)\n// 0F: Multiple Coils (FC=15)\n// 10: Multiple Holding Registers (FC=16)\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = global.get(\"modbus\");\n    for (const row of registers) {\n        if (row.Parameter == subTopic)\n            return row;\n    }\n    node.error('unable to parse ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"SETPOINT_hsp1\" },\n        { name: \"SETPOINT_hsp2\" },\n\n        { name: \"RESETCFG_hr_deg\" },\n        { name: \"RESETCFG_oat_hrfu\" },\n        { name: \"RESETCFG_oat_hrno\" },\n\n        { name: \"PROTOCOL_DEM_LIM\" }        \n    ];\n\nconst temperature =\n    [\n        { name: \"GENUNIT_SP\" },\n        { name: \"GENUNIT_CTRL_PNT\" },\n        { name: \"GENUNIT_CTRL_TYP\" },\n\n        { name: \"TEMP_EWT\", reportOnDiff: 2 },  // override the 0.25 \n        { name: \"TEMP_LWT\", reportOnDiff: 2 },  // override the 0.25 \n        { name: \"TEMP_OAT\" },\n    ];\n\nconst pressure =\n    [\n        { name: \"PRESSURE_PUMP_EWP\"  },\n        { name: \"PRESSURE_PUMP_LWP\"  },\n        { name: \"PUMPSTAT_WAT_FLOW\"  }\n    ];\n\nconst state =  \n    [\n        { name: \"UNIT_STATUS\" },\n        { name: \"PROTOCOL_CHIL_S_S\" },  //off on\n        { name: \"PROTOCOL_SP_SEL\" }, \n        { name: \"PROTOCOL_SP_OCC\" },\n        { name: \"PROTOCOL_CHIL_OCC\" },\n\n        { name: \"PUMPSTAT_PUMP_1\" },\n        { name: \"PUMPSTAT_PUMP_2\"},\n    ];\n\n const pump = \n    [   \n        { name: \"GENUNIT_CAP_T\" , reportOnDiff : 10 },   // 0% to 100%\n\n        { name: \"PUMPSTAT_VPMP_CMD\"},\n        { name: \"PUMPSTAT_CAPPOWER\", reportOnDiff : 5 },\n        { name: \"PUMPSTAT_WAT_FLOW\", reportOnDiff: 0.5  },        \n    ];\n\nconst alarm =\n    [\n        { name: \"UNIT_ALM\" },   \n        { name: \"ALARMRST_alarm_1c\" },\n        { name: \"ALARMRST_alarm_2c\" },\n        { name: \"ALARMRST_alarm_3c\" },\n        { name: \"ALARMRST_alarm_4c\" },\n        { name: \"ALARMRST_alarm_5c\" },\n    ];\n\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);  \n\n\nlet regList         = { input: input, temperature: temperature, pressure: pressure, state: state, pump: pump, alarm: alarm};\nlet reportOnDiff    = {               temperature: 1.0,         pressure: 15 ,                    pump: 0.5 };\n\nlet sequences = [] ;\n\nconst fc = { HR : 3, IR : 4 }\n\nfor (const [measurement, group] of Object.entries(regList)) {    \n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name)\n        {\n            const row = lookupRegister(e.name);\n            if (row)\n            {\n                const m = {} ;\n                m.prefix = 'local';\n                m.source = 'ashp0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address ;\n                m.measurement = measurement;\n                m.fc = fc[row.Type] ;\n                m.quantity = row['Reg. N°'];\n                m.unitid = 1;\n\n\n                m.modbusRow = row ;\n                m.writeThrough = msg.writeThrough ;\n                \n                const groupReportOnDifference = reportOnDiff[measurement] === undefined ?\n                    0 : reportOnDiff[measurement]  \n\n                m.reportOnDiff = e.reportOnDiff === undefined ? \n                    groupReportOnDifference : e.reportOnDiff;                \n\n                m.digest = (msg.writeThrough == false) && (m.reportOnDiff != 0)  \n                //node.error('digest ' + m.digest)\n\n                m.windowSize = 3 * 30 ;  \n\n                //node.error(e)\n                // red : digest, yellow : update, green : writeThrough    \n\n                let colour = m.digest ? 'red': (m.writeThrough ? 'green' : 'yellow') ;\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0)\n{\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null ;\n}\nif (msg.sequences.length > 1)\n{\n    node.status({ fill: \"green\", shape: \"ring\", text: `:${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
+        "func": "\n// specify explicit register using msg.topic else get them all\n\n\n// 01: Coils (FC=01)\n// 02: Discrete Inputs (FC=02)\nconst HR = 3 // Multiple Holding Registers (FC=03)\nconst IR = 4 // Input Registers (FC=04)\n// 05: Single Coil (FC=05)\n// 06: Single Holding Register (FC=06)\n// 0F: Multiple Coils (FC=15)\n// 10: Multiple Holding Registers (FC=16)\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = global.get(\"modbus\");\n    for (const row of registers) {\n        if (row.Parameter == subTopic)\n            return row;\n    }\n    node.error('unable to parse ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"SETPOINT_hsp1\" },\n        { name: \"SETPOINT_hsp2\" },\n\n        { name: \"RESETCFG_hr_deg\" },\n        { name: \"RESETCFG_oat_hrfu\" },\n        { name: \"RESETCFG_oat_hrno\" },\n\n        { name: \"PROTOCOL_DEM_LIM\" }        \n    ];\n\nconst temperature =\n    [\n        { name: \"GENUNIT_SP\" },\n        { name: \"GENUNIT_CTRL_PNT\" },\n        { name: \"GENUNIT_CTRL_TYP\" },\n\n        { name: \"TEMP_EWT\", reportOnDiff: 1 },  // override the 0.25 \n        { name: \"TEMP_LWT\", reportOnDiff: 1 },  // override the 0.25 \n        { name: \"TEMP_OAT\" },\n    ];\n\nconst pressure =\n    [\n        { name: \"PRESSURE_PUMP_EWP\"  },\n        { name: \"PRESSURE_PUMP_LWP\"  },\n        { name: \"PUMPSTAT_WAT_FLOW\"  }\n    ];\n\nconst state =  \n    [\n        { name: \"UNIT_STATUS\" },\n        { name: \"PROTOCOL_CHIL_S_S\" },  //off on\n        { name: \"PROTOCOL_SP_SEL\" }, \n        { name: \"PROTOCOL_SP_OCC\" },\n        { name: \"PROTOCOL_CHIL_OCC\" },\n\n        { name: \"PUMPSTAT_PUMP_1\" },\n        { name: \"PUMPSTAT_PUMP_2\"},\n    ];\n\n const pump = \n    [   \n        { name: \"GENUNIT_CAP_T\" , reportOnDiff : 10 },   // 0% to 100%\n\n        { name: \"PUMPSTAT_VPMP_CMD\"},\n        { name: \"PUMPSTAT_CAPPOWER\", reportOnDiff : 2 },\n        { name: \"PUMPSTAT_WAT_FLOW\", reportOnDiff: 0.5  },        \n    ];\n\nconst alarm =\n    [\n        { name: \"UNIT_ALM\" },   \n        { name: \"ALARMRST_alarm_1c\" },\n        { name: \"ALARMRST_alarm_2c\" },\n        { name: \"ALARMRST_alarm_3c\" },\n        { name: \"ALARMRST_alarm_4c\" },\n        { name: \"ALARMRST_alarm_5c\" },\n    ];\n\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);  \n\n\nlet regList         = { input: input, temperature: temperature, pressure: pressure, state: state, pump: pump, alarm: alarm};\nlet reportOnDiff    = {               temperature: 1.0,         pressure: 15 ,                    pump: 0.5 };\n\nlet sequences = [] ;\n\nconst fc = { HR : 3, IR : 4 }\n\nfor (const [measurement, group] of Object.entries(regList)) {    \n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name)\n        {\n            const row = lookupRegister(e.name);\n            if (row)\n            {\n                const m = {} ;\n                m.prefix = 'local';\n                m.source = 'ashp0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address ;\n                m.measurement = measurement;\n                m.fc = fc[row.Type] ;\n                m.quantity = row['Reg. N°'];\n                m.unitid = 1;\n\n\n                m.modbusRow = row ;\n                m.writeThrough = msg.writeThrough ;\n                \n                const groupReportOnDifference = reportOnDiff[measurement] === undefined ?\n                    0 : reportOnDiff[measurement]  \n\n                m.reportOnDiff = e.reportOnDiff === undefined ? \n                    groupReportOnDifference : e.reportOnDiff;                \n\n                m.digest = (msg.writeThrough == false) && (m.reportOnDiff != 0)  \n                //node.error('digest ' + m.digest)\n\n                m.windowSize = 3 * 30 ;  \n\n                //node.error(e)\n                // red : digest, yellow : update, green : writeThrough    \n\n                let colour = m.digest ? 'red': (m.writeThrough ? 'green' : 'yellow') ;\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0)\n{\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null ;\n}\nif (msg.sequences.length > 1)\n{\n    node.status({ fill: \"green\", shape: \"ring\", text: `:${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2027,13 +2131,13 @@
         "id": "fd7087714f1e7e46",
         "type": "modbus-flex-connector",
         "z": "d6d8802f46b4aa03",
-        "name": "flex-connector",
+        "name": "ASHP-connector",
         "maxReconnectsPerMinute": 4,
         "emptyQueue": false,
         "showStatusActivities": true,
         "showErrors": true,
         "server": "c6b56e0744603b80",
-        "x": 540,
+        "x": 550,
         "y": 260,
         "wires": [
             [
@@ -2045,7 +2149,7 @@
         "id": "3bdc23fc1f16c1bb",
         "type": "modbus-flex-sequencer",
         "z": "d6d8802f46b4aa03",
-        "name": "flex-sequence1",
+        "name": "ASHP-read",
         "sequences": [
             {
                 "name": "sequence0",
@@ -2067,7 +2171,7 @@
         "keepMsgProperties": true,
         "delayOnStart": false,
         "startDelayTime": "",
-        "x": 580,
+        "x": 570,
         "y": 340,
         "wires": [
             [
@@ -2100,7 +2204,7 @@
         "type": "debug",
         "z": "d6d8802f46b4aa03",
         "name": "payload",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2129,7 +2233,7 @@
         "id": "6dbcbc44b8105773",
         "type": "function",
         "z": "d6d8802f46b4aa03",
-        "name": "type conversions",
+        "name": "number conversions",
         "func": "\n// float32lib.js  rev 1.0 22/09/2024\n\nfunction swapEndian(xb) {\n    return [xb[1], xb[0], xb[3], xb[2]]\n}\n\nfunction float32ToBytes(fl) {\n    const f32 = new Float32Array(1); f32[0] = fl;\n    const ui8 = new Uint8Array(f32.buffer);\n    return swapEndian((Array.from(ui8)));\n}\n\n// this still works on incoming data\n// float32ToBytes bytes = 15,219,64,73 getFloat32 = 3.14\n\nfunction bytesToFloat32(xb) {\n    const ui8 = Uint8Array.from((swapEndian(xb)));\n    //console.log(`ui8: ${ui8}  ui8.buffer ${ui8.buffer}`);\n    const fl = new Float32Array(ui8.buffer);\n    return Math.trunc(fl[0] * 100) / 100;\n}\n\n\nfunction bytesToUint32(xb) {\n    const ui8 = Uint8Array.from((swapEndian(xb)));\n    //console.log(`ui8: ${ui8}  ui8.buffer ${ui8.buffer}`);\n\n    var dataView = new DataView(ui8.buffer);\n    return dataView.getUint32(0, true); // false for big-endian\n}\n\n\nlet value = null ;\n\nswitch (msg.modbusRow['Display Mode'])\n{\n    case '32bits FLOAT' :\n        value = bytesToFloat32(msg.payload.buffer);\n        break ;\n\n    case '32bits UINT' :   \n        value = bytesToUint32(msg.payload.buffer);\n        value = msg.modbusRow['Max.'] == 1 ? value * 100 : value ; // boolean\n        break ;\n    \n    default : \n        node.status({ fill: \"red\", shape: \"dot\", text: `${msg.topic}:${msg.payload} unrecognised dm: ${msg.modbusRow['Display Mode']}`})\n        return null ;\n}\n\nmsg.units = msg.modbusRow['Unit']\nmsg.payload = value;\n\n// red : digest, yellow : update, green : writeThrough    \n\nlet colour = msg.digest ? 'red': (msg.writeThrough ? 'green' : 'yellow') ;\n\nnode.status({ fill: colour, shape: \"dot\", text: `${msg.topic}:${msg.payload}` });\nreturn msg  ;",
         "outputs": 1,
         "timeout": "",
@@ -2137,7 +2241,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 270,
+        "x": 280,
         "y": 460,
         "wires": [
             [
@@ -2150,7 +2254,7 @@
         "id": "e3f5b1582fd58943",
         "type": "modbus-flex-write",
         "z": "d6d8802f46b4aa03",
-        "name": "flex-write",
+        "name": "ASHP-write",
         "showStatusActivities": true,
         "showErrors": true,
         "showWarnings": true,
@@ -2159,7 +2263,7 @@
         "keepMsgProperties": true,
         "delayOnStart": false,
         "startDelayTime": "",
-        "x": 780,
+        "x": 790,
         "y": 120,
         "wires": [
             [],
@@ -2191,7 +2295,7 @@
         "id": "ab26331b697a1a23",
         "type": "function",
         "z": "d6d8802f46b4aa03",
-        "name": "map aquaciat register",
+        "name": "map CIAT register",
         "func": "/**\n * \n */\n\n\n// ver 1.0\nfunction lookupRegister(topic)\n{\n    const tokens = topic.split(/[\\/]/);\n    const subTopic = tokens.at(-1);     \n\n    const registers = global.get(\"modbus\");\n    for (const row of registers)\n    {\n        if (row.Parameter == subTopic)\n            return row ;\n    }   \n    return null ;\n}\n\nconst row = lookupRegister(msg.topic)\nif (row)\n{   \n    msg.address = row.Address;\n    msg.writeThrough = true ;\n    msg.modbusRow = row ;\n    node.status({ fill: \"green\", shape: \"dot\", text: `${msg.topic} ${msg.address} ${msg.payload}` });\n    return msg  ;\n}\nelse\n{\n    node.status({ fill: \"red\", shape: \"dot\", text: `unmatched command: ${msg.topic}` });\n    return null ;\n}",
         "outputs": 1,
         "timeout": "",
@@ -2199,7 +2303,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 360,
+        "x": 350,
         "y": 40,
         "wires": [
             [
@@ -2685,7 +2789,7 @@
         "id": "4958cf804f325997",
         "type": "inject",
         "z": "ce7503bf65214c43",
-        "name": "g3/temperature is 21",
+        "name": "g3/temperature is 19.5",
         "props": [
             {
                 "p": "topic",
@@ -2700,9 +2804,9 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "g3/temperature",
-        "payload": "21",
+        "payload": "19.5",
         "payloadType": "num",
-        "x": 150,
+        "x": 160,
         "y": 40,
         "wires": [
             [
@@ -2793,7 +2897,7 @@
         "type": "PID",
         "z": "ce7503bf65214c43",
         "name": "PID control",
-        "setpoint": "20.75",
+        "setpoint": "19.5",
         "pb": "1.0",
         "ti": "99999",
         "td": 0,
@@ -2805,7 +2909,9 @@
         "x": 190,
         "y": 240,
         "wires": [
-            []
+            [
+                "8c621caee9ea19f2"
+            ]
         ]
     },
     {
@@ -2813,8 +2919,8 @@
         "type": "function",
         "z": "ce7503bf65214c43",
         "name": "calculate b0",
-        "func": "\n\n/**\n * This utils code is duplicated\n *\n * ver 1.0\n */\n\nconst timeNow = Date.now()\nconst siteConfig = global.get('site-config') ?? {}\nconst instrumentation = global.get(\"instrumentation\") ?? {}\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n\n  sensorsThatHaveTimedOut: (sensorsKnown, instruments, minutes, timeNow) => {\n    const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n      + minutes * 60 * 1000 < timeNow)\n\n    const sensorsActive = Object.keys(instruments)\n      .filter((s) => s.split('/')[1] == 'temperature')\n      .map((s) => s.split('/')[0])\n\n    const sensorsOffline = sensorsKnown\n      .filter((name) => !sensorsActive.includes(name))\n\n    const timedOut = sensorsActive\n      .filter((name) => sensorsActive.includes(name))\n      .filter((name) => isTimedOut(name))\n      .map((name) => name + ':'\n        + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n    const sensorsOnline = sensorsActive\n      .filter((name) => (!isTimedOut(name)))\n\n    const res = { online: sensorsOnline, timedout: timedOut, offline: sensorsOffline }\n    return res \n  }\n}\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 2 },  // first floor corridor\n    { name: 'g4', weight: 1 },\n    { name: 'm0', weight: 1 },\n    { name: 'm3', weight: 1 },\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorsThatHaveTimedOut(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMM(timeNow)} b0:${buildingTemperature.toFixed(2)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let b0 = null\n  let setpoint1 = null \n  let setpoint2 = null \n\n  const sensorsSelected = sensorWeight.map((e) => e.name)\n  if (sensorsSelected.includes(sensorName)) \n    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      digest:       true,\n      prefix:       'local',      // pretend to be a sensor, albeit virtual, so influx stores\n      windowSize:   10,           // number of changes\n      track: true                 // update status text under node\n    }\n\n    // create a msg to update the ASHP setpoint \n    setpoint1 = {\n      topic:        'ashp0/SETPOINT_hsp1',\n      source:       'pid',\n      location:     'pid',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      writeThrough: false,\n      track: true                 // update status text under node\n    }\n\n    // create a msg to update the ASHP setpoint \n    setpoint2 = {\n      topic:        'ashp0/SETPOINT_hsp2',\n      source:       'pid',\n      location:     'pid',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      writeThrough: false,\n      track: true                 // update status text under node\n    } \n  }\n  return [[b0],[null]]\n}\n\nconst msgs = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn msgs",
-        "outputs": 2,
+        "func": "\n\n/**\n * This utils code is duplicated\n *\n * ver 1.0\n */\n\nconst timeNow = Date.now()\nconst siteConfig = global.get('site-config') ?? {}\nconst instrumentation = global.get(\"instrumentation\") ?? {}\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n\n  sensorsThatHaveTimedOut: (sensorsKnown, instruments, minutes, timeNow) => {\n    const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n      + minutes * 60 * 1000 < timeNow)\n\n    const sensorsActive = Object.keys(instruments)\n      .filter((s) => s.split('/')[1] == 'temperature')\n      .map((s) => s.split('/')[0])\n\n    const sensorsOffline = sensorsKnown\n      .filter((name) => !sensorsActive.includes(name))\n\n    const timedOut = sensorsActive\n      .filter((name) => sensorsActive.includes(name))\n      .filter((name) => isTimedOut(name))\n      .map((name) => name + ':'\n        + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n    const sensorsOnline = sensorsActive\n      .filter((name) => (!isTimedOut(name)))\n\n    const res = { online: sensorsOnline, timedout: timedOut, offline: sensorsOffline }\n    return res \n  }\n}\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 2 },  // first floor corridor\n    { name: 'g4', weight: 1 },\n    { name: 'm0', weight: 1 },\n    { name: 'm3', weight: 1 },\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorsThatHaveTimedOut(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMM(timeNow)} b0:${buildingTemperature.toFixed(2)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let b0 = null\n  let setpoint1 = null \n  let setpoint2 = null \n\n  const sensorsSelected = sensorWeight.map((e) => e.name)\n  if (sensorsSelected.includes(sensorName)) \n    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      digest:       true,\n      prefix:       'local',      // pretend to be a sensor, albeit virtual, so influx stores\n      windowSize:   10,           // number of changes\n      track: true                 // update status text under node\n    }\n\n    /*\n    this is no longer required\n\n    // create a msg to update the ASHP setpoint \n    setpoint1 = {\n      topic:        'ashp0/SETPOINT_hsp1',\n      source:       'pid',\n      location:     'pid',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      writeThrough: false,\n      track: true                 // update status text under node\n    }\n\n    // create a msg to update the ASHP setpoint \n    setpoint2 = {\n      topic:        'ashp0/SETPOINT_hsp2',\n      source:       'pid',\n      location:     'pid',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      writeThrough: false,\n      track: true                 // update status text under node\n    } \n    */\n  }\n  return b0\n}\n\nconst msgs = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn msgs",
+        "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
@@ -2827,8 +2933,7 @@
                 "b513138d13eb5387",
                 "57a65d7e6a100b88",
                 "a35c3d2647a06049"
-            ],
-            []
+            ]
         ]
     },
     {
@@ -2853,7 +2958,7 @@
         "type": "function",
         "z": "ce7503bf65214c43",
         "name": "set point",
-        "func": "const utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n  timeNow : (() => utils.getHHMM(Date.now()))\n}\n\n\nconst twoDecPoint = (n) => (Math.round(n*100)/100 )\n\nmsg.rangeHigh = 48   // degrees C, flat out \nmsg.rangeLow =  34   // degrees C, almost off\n\nconst waterSetPoint = twoDecPoint(msg.rangeLow + msg.payload * (msg.rangeHigh-msg.rangeLow))\n\nconst m0 = { \n    topic:      'pid/setpoint',\n    measurement:'temperature',\n    payload:     waterSetPoint,\n    prefix:     'local'\n}\n\nconst m1 = { \n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     waterSetPoint,\n    prefix:     'local'\n}\n\nconst m2 = { \n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     waterSetPoint,\n    prefix:     'local'\n}\n\nconst m3 = { \n    topic:      'app/response/pid/log',\n    measurement: null,\n    payload:     `${utils.timeNow()} SP:${msg.setpoint} bt0:${msg.bt0} PID:${twoDecPoint(msg.payload)} L:${msg.rangeLow} H:${msg.rangeHigh} wat:${waterSetPoint}`,\n    prefix:     'local'\n}\n\n\nnode.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.timeNow()} SETPOINT_hsp1:${waterSetPoint}`\n})\n\nreturn [[m1,m2],[m3]]\n",
+        "func": "//really need to different handler functions for settings and ashp control\n\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n  timeNow : (() => utils.getHHMM(Date.now()))\n}\n\nconst settings = context.get('pid') ??  { setpoint : 20.0, rangeLow : 32, maxFlow : 46, rangeHigh : 50 }\n\nconst twoDecPoint = (n) => (Math.round(n * 100) / 100)\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens.at(-1);  \nlet waterSetPoint = null ;\n\nconst noticeOf = (settings, subTopic) => ({\n    topic:      'pid0/' + subTopic,\n    measurement: 'temperature',\n    payload:     settings[subTopic],\n    prefix:     'local'\n}) \n\n/* \n    every time we process an incoming message \n    just push out notices indicating what's going on\n*/\n\nconst ashpControl = [] \nconst notices = []\n\nswitch (msg.topic) {\n    case 'app/request/pid0/maxFlow' :\n    case 'app/request/pid0/rangeLow' :\n    case 'app/request/pid0/rangeHigh' :    \n        settings[subTopic] = parseInt(msg.payload) ;\n        context.set('pid', settings)\n        notices.push( noticeOf(settings, subTopic))       \n        node.status({\n            fill: \"blue\", shape: \"dot\",\n            text: `${utils.timeNow()} ${subTopic}:${settings[subTopic]}`\n        })\n        break ;\n        //return [null, null] ;\n \n    case 'app/request/refresh':\n        for (const [key, value] of Object.entries(settings)) \n            notices.push(noticeOf(settings, key))\n        break ;\n\n    case 'b0/temperature' :\n        waterSetPoint = settings.rangeLow + msg.payload * (settings.rangeHigh - settings.rangeLow)\n        waterSetPoint = twoDecPoint(Math.min(settings.maxFlow,  waterSetPoint))\n        break ;\n        \n    default :\n        node.error('unable to process ' + msg.topic)\n}\n\n\nif (waterSetPoint)\n{ \n    ashpControl.push({ \n        topic:      'ashp0/SETPOINT_hsp1',\n        measurement:'temperature',\n        payload:     waterSetPoint,\n        prefix:     'local',\n        track:       true               // update status text under node\n    });\n    ashpControl.push({ \n        topic:      'ashp0/SETPOINT_hsp2',\n        measurement:'temperature',\n        payload:     waterSetPoint,\n        prefix:     'local',\n        track:       true               // update status text under node\n    });\n\n    // push out setting information\n    notices.push( noticeOf(settings, 'setpoint'))\n    notices.push( noticeOf(settings, 'rangeLow'))\n    notices.push( noticeOf(settings, 'maxFlow'))\n    notices.push( noticeOf(settings, 'rangeHigh'))    \n\n    notices.push({ \n        topic:      'app/response/pid/log',\n        measurement: null,\n        payload:     `${utils.timeNow()} SP:${msg.setpoint} bt0:${msg.bt0} PID:${twoDecPoint(msg.payload)} L:${settings.rangeLow} F:${settings.maxFlow} H:${settings.rangeHigh} wat:${waterSetPoint}`,\n        prefix:     'local'\n    })\n    node.status({\n        fill: \"yellow\", shape: \"dot\",\n        text: `${utils.timeNow()} SETPOINT_hsp1:${waterSetPoint}`\n    })\n}\nreturn [ashpControl, notices]\n",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -2913,7 +3018,7 @@
         "rateUnits": "minute",
         "drop_select": "drop",
         "addcurrentcount": true,
-        "name": "limit 1 msg in 15 mins",
+        "name": "limit 1 msgs in 15 mins",
         "outputs": "2",
         "buffer_size": "0",
         "buffer_drop": "buffer_drop_new",
@@ -3004,7 +3109,7 @@
         "type": "function",
         "z": "ce7503bf65214c43",
         "name": "set pid param",
-        "func": "\n// PID configuration, see https://flows.nodered.org/node/node-red-contrib-pid\n\n//const lastPid = global.get('pid') ??  {}\n\nconst tokens = msg.topic.split('/')\nconst param = tokens[tokens.length - 1]\nlet m = null \nlet control = null \n\nif (tokens[1] != 'request')\n{\n  node.error(\"Ignoring topic \" + msg.topic)\n  return null ;\n}\n\nswitch(param){\n\n  case 'setpoint' :\n  case 'prop_band' :\n  case 't_integral' :  \n  case 't_derivative' :  \n  {\n    //const pid = lastPid;\n    //pid[param] = msg.payload \n    //global.set('pid',pid)\n\n    // sending response in sensor style simple format\n    \n    m = {\n      source : 'pid',\n      location : 'pid' ,\n      topic :  'pid' + '/' + param,\n      payload : msg.payload, \n      measurement : 'control',\n      prefix : 'local',\n      writeThrough : true,\n      track : true,\n    }\n\n    control = \n    {\n      topic   : param,\n      payload : msg.payload\n    }\n\n    node.status({\n      fill: \"yellow\", shape: \"dot\",\n      text: `${param} = ${msg.payload}`\n    });\n  }\n}\nreturn [control, m] ;\n\n/*\nprocess_value\nsetpoint\nprop_band\nt_integral\nt_derivative\nmax_interval\nsmooth_factor\n\n*/",
+        "func": "\n// PID configuration, see https://flows.nodered.org/node/node-red-contrib-pid\n\nconst lastPid = global.get('pid') ??  {}\n\nconst tokens = msg.topic.split('/')\nconst param = tokens[tokens.length - 1]\nlet m = null \nlet control = null \n\nif (tokens[1] != 'request')\n{\n  node.error(\"Ignoring topic \" + msg.topic)\n  return null ;\n}\n\nswitch(param){\n\n  case 'setpoint' :\n  case 'prop_band' :\n  case 't_integral' :  \n  case 't_derivative' :  \n  {\n    //const pid = lastPid;\n    //pid[param] = msg.payload \n    //global.set('pid',pid)\n\n    // sending response in sensor style simple format\n    \n    m = {\n      source : 'pid',\n      location : 'pid' ,\n      topic :  'pid' + '/' + param,\n      payload : msg.payload, \n      measurement : 'control',\n      prefix : 'local',\n      writeThrough : true,\n      track : true,\n    }\n\n    control = \n    {\n      topic   : param,\n      payload : msg.payload\n    }\n\n    node.status({\n      fill: \"yellow\", shape: \"dot\",\n      text: `${param} = ${msg.payload}`\n    });\n  }\n}\nreturn [control, m] ;\n\n/*\nPID params\nprocess_value\nsetpoint\nprop_band\nt_integral\nt_derivative\nmax_interval\nsmooth_factor\n\n*/",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -3070,6 +3175,448 @@
         "x": 635,
         "y": 340,
         "wires": []
+    },
+    {
+        "id": "b27cee27b9d6f4b1",
+        "type": "link in",
+        "z": "ce7503bf65214c43",
+        "name": "PID settings",
+        "links": [
+            "58d70b01b04781c8",
+            "a2ff14d6d3cab8f1"
+        ],
+        "x": 45,
+        "y": 180,
+        "wires": [
+            [
+                "8c621caee9ea19f2"
+            ]
+        ]
+    },
+    {
+        "id": "7b9cb685f876dcdb",
+        "type": "comment",
+        "z": "ce7503bf65214c43",
+        "name": "PID not wired to ASHP",
+        "info": "",
+        "x": 360,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "036e2046bfd2657c",
+        "type": "delay",
+        "z": "78ad727ff3800ccd",
+        "name": "refresh 1 sec",
+        "pauseType": "delay",
+        "timeout": "1000",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 470,
+        "y": 380,
+        "wires": [
+            [
+                "e664cefd2982f764"
+            ]
+        ]
+    },
+    {
+        "id": "f2247fd3eb87a008",
+        "type": "function",
+        "z": "78ad727ff3800ccd",
+        "name": "create modbus write",
+        "func": "/*\nFunction node code example for single write:\n\nmsg.payload = { value: msg.payload, 'fc': 5, 'unitid': 1, 'address': 0 , 'quantity': 1 } return msg ;\n\nFunction node code example for multiple write:\n\nmsg.payload = { value: msg.payload, 'fc': 15, 'unitid': 1, 'address': 0 , 'quantity': 10 } return msg ;\n*/\n\nlet payload = msg.payload ; \nif (isFinite(payload))\n  payload = 10 * Number(payload);\n\nmsg.payload = { 'address': msg.address, value: payload, 'fc': 6, 'unitid': 1,  'quantity': 2 };\n\nnode.status({ fill: \"yellow\", shape: \"dot\", text: `${msg.topic}  ${payload}` });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 280,
+        "wires": [
+            [
+                "21ea63b8552935b4",
+                "94620ca7e001976d"
+            ]
+        ]
+    },
+    {
+        "id": "21ea63b8552935b4",
+        "type": "modbus-flex-write",
+        "z": "78ad727ff3800ccd",
+        "name": "write AC1-27",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "server": "8a3ca6b2c6028d5b",
+        "emptyMsgOnFail": true,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 690,
+        "y": 280,
+        "wires": [
+            [],
+            []
+        ]
+    },
+    {
+        "id": "7a7bf0dbe5c3e9c8",
+        "type": "modbus-flex-connector",
+        "z": "78ad727ff3800ccd",
+        "name": "AC1 27 connector",
+        "maxReconnectsPerMinute": 4,
+        "emptyQueue": false,
+        "showStatusActivities": true,
+        "showErrors": true,
+        "server": "8a3ca6b2c6028d5b",
+        "x": 470,
+        "y": 440,
+        "wires": [
+            [
+                "98d6879a13a2d3cf"
+            ]
+        ]
+    },
+    {
+        "id": "94620ca7e001976d",
+        "type": "debug",
+        "z": "78ad727ff3800ccd",
+        "name": "updates",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "98d6879a13a2d3cf",
+        "type": "debug",
+        "z": "78ad727ff3800ccd",
+        "name": "raw modbus",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "297578f283368694",
+        "type": "modbus-flex-sequencer",
+        "z": "78ad727ff3800ccd",
+        "name": "AC1 27 read",
+        "sequences": [
+            {
+                "name": "sequence0",
+                "unitid": "1",
+                "fc": "FC3",
+                "address": "0",
+                "quantity": "1"
+            }
+        ],
+        "server": "8a3ca6b2c6028d5b",
+        "showStatusActivities": true,
+        "showErrors": true,
+        "showWarnings": true,
+        "logIOActivities": false,
+        "useIOFile": false,
+        "ioFile": "",
+        "useIOForPayload": false,
+        "emptyMsgOnFail": true,
+        "keepMsgProperties": true,
+        "delayOnStart": false,
+        "startDelayTime": "",
+        "x": 450,
+        "y": 500,
+        "wires": [
+            [
+                "98d6879a13a2d3cf",
+                "f19f15445d6a2cbf"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "e664cefd2982f764",
+        "type": "function",
+        "z": "78ad727ff3800ccd",
+        "name": "poll modbus",
+        "func": "\n// this code is largely duplicated from ashp poll\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = flow.get(\"modbusRegisters\");\n    for (const row of registers) {\n        if (row[\"Mnem.\"] == subTopic)\n            return row;\n    }\n    node.error('Unable to find register in map ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"1SP\" },\n        { name: \"2SP\" },       \n        { name: \"ALA\" },    // low temp alarm, used for testing       \n        { name: \"AHA\" },    // low temp alarm, used for testing               \n    ];\n\nconst temperature =\n    [\n        { name: \"PRO\",  reportOnDiff: 0.1 }  // override the 0.25 \n    ];\n\nconst state =  \n    [\n        { name: \"OUT\" }\n    ];\n\nconst alarm =\n    [\n        { name: \"AL0\" },\n        { name: \"AL1\" }\n    ];\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);  \n\nlet regList         = { input: input, temperature: temperature, state: state, alarm: alarm};\nlet reportOnDiff    = { temperature: 1.0 };\n\nlet sequences = [] ;\n\nconst fc = { HR : 3}\n\nfor (const [measurement, group] of Object.entries(regList)) {    \n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name)\n        {\n            const row = lookupRegister(e.name);\n            if (row)\n            {\n                const m = {} ;\n                m.prefix = 'local';\n                m.source = 'lae0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address ;\n                m.measurement = measurement;\n                m.fc = fc['HR'] ;\n                m.quantity = 1 ;\n                m.unitid = 1;\n\n\n                m.modbusRow = row ;\n                m.writeThrough = msg.writeThrough ;\n                \n                const groupReportOnDifference = reportOnDiff[measurement] === undefined ?\n                    0 : reportOnDiff[measurement]  \n\n                m.reportOnDiff = e.reportOnDiff === undefined ? \n                    groupReportOnDifference : e.reportOnDiff;                \n\n                m.digest = (msg.writeThrough == false) && (m.reportOnDiff != 0)  \n                //node.error('digest ' + m.digest)\n\n                m.windowSize = 3 * 30 ;  \n\n                //node.error(e)\n                // red : digest, yellow : update, green : writeThrough    \n\n                let colour = m.digest ? 'red': (m.writeThrough ? 'green' : 'yellow') ;\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0)\n{\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null ;\n}\nif (msg.sequences.length > 1)\n{\n    node.status({ fill: \"green\", shape: \"ring\", text: `${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//const fs = require('fs');\n//const csv = require('csv-parser');\n\n/*\nconst filePath = 'AQUACIAT-Modbus.csv'; // Replace with your actual file path\n\nconst data = [];\n\nfs.createReadStream(filePath)\n    .pipe(csv())\n    .on('data', (row) => {\n        data.push(row);\n    })\n    .on('end', () => {\n        console.log('CSV data parsed successfully!');\n        context.put('aquaciat', data);\n        node.status({ fill: \"green\", shape: \"dot\", text: `CSV file loaded` });\n\n\n    })\n    .on('error', (err) => {\n        console.error('Error parsing CSV:', err);\n    });\n\n*/",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 500,
+        "wires": [
+            [
+                "297578f283368694"
+            ]
+        ]
+    },
+    {
+        "id": "f19f15445d6a2cbf",
+        "type": "function",
+        "z": "78ad727ff3800ccd",
+        "name": "number conversions",
+        "func": "//\n// note that the load CSV node must be configured to NOT parse numbers \n// because default values like 40.0 must be preserved as this is used\n// to determine decimal points\n\nmsg.payload = msg.payload[0] \n\nconst m = /\\.[\\d]+$/.test(msg.modbusRow['Default value'])\nconst numberOfDecimals = m ? 1 : 0;\n\nRED.util.cloneMessage(msg);\n\nif (isFinite(msg.payload)) \n  msg.payload *= Math.pow(10, -numberOfDecimals);\n\nmsg.units = msg.modbusRow['Unit/Value']\n\n// red : digest, yellow : update, green : writeThrough    \n\nlet colour = msg.digest ? 'red': (msg.writeThrough ? 'green' : 'yellow') ;\n\nnode.status({ fill: colour, shape: \"dot\", \ntext: `${msg.topic}:${msg.payload} default:${msg.modbusRow['Default value']}` });\nreturn msg  ;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 580,
+        "wires": [
+            [
+                "f3dd344c36740256",
+                "5d488e53c97b07ab"
+            ]
+        ]
+    },
+    {
+        "id": "f3dd344c36740256",
+        "type": "debug",
+        "z": "78ad727ff3800ccd",
+        "name": "payload",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "c438c8cab5ded2a4",
+        "type": "function",
+        "z": "78ad727ff3800ccd",
+        "name": "map LAE register",
+        "func": "/**\n * lookup address of LAE mneumonic\n */\n\n// ver 1.1\nfunction lookupRegister(topic) {\n\n    const tokens = topic.split(/[\\/]/);\n    const subTopic = tokens.at(-1);  \n    const registers = flow.get(\"modbusRegisters\");\n    for (const row of registers) {\n        if (row[\"Mnem.\"] == subTopic)\n            return row;\n    }\n    node.error('unable to parse ' + subTopic)\n    return null;\n}\n\n\nconst row = lookupRegister(msg.topic)\nif (row)\n{   \n    msg.address = row.Address;\n    msg.writeThrough = true ;\n    msg.modbusRow = row ;\n    node.status({ fill: \"green\", shape: \"dot\", text: `${msg.topic} ${msg.address} ${msg.payload}` });\n    return msg  ;\n}\nelse\n{\n    node.status({ fill: \"red\", shape: \"dot\", text: `unmatched command: ${msg.topic}` });\n    return null ;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 230,
+        "y": 280,
+        "wires": [
+            [
+                "036e2046bfd2657c",
+                "f2247fd3eb87a008"
+            ]
+        ]
+    },
+    {
+        "id": "9a42b7c21189bcac",
+        "type": "file in",
+        "z": "78ad727ff3800ccd",
+        "name": "read modbus file",
+        "filename": "/mnt/dietpi_userdata/lae-ac1/lae-ac1-27.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 370,
+        "y": 80,
+        "wires": [
+            [
+                "4e4de1bff793bf79"
+            ]
+        ]
+    },
+    {
+        "id": "d019b6b3ca9e6bcd",
+        "type": "debug",
+        "z": "78ad727ff3800ccd",
+        "name": "lae-modbus",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "a0f3a2340a3477a3",
+        "type": "function",
+        "z": "78ad727ff3800ccd",
+        "name": "set modbus array",
+        "func": "// todo, store scale as \n\nlet registers = msg.payload;\nconst flowVariable = \"modbusRegisters\"\nflow.set(flowVariable, registers);\nnode.log('Modbus config loaded for ' + registers);\nconst len = registers.length ;\nnode.status({ fill: \"green\", shape: \"dot\", text: `${len} items loaded from file into flow ${flowVariable}` });\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 140,
+        "wires": [
+            [
+                "d019b6b3ca9e6bcd"
+            ]
+        ]
+    },
+    {
+        "id": "375c1135c9263a11",
+        "type": "inject",
+        "z": "78ad727ff3800ccd",
+        "name": "initialize",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.0",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 80,
+        "wires": [
+            [
+                "9a42b7c21189bcac"
+            ]
+        ]
+    },
+    {
+        "id": "4e4de1bff793bf79",
+        "type": "csv",
+        "z": "78ad727ff3800ccd",
+        "name": "load CSV (no numbers)",
+        "sep": ",",
+        "hdrin": true,
+        "hdrout": "none",
+        "multi": "mult",
+        "ret": "\\n",
+        "temp": "",
+        "skip": "0",
+        "strings": false,
+        "include_empty_strings": "",
+        "include_null_values": "",
+        "x": 610,
+        "y": 80,
+        "wires": [
+            [
+                "a0f3a2340a3477a3"
+            ]
+        ]
+    },
+    {
+        "id": "1c929b18596fe404",
+        "type": "comment",
+        "z": "78ad727ff3800ccd",
+        "name": "ASHP GAS control switch - LAE1-27 in plant room",
+        "info": "",
+        "x": 270,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "38ae1de7ad821a16",
+        "type": "inject",
+        "z": "78ad727ff3800ccd",
+        "name": "every 20 secs",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            },
+            {
+                "p": "writeThrough",
+                "v": "false",
+                "vt": "bool"
+            }
+        ],
+        "repeat": "20",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "pollAll",
+        "payload": "",
+        "payloadType": "date",
+        "x": 200,
+        "y": 380,
+        "wires": [
+            [
+                "e664cefd2982f764"
+            ]
+        ]
+    },
+    {
+        "id": "5d488e53c97b07ab",
+        "type": "link out",
+        "z": "78ad727ff3800ccd",
+        "name": "sensors",
+        "mode": "link",
+        "links": [
+            "3a0b7c61797ade28"
+        ],
+        "x": 665,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "067d0e710c60a2bf",
+        "type": "link in",
+        "z": "78ad727ff3800ccd",
+        "name": "app/requests/lae0",
+        "links": [
+            "a2ff14d6d3cab8f1"
+        ],
+        "x": 95,
+        "y": 280,
+        "wires": [
+            [
+                "c438c8cab5ded2a4"
+            ]
+        ]
     },
     {
         "id": "4022c2129e11b456",
