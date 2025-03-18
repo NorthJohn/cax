@@ -113,8 +113,8 @@
         "id": "91e4421d067a2d1b",
         "type": "junction",
         "z": "fce55c80ba409b3d",
-        "x": 560,
-        "y": 240,
+        "x": 680,
+        "y": 60,
         "wires": [
             [
                 "6ac4b5a2620be04c"
@@ -156,6 +156,42 @@
             [
                 "faf9c12a90fda8f1",
                 "0b3d1bb1f851d520"
+            ]
+        ]
+    },
+    {
+        "id": "0289771e2a8cd67b",
+        "type": "junction",
+        "z": "ce7503bf65214c43",
+        "x": 320,
+        "y": 240,
+        "wires": [
+            [
+                "8c621caee9ea19f2"
+            ]
+        ]
+    },
+    {
+        "id": "b9e3aea420ead0a3",
+        "type": "junction",
+        "z": "fce55c80ba409b3d",
+        "x": 200,
+        "y": 100,
+        "wires": [
+            [
+                "3fff4148fd6087dd"
+            ]
+        ]
+    },
+    {
+        "id": "94e8e29594123b82",
+        "type": "junction",
+        "z": "ce7503bf65214c43",
+        "x": 240,
+        "y": 600,
+        "wires": [
+            [
+                "64ccfd798347cd78"
             ]
         ]
     },
@@ -622,8 +658,8 @@
         "correl": "",
         "expiry": "",
         "broker": "2ce60664f6ba7120",
-        "x": 650,
-        "y": 220,
+        "x": 770,
+        "y": 40,
         "wires": []
     },
     {
@@ -637,8 +673,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 220,
+        "x": 580,
+        "y": 40,
         "wires": [
             [
                 "91e4421d067a2d1b",
@@ -657,8 +693,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 460,
-        "y": 280,
+        "x": 580,
+        "y": 100,
         "wires": [
             [
                 "91e4421d067a2d1b",
@@ -680,8 +716,8 @@
         "correl": "",
         "expiry": "",
         "broker": "9d1ae28e263fad2a",
-        "x": 640,
-        "y": 280,
+        "x": 760,
+        "y": 100,
         "wires": []
     },
     {
@@ -697,8 +733,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 620,
-        "y": 140,
+        "x": 760,
+        "y": 160,
         "wires": []
     },
     {
@@ -714,11 +750,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 70,
+        "x": 90,
         "y": 40,
         "wires": [
             [
-                "3fff4148fd6087dd"
+                "b9e3aea420ead0a3"
             ]
         ]
     },
@@ -735,11 +771,11 @@
         "rap": true,
         "rh": 0,
         "inputs": 0,
-        "x": 80,
+        "x": 100,
         "y": 100,
         "wires": [
             [
-                "3fff4148fd6087dd"
+                "b9e3aea420ead0a3"
             ]
         ]
     },
@@ -751,6 +787,12 @@
         "property": "topic",
         "propertyType": "msg",
         "rules": [
+            {
+                "t": "regex",
+                "v": "pid0\\/(get|set|request)\\/",
+                "vt": "str",
+                "case": false
+            },
             {
                 "t": "regex",
                 "v": "app\\/",
@@ -795,6 +837,12 @@
             },
             {
                 "t": "regex",
+                "v": "^[^\\/]*\\/(lae0|ashp0|pid)\\/*$",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
                 "v": "",
                 "vt": "str",
                 "case": false
@@ -802,10 +850,13 @@
         ],
         "checkall": "false",
         "repair": false,
-        "outputs": 8,
-        "x": 100,
-        "y": 220,
+        "outputs": 10,
+        "x": 160,
+        "y": 300,
         "wires": [
+            [
+                "d85bfa6a0e81301d"
+            ],
             [
                 "7b7a4dd23fba8082"
             ],
@@ -829,6 +880,9 @@
             ],
             [
                 "aca5d197ea67d78a"
+            ],
+            [
+                "aca5d197ea67d78a"
             ]
         ],
         "info": "the regex here \n\nhttps://regex101.com/r/wlRMWz/1"
@@ -845,8 +899,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 260,
-        "y": 60,
+        "x": 100,
+        "y": 180,
         "wires": [
             [
                 "169352bc32f5bbd4"
@@ -868,7 +922,7 @@
         "org": "PUNL-30d",
         "bucket": "caxton30d",
         "x": 630,
-        "y": 480,
+        "y": 540,
         "wires": []
     },
     {
@@ -886,7 +940,7 @@
         "org": "organisation",
         "bucket": "bucket",
         "x": 630,
-        "y": 520,
+        "y": 580,
         "wires": []
     },
     {
@@ -902,80 +956,9 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 600,
+        "x": 620,
         "y": 360,
         "wires": []
-    },
-    {
-        "id": "dd793b9131285a2d",
-        "type": "file in",
-        "z": "fce55c80ba409b3d",
-        "name": "read config file",
-        "filename": "/mnt/dietpi_userdata/site-config.yaml",
-        "filenameType": "str",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 280,
-        "y": 720,
-        "wires": [
-            [
-                "8e01751ffc91da73"
-            ]
-        ]
-    },
-    {
-        "id": "8e01751ffc91da73",
-        "type": "yaml",
-        "z": "fce55c80ba409b3d",
-        "property": "payload",
-        "name": "",
-        "x": 450,
-        "y": 720,
-        "wires": [
-            [
-                "5e632bcd3eb2c3ec"
-            ]
-        ]
-    },
-    {
-        "id": "e45e88337a59659f",
-        "type": "debug",
-        "z": "fce55c80ba409b3d",
-        "name": "config",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 630,
-        "y": 780,
-        "wires": []
-    },
-    {
-        "id": "5e632bcd3eb2c3ec",
-        "type": "function",
-        "z": "fce55c80ba409b3d",
-        "name": "set config",
-        "func": "let config = msg.payload;\nglobal.set(\"site-config\", config);\nnode.log('Site config loaded for ' + config.site);\nreturn msg;",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 440,
-        "y": 780,
-        "wires": [
-            [
-                "e45e88337a59659f"
-            ]
-        ]
     },
     {
         "id": "b059487bc1ff0a2b",
@@ -986,8 +969,8 @@
             "0a9719bd77581975",
             "577231c552842134"
         ],
-        "x": 265,
-        "y": 360,
+        "x": 315,
+        "y": 120,
         "wires": [
             [
                 "06aca66c9580d0d3"
@@ -1003,8 +986,8 @@
             "293ae4963a27a257",
             "8e6fb5fdc6f0bef1"
         ],
-        "x": 265,
-        "y": 320,
+        "x": 315,
+        "y": 40,
         "wires": [
             [
                 "b71d646d0524d860"
@@ -1025,37 +1008,8 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 630,
-        "y": 560,
+        "y": 620,
         "wires": []
-    },
-    {
-        "id": "9b111b1a593b741c",
-        "type": "inject",
-        "z": "fce55c80ba409b3d",
-        "name": "reload",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "0.0",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 90,
-        "y": 720,
-        "wires": [
-            [
-                "dd793b9131285a2d"
-            ]
-        ]
     },
     {
         "id": "e5c04e4bbe660ab9",
@@ -1069,8 +1023,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 300,
-        "y": 420,
+        "x": 240,
+        "y": 480,
         "wires": [
             [
                 "2447196ebfeb6d69"
@@ -1087,8 +1041,8 @@
             "57a65d7e6a100b88",
             "5d488e53c97b07ab"
         ],
-        "x": 75,
-        "y": 600,
+        "x": 125,
+        "y": 660,
         "wires": [
             [
                 "2447196ebfeb6d69",
@@ -1109,7 +1063,7 @@
         "finalize": "",
         "libs": [],
         "x": 430,
-        "y": 500,
+        "y": 560,
         "wires": [
             [
                 "d544888678a2bcd7",
@@ -1132,7 +1086,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 610,
-        "y": 420,
+        "y": 480,
         "wires": []
     },
     {
@@ -1148,7 +1102,7 @@
         "finalize": "",
         "libs": [],
         "x": 190,
-        "y": 500,
+        "y": 560,
         "wires": [
             [
                 "b71d646d0524d860",
@@ -1175,7 +1129,7 @@
             "f2e5754610a2a6d1"
         ],
         "x": 575,
-        "y": 620,
+        "y": 680,
         "wires": []
     },
     {
@@ -1187,8 +1141,8 @@
             "f07bdf58f4238213",
             "90da587f91c535d6"
         ],
-        "x": 265,
-        "y": 280,
+        "x": 315,
+        "y": 80,
         "wires": [
             [
                 "b71d646d0524d860",
@@ -1205,8 +1159,8 @@
         "links": [
             "3d273fe27e049b65"
         ],
-        "x": 445,
-        "y": 100,
+        "x": 575,
+        "y": 260,
         "wires": []
     },
     {
@@ -1218,7 +1172,7 @@
             "f28841e54458294f"
         ],
         "x": 75,
-        "y": 420,
+        "y": 480,
         "wires": [
             [
                 "e5c04e4bbe660ab9"
@@ -1239,26 +1193,8 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 290,
-        "y": 600,
+        "y": 660,
         "wires": []
-    },
-    {
-        "id": "f15ca2197c7843a7",
-        "type": "function",
-        "z": "fce55c80ba409b3d",
-        "name": "utils",
-        "func": "// look in the setup tab\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    getHHMM: ((millis) => \n    {\n        const d = new Date(millis)\n        return d.toTimeString().substring(0, 5)\n    }),\n\n\n    getTimeNow : (() =>\n    {\n        return utils.getHHMM(Date.now)\n    }),\n\n    sensorsThatHaveTimedOut: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + minutes * 60 * 1000 < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const sensorsOffline = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const sensorsOnline = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: sensorsOnline, timedout: timedOut, offline: sensorsOffline }\n    }\n\n}\nglobal.set(\"utils\", utils)",
-        "finalize": "",
-        "libs": [],
-        "x": 70,
-        "y": 780,
-        "wires": [
-            []
-        ]
     },
     {
         "id": "9a936887b0d2ee97",
@@ -1274,7 +1210,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 620,
-        "y": 660,
+        "y": 720,
         "wires": []
     },
     {
@@ -1287,8 +1223,8 @@
             "1ed268d33495501b",
             "a5b0229895915912"
         ],
-        "x": 445,
-        "y": 140,
+        "x": 575,
+        "y": 300,
         "wires": []
     },
     {
@@ -1303,11 +1239,55 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 130,
-        "y": 340,
+        "x": 410,
+        "y": 400,
         "wires": [
             [
                 "2447196ebfeb6d69"
+            ]
+        ]
+    },
+    {
+        "id": "d85bfa6a0e81301d",
+        "type": "link out",
+        "z": "fce55c80ba409b3d",
+        "name": "pid",
+        "mode": "link",
+        "links": [
+            "f4d3a3aa4f3e3254"
+        ],
+        "x": 575,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "61606c0c7a017d06",
+        "type": "comment",
+        "z": "fce55c80ba409b3d",
+        "name": "Hive only accepts requests",
+        "info": "",
+        "x": 730,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "274a027e2ae7e83f",
+        "type": "mqtt in",
+        "z": "fce55c80ba409b3d",
+        "name": "hive set",
+        "topic": "+/+/set/#",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "2ce60664f6ba7120",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 230,
+        "y": 40,
+        "wires": [
+            [
+                "b9e3aea420ead0a3"
             ]
         ]
     },
@@ -1911,8 +1891,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 180,
-        "y": 860,
+        "x": 160,
+        "y": 1200,
         "wires": [
             [
                 "24af47e7e1338dfa"
@@ -1931,8 +1911,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 860,
+        "x": 380,
+        "y": 1200,
         "wires": [
             [
                 "eea14150cfa98bd1"
@@ -1951,8 +1931,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 620,
-        "y": 860,
+        "x": 600,
+        "y": 1200,
         "wires": []
     },
     {
@@ -1969,71 +1949,6 @@
         "statusType": "auto",
         "x": 610,
         "y": 340,
-        "wires": []
-    },
-    {
-        "id": "3d650fe3327bf1fb",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "function 1",
-        "func": "\nconst utils = global.get('utils') ?? null \n\nmsg.payload = 9 \n\nmsg.payload = utils.square(8)\n\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 380,
-        "y": 960,
-        "wires": [
-            [
-                "f7e820e803cf9db9"
-            ]
-        ]
-    },
-    {
-        "id": "59ee9aae6d2816cc",
-        "type": "inject",
-        "z": "a39c97029f2c005f",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 180,
-        "y": 960,
-        "wires": [
-            [
-                "3d650fe3327bf1fb"
-            ]
-        ]
-    },
-    {
-        "id": "f7e820e803cf9db9",
-        "type": "debug",
-        "z": "a39c97029f2c005f",
-        "name": "debug 9",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 620,
-        "y": 960,
         "wires": []
     },
     {
@@ -2071,6 +1986,189 @@
         ],
         "x": 705,
         "y": 240,
+        "wires": []
+    },
+    {
+        "id": "dd793b9131285a2d",
+        "type": "file in",
+        "z": "a39c97029f2c005f",
+        "name": "read config file",
+        "filename": "/mnt/dietpi_userdata/site-config.yaml",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 340,
+        "y": 900,
+        "wires": [
+            [
+                "8e01751ffc91da73"
+            ]
+        ]
+    },
+    {
+        "id": "8e01751ffc91da73",
+        "type": "yaml",
+        "z": "a39c97029f2c005f",
+        "property": "payload",
+        "name": "",
+        "x": 510,
+        "y": 900,
+        "wires": [
+            [
+                "5e632bcd3eb2c3ec"
+            ]
+        ]
+    },
+    {
+        "id": "e45e88337a59659f",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "config",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "5e632bcd3eb2c3ec",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "set config",
+        "func": "let config = msg.payload;\nglobal.set(\"site-config\", config);\nnode.log('Site config loaded for ' + config.site);\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 960,
+        "wires": [
+            [
+                "e45e88337a59659f"
+            ]
+        ]
+    },
+    {
+        "id": "9b111b1a593b741c",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "reload",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.0",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 900,
+        "wires": [
+            [
+                "dd793b9131285a2d"
+            ]
+        ]
+    },
+    {
+        "id": "f15ca2197c7843a7",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "utils",
+        "func": "// look in the On Start tab\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    getHHMM: ((millis) => \n    {\n        const d = new Date(millis)\n        return d.toTimeString().substring(0, 5)\n    }),\n\n\n    getTimeNow : (() =>\n    {\n        return utils.getHHMM(Date.now)\n    }),\n\n    sensorsThatHaveTimedOut: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + minutes * 60 * 1000 < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const sensorsOffline = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const sensorsOnline = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: sensorsOnline, timedout: timedOut, offline: sensorsOffline }\n    }\n\n}\nglobal.set(\"utils\", utils)",
+        "finalize": "",
+        "libs": [],
+        "x": 130,
+        "y": 960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3d650fe3327bf1fb",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "function 1",
+        "func": "\nconst utils = global.get('utils') ?? null \n\nmsg.payload = 9 \n\nmsg.payload = utils.square(8)\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1100,
+        "wires": [
+            [
+                "f7e820e803cf9db9"
+            ]
+        ]
+    },
+    {
+        "id": "59ee9aae6d2816cc",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 1100,
+        "wires": [
+            [
+                "3d650fe3327bf1fb"
+            ]
+        ]
+    },
+    {
+        "id": "f7e820e803cf9db9",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 1100,
         "wires": []
     },
     {
@@ -2204,7 +2302,7 @@
         "type": "debug",
         "z": "d6d8802f46b4aa03",
         "name": "payload",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2623,7 +2721,7 @@
         "type": "debug",
         "z": "d6d8802f46b4aa03",
         "name": "updates",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2758,7 +2856,7 @@
         "type": "debug",
         "z": "d6d8802f46b4aa03",
         "name": "debug 13",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2828,77 +2926,12 @@
         "wires": []
     },
     {
-        "id": "854f216d34b3ed61",
-        "type": "inject",
-        "z": "ce7503bf65214c43",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 100,
-        "y": 1420,
-        "wires": [
-            [
-                "bc7f5ca9b62258a3"
-            ]
-        ]
-    },
-    {
-        "id": "bc7f5ca9b62258a3",
-        "type": "function",
-        "z": "ce7503bf65214c43",
-        "name": "dump history",
-        "func": "\nconst instrumentation = flow.get(\"history\") ?? {}\nlet m = {}\nm.topic = 'history'\nm.payload = instrumentation ;\nreturn m;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 330,
-        "y": 1420,
-        "wires": [
-            [
-                "e6e57793c79cb473"
-            ]
-        ]
-    },
-    {
-        "id": "e6e57793c79cb473",
-        "type": "debug",
-        "z": "ce7503bf65214c43",
-        "name": "debug 6",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 510,
-        "y": 1420,
-        "wires": []
-    },
-    {
         "id": "52fa1064dec1e311",
         "type": "PID",
         "z": "ce7503bf65214c43",
         "name": "PID control",
-        "setpoint": "19.5",
-        "pb": "1.0",
+        "setpoint": "20",
+        "pb": "1",
         "ti": "99999",
         "td": 0,
         "integral_default": "0.33",
@@ -2910,7 +2943,7 @@
         "y": 240,
         "wires": [
             [
-                "8c621caee9ea19f2"
+                "0289771e2a8cd67b"
             ]
         ]
     },
@@ -2919,7 +2952,7 @@
         "type": "function",
         "z": "ce7503bf65214c43",
         "name": "calculate b0",
-        "func": "\n\n/**\n * This utils code is duplicated\n *\n * ver 1.0\n */\n\nconst timeNow = Date.now()\nconst siteConfig = global.get('site-config') ?? {}\nconst instrumentation = global.get(\"instrumentation\") ?? {}\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n\n  sensorsThatHaveTimedOut: (sensorsKnown, instruments, minutes, timeNow) => {\n    const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n      + minutes * 60 * 1000 < timeNow)\n\n    const sensorsActive = Object.keys(instruments)\n      .filter((s) => s.split('/')[1] == 'temperature')\n      .map((s) => s.split('/')[0])\n\n    const sensorsOffline = sensorsKnown\n      .filter((name) => !sensorsActive.includes(name))\n\n    const timedOut = sensorsActive\n      .filter((name) => sensorsActive.includes(name))\n      .filter((name) => isTimedOut(name))\n      .map((name) => name + ':'\n        + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n    const sensorsOnline = sensorsActive\n      .filter((name) => (!isTimedOut(name)))\n\n    const res = { online: sensorsOnline, timedout: timedOut, offline: sensorsOffline }\n    return res \n  }\n}\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 2 },  // first floor corridor\n    { name: 'g4', weight: 1 },\n    { name: 'm0', weight: 1 },\n    { name: 'm3', weight: 1 },\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorsThatHaveTimedOut(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMM(timeNow)} b0:${buildingTemperature.toFixed(2)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let b0 = null\n  let setpoint1 = null \n  let setpoint2 = null \n\n  const sensorsSelected = sensorWeight.map((e) => e.name)\n  if (sensorsSelected.includes(sensorName)) \n    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      digest:       true,\n      prefix:       'local',      // pretend to be a sensor, albeit virtual, so influx stores\n      windowSize:   10,           // number of changes\n      track: true                 // update status text under node\n    }\n\n    /*\n    this is no longer required\n\n    // create a msg to update the ASHP setpoint \n    setpoint1 = {\n      topic:        'ashp0/SETPOINT_hsp1',\n      source:       'pid',\n      location:     'pid',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      writeThrough: false,\n      track: true                 // update status text under node\n    }\n\n    // create a msg to update the ASHP setpoint \n    setpoint2 = {\n      topic:        'ashp0/SETPOINT_hsp2',\n      source:       'pid',\n      location:     'pid',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      writeThrough: false,\n      track: true                 // update status text under node\n    } \n    */\n  }\n  return b0\n}\n\nconst msgs = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn msgs",
+        "func": "\n\n/**\n * This utils code is duplicated\n *\n * ver 1.0\n */\n\nconst timeNow = Date.now()\nconst siteConfig = global.get('site-config') ?? {}\nconst instrumentation = global.get(\"instrumentation\") ?? {}\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n\n  sensorsThatHaveTimedOut: (sensorsKnown, instruments, minutes, timeNow) => {\n    const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n      + minutes * 60 * 1000 < timeNow)\n\n    const sensorsActive = Object.keys(instruments)\n      .filter((s) => s.split('/')[1] == 'temperature')\n      .map((s) => s.split('/')[0])\n\n    const sensorsOffline = sensorsKnown\n      .filter((name) => !sensorsActive.includes(name))\n\n    const timedOut = sensorsActive\n      .filter((name) => sensorsActive.includes(name))\n      .filter((name) => isTimedOut(name))\n      .map((name) => name + ':'\n        + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n    const sensorsOnline = sensorsActive\n      .filter((name) => (!isTimedOut(name)))\n\n    const res = { online: sensorsOnline, timedout: timedOut, offline: sensorsOffline }\n    return res \n  }\n}\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 2 },  // first floor corridor\n    { name: 'g4', weight: 1 },\n    { name: 'm0', weight: 1 },\n    { name: 'm3', weight: 1 },\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorsThatHaveTimedOut(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMM(timeNow)} b0:${buildingTemperature.toFixed(2)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let b0 = null\n  let setpoint1 = null \n  let setpoint2 = null \n\n  const sensorsSelected = sensorWeight.map((e) => e.name)\n  if (sensorsSelected.includes(sensorName)) \n    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      measurement: 'temperature', // needed for influx\n      digest:       true,\n      prefix:       'local',      // pretend to be a sensor, albeit virtual, so influx stores\n      windowSize:   10,           // number of changes\n      track: true                 // update status text under node\n    }\n  }\n  return b0\n}\n\nconst msgs = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn msgs",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2965,7 +2998,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
+        "x": 440,
         "y": 240,
         "wires": [
             [
@@ -2983,7 +3016,7 @@
         "type": "debug",
         "z": "ce7503bf65214c43",
         "name": "log",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2992,7 +3025,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 670,
-        "y": 300,
+        "y": 260,
         "wires": []
     },
     {
@@ -3005,7 +3038,7 @@
             "f61b76784c425ebd"
         ],
         "x": 635,
-        "y": 220,
+        "y": 740,
         "wires": []
     },
     {
@@ -3030,7 +3063,8 @@
         "wires": [
             [
                 "e49adf55f3eac793",
-                "52fa1064dec1e311"
+                "52fa1064dec1e311",
+                "64ccfd798347cd78"
             ],
             [
                 "73f1db35034db281"
@@ -3042,7 +3076,7 @@
         "type": "debug",
         "z": "ce7503bf65214c43",
         "name": "accepted",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3059,7 +3093,7 @@
         "type": "debug",
         "z": "ce7503bf65214c43",
         "name": "discarded",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3076,7 +3110,7 @@
         "type": "debug",
         "z": "ce7503bf65214c43",
         "name": "to modbus",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3085,7 +3119,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 690,
-        "y": 260,
+        "y": 220,
         "wires": []
     },
     {
@@ -3096,7 +3130,7 @@
         "links": [
             "e214bc4b98b2be8f"
         ],
-        "x": 35,
+        "x": 45,
         "y": 440,
         "wires": [
             [
@@ -3116,7 +3150,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 180,
+        "x": 200,
         "y": 440,
         "wires": [
             [
@@ -3134,7 +3168,7 @@
         "type": "debug",
         "z": "ce7503bf65214c43",
         "name": "PID control",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3151,7 +3185,7 @@
         "type": "debug",
         "z": "ce7503bf65214c43",
         "name": "response",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3173,7 +3207,7 @@
             "8b799875a8ef011e"
         ],
         "x": 635,
-        "y": 340,
+        "y": 820,
         "wires": []
     },
     {
@@ -3189,7 +3223,7 @@
         "y": 180,
         "wires": [
             [
-                "8c621caee9ea19f2"
+                "0289771e2a8cd67b"
             ]
         ]
     },
@@ -3199,8 +3233,589 @@
         "z": "ce7503bf65214c43",
         "name": "PID not wired to ASHP",
         "info": "",
+        "x": 120,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "d7cca6955dfae8fe",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "heat controller",
+        "func": "\n\nconst twoDecPoint = (n) => (Math.round(n * 100) / 100)\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n  timeNow : (() => utils.getHHMM(Date.now()))\n}\n\nconst noticeOf = (settings, subTopic) => ({\n  topic:      'pid0/' + subTopic,\n  measurement: 'temperature',\n  payload:     settings[subTopic],\n  prefix:     'local'\n})\n\n\n\nfunction linearRelationship(x, x1, y1, x2, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [twoDecPoint(slope), twoDecPoint(y)]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.OAT, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = linearRelationship(oatBanded, prop.hrOatFull, prop.hrFlowFull,\n                                 prop.hrOatNone, prop.hrFlowNone);\n\n  const [weatherCompSlope, weatherComp] = res\n  const loadComp = twoDecPoint((prop.pidOut - 0.5) * prop.loadCompRange)\n\n  // add the weather compensation and the load compensation\n  let flowSetPoint = weatherComp + loadComp\n\n  flowSetPoint = twoDecPoint(Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin))\n  const heatingMode =  flowSetPoint == prop.flowMin\n  ? 'off' :  flowSetPoint > prop.flowGas ? 'gas' : 'ashp'\n  node.status({\n    fill: \"red\", shape: \"dot\",\n    text: `${utils.timeNow()} wc:${weatherComp} lc:${loadComp} setPoint:${flowSetPoint}`\n  })\n  return [ weatherComp, loadComp, flowSetPoint, heatingMode ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, flowSetPoint, heatingMode ] = calculateFlowTemperature(settings)\n\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'switch/heatingMode',\n    measurement:'state',\n    payload:     heatingMode,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n\n  const logText = [\n  `oat:${settings.OAT} wc:${weatherComp}`,\n  `sp:${settings.setpoint} bt:${settings.buildingTemp} PID:${twoDecPoint(settings.pidOut)} lc:${loadComp}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ]\n\n  notices.push({\n    topic:      'app/response/pid/log',\n    measurement: null,\n    payload:     `${utils.timeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.timeNow()} flowSetPoint:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'buildingTemp')\n{\n  node.error(\"Will only accept msgs with 'buildingTemp' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\ndoCalculation(settings, ashpControl, switchControl, notices)\nreturn [ashpControl, switchControl, notices]\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
         "x": 360,
-        "y": 320,
+        "y": 820,
+        "wires": [
+            [
+                "6591f29aedfe3fc3"
+            ],
+            [
+                "56fcefd90b4ae58c",
+                "ea6dd55c20b1baa3"
+            ],
+            [
+                "90da587f91c535d6",
+                "0d802e41352713c5"
+            ]
+        ]
+    },
+    {
+        "id": "f4d3a3aa4f3e3254",
+        "type": "link in",
+        "z": "ce7503bf65214c43",
+        "name": "pid2",
+        "links": [
+            "79eec6d42a3cacad",
+            "d85bfa6a0e81301d"
+        ],
+        "x": 145,
+        "y": 540,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "0d802e41352713c5",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "mqtt",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "6591f29aedfe3fc3",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "ashp",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "71a391ed25de32b6",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "0.75",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "b0/temperature",
+        "payload": "0.75",
+        "payloadType": "num",
+        "x": 110,
+        "y": 660,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "578ccceb9ca5759c",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "0.33",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "b0/temperature",
+        "payload": "0.33",
+        "payloadType": "num",
+        "x": 110,
+        "y": 700,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "e6a9c5620bd09486",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "OAT 3",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "weather/OAT",
+        "payload": "3",
+        "payloadType": "num",
+        "x": 110,
+        "y": 740,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "445263326788ff31",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "OAT 12",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "weather/OAT",
+        "payload": "12",
+        "payloadType": "num",
+        "x": 110,
+        "y": 820,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "2ffdb1acbf50d45f",
+        "type": "PID",
+        "z": "ce7503bf65214c43",
+        "name": "",
+        "setpoint": 21,
+        "pb": 1,
+        "ti": 9999,
+        "td": 0,
+        "integral_default": 0.5,
+        "smooth_factor": 3,
+        "max_interval": 600,
+        "enable": 1,
+        "disabled_op": 0,
+        "x": 330,
+        "y": 740,
+        "wires": [
+            [
+                "d7cca6955dfae8fe",
+                "aaa40ac9f92ccbfc"
+            ]
+        ]
+    },
+    {
+        "id": "56fcefd90b4ae58c",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "switch",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "ffeff55564dfe352",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "Switch off | ASHP | gas ",
+        "func": "\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n  timeNow : (() => utils.getHHMM(Date.now()))\n}\n\nconst switchControl = [] \n\nfunction changeHeatingMode(desiredState, switchControl) \n{\n  // override the preset LAE0 temperatures to force \n  // the controller into the required heating mode \n\n  switch(desiredState) {\n    case 'off' :   // state off \n      switchControl.push({\n        topic:   'lae0/2SP',\n        payload:  20.3,        \n      })\n      break  \n\n    case 'ashp' :  // ASHP on \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.3,\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 20.3,\n      }) \n      break\n\n    case 'gas' :  // GAS on\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 10.3,\n      }) \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 20.3,\n      })\n      break \n\n    default : \n      node.error(\"Unrecognised desired state \" + desiredState);\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 5,\n      })\n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18,\n      })\n      break      \n  }\n  const stateColour = {off : 'white', ashp : 'green', gas : 'red'}\n  node.status({\n    fill: stateColour[desiredState], shape: \"dot\",\n    text: `${utils.timeNow()} heatingMode:${desiredState}`\n  })\n}\nif (msg.topic == 'switch/heatingMode')  // good to assert correct stream\n  changeHeatingMode(msg.payload, switchControl)\nelse\n  node.error('Unexpected topic', msg)\n\nreturn switchControl\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 920,
+        "wires": [
+            [
+                "c1400d35bdc93f89"
+            ]
+        ]
+    },
+    {
+        "id": "ea6dd55c20b1baa3",
+        "type": "rbe",
+        "z": "ce7503bf65214c43",
+        "name": "changed?",
+        "func": "rbe",
+        "gap": "0.1",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 220,
+        "y": 920,
+        "wires": [
+            [
+                "ffeff55564dfe352"
+            ]
+        ]
+    },
+    {
+        "id": "777a08215450b70f",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "LAE listener - start/stop ASHP",
+        "func": "\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n  timeNow : (() => utils.getHHMM(Date.now()))\n}\n\nconst controlOf = (target, payload) => ({\n  topic:       target,\n  measurement: 'state',\n  payload:     payload\n})\n\nlet ashpControl = []\nlet gasControl = []\nlet notices = []\n\nfunction changedHeatingMode(state, ashpControl, gasControl, notices) \n{\n  // override the preset LAE0 temperatures to force \n  // the controller into the required heating mode \n  let ashpStateOn  \n  switch(state) {\n    case 0 :   // heating off \n    case 3 :   // gas on \n      ashpStateOn = false\n      break  \n\n    case 2 :   // ASHP on \n      ashpStateOn = true  \n      break  \n\n    default : \n      node.error(\"Unrecognised controller state\", state);\n  }\n  ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', ashpStateOn ? 1 : 0))   \n  const stateColour   = ['black','grey','green','red']\n  const stateText   =   ['off','undefined','ashp','gas'] \n  const logText =     `LAE.OUT:${stateText[state]} [${state}]`\n  node.status({\n    fill: stateColour[state], shape: \"dot\",\n    text: `${utils.timeNow()} ${logText}`\n  })\n\n  notices.push({\n    topic:      'app/response/pid/log',\n    measurement: null,\n    payload:     `${utils.timeNow()} ${logText}`, \n    prefix:      'local'\n  })\n\n}\n\n// ignore most messages from the LAE controller\nif (msg.topic == 'lae0/OUT')\n  changedHeatingMode(msg.payload, ashpControl, gasControl, notices)\nelse\n  node.debug('Ignoring topic', msg)\n\n\nreturn [ashpControl, gasControl, notices]\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 1020,
+        "wires": [
+            [
+                "95f98b4d54544416",
+                "bbb9fa50e55242f2"
+            ],
+            [
+                "80c4950e26605282"
+            ],
+            [
+                "90da587f91c535d6"
+            ]
+        ]
+    },
+    {
+        "id": "854f216d34b3ed61",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 260,
+        "y": 1160,
+        "wires": [
+            [
+                "bc7f5ca9b62258a3"
+            ]
+        ]
+    },
+    {
+        "id": "bc7f5ca9b62258a3",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "dump history",
+        "func": "\nconst instrumentation = flow.get(\"history\") ?? {}\nlet m = {}\nm.topic = 'history'\nm.payload = instrumentation ;\nreturn m;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 1160,
+        "wires": [
+            [
+                "e6e57793c79cb473"
+            ]
+        ]
+    },
+    {
+        "id": "e6e57793c79cb473",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "debug 6",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "c1400d35bdc93f89",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "switch",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "95f98b4d54544416",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "ashp ctrl",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "80c4950e26605282",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "gas ctrl",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "3a115e4d5c2be590",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "OAT 6",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "weather/OAT",
+        "payload": "6",
+        "payloadType": "num",
+        "x": 110,
+        "y": 780,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "e731444c07535ac3",
+        "type": "link in",
+        "z": "ce7503bf65214c43",
+        "name": "LAE0",
+        "links": [
+            "5d488e53c97b07ab"
+        ],
+        "x": 85,
+        "y": 1020,
+        "wires": [
+            [
+                "40448ed9e97b2d96"
+            ]
+        ]
+    },
+    {
+        "id": "40448ed9e97b2d96",
+        "type": "rbe",
+        "z": "ce7503bf65214c43",
+        "name": "changed?",
+        "func": "rbe",
+        "gap": "0.1",
+        "start": "",
+        "inout": "out",
+        "septopics": true,
+        "property": "payload",
+        "topi": "topic",
+        "x": 200,
+        "y": 1020,
+        "wires": [
+            [
+                "777a08215450b70f"
+            ]
+        ]
+    },
+    {
+        "id": "64ccfd798347cd78",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "heat settings",
+        "func": "\n\nconst twoDecPoint = (n) => (Math.round(n * 100) / 100)\n\nconst utils =\n{\n  getHHMM: ((millis) => {\n    const d = new Date(millis)\n    return d.toTimeString().substring(0, 5)\n  }),\n  timeNow : (() => utils.getHHMM(Date.now()))\n}\n\nconst initSettings =  {\n\n  // weather compensation.\n  // As outside temperature drops from OatFull 15C to OatNone 5C,\n  //            weatherComp rises from flowFull 25C to flowNone 40C\n\n  hrOatFull : 15,\n  hrOatNone : 3,\n  hrFlowFull : 25,\n  hrFlowNone : 45,\n\n  prop_band :    0.5,\n  t_integral :   9999, \n  t_derivative : 0, \n\n  loadCompRange : 10,\n\n  flowMin : 32,\n  flowGas : 44,\n  flowMax : 50,\n\n  OAT: 10,\n  setpoint : 21.1,\n  buildingTemp : 20,    \n  pidOut : .6\n}\n\n\nconst noticeOf = (settings, subTopic) => ({\n  topic:      'pid0/' + subTopic,\n  measurement: 'temperature',\n  payload:     settings[subTopic],\n  prefix:     'local'\n})\n\n/*\n *    every time we process an incoming message\n *    just push out notices indicating what's going on\n */\n\nfunction handleIncomingMessage(msg, contextName, settings, notices)\n{\n  const tokens = msg.topic.split(/[\\/]/)\n  let subTopic = tokens.at(-1)\n  let logText = \"\" \n\n\n  switch (msg.topic) {\n\n    case 'pid/get/all':\n      for (const key in initSettings)\n        notices.push(noticeOf(settings, key))\n      logText = `${utils.timeNow()} refresh all`\n      break\n    case 'b0/temperature' :\n      subTopic = 'buildingTemp'     \n      // this is building temperature\n      // intentional dropthrough \n\n    default :\n      if (subTopic in initSettings)\n      {\n        settings[subTopic] = twoDecPoint(parseFloat(msg.payload));\n        //  node.error(\"my error message C \" +  subTopic + \" \" + settings[subTopic]);\n        context.set(contextName, settings)\n        notices.push(noticeOf(settings, subTopic))\n        logText = `${utils.timeNow()} ${subTopic}:${settings[subTopic]}`\n      }\n      else\n        node.error('subtopic ' + subTopic + ' not in initSettings')  \n      break\n  }\n\n  if (false)\n  {\n    for (const key in initSettings)\n      notices.push(noticeOf(settings, key))\n  }\n  notices.push({\n    topic:      'app/response/pid/log',\n    measurement: null,\n    payload:     logText,\n    prefix:     'local'\n  })\n  node.status({\n    fill: \"blue\", shape: \"dot\",\n    text:  logText\n  })\n}\n\n\n\nconst contextName = 'pidv2'\nconst settings = context.get(contextName) ?? initSettings\n/*\nnode.status({\n          fill: \"red\", shape: \"dot\",\n          text: `${utils.timeNow()} settings ${Object.keys(settings).length} loaded`\n})\n*/\nconst notices = []\n\nhandleIncomingMessage(msg, contextName, settings, notices)\n\nconst msgPID = \n{ \n  topic : 'buildingTemp', \n  payload : settings.buildingTemp, \n  settingsPassingThrough : settings\n}\nreturn [msgPID, notices]\n\n\n/*\nPID params\nprocess_value\nsetpoint\nprop_band\nt_integral\nt_derivative\nmax_interval\nsmooth_factor\n*/",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 660,
+        "wires": [
+            [
+                "3af8583518a00155",
+                "2ffdb1acbf50d45f"
+            ],
+            [
+                "90da587f91c535d6",
+                "0d802e41352713c5"
+            ]
+        ]
+    },
+    {
+        "id": "3af8583518a00155",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "settings",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "ca76adbed905d7a1",
+        "type": "comment",
+        "z": "ce7503bf65214c43",
+        "name": "Test buttons",
+        "info": "",
+        "x": 110,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "f2708111c0193421",
+        "type": "inject",
+        "z": "ce7503bf65214c43",
+        "name": "bt 20.1",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "b0/temperature",
+        "payload": "20.1",
+        "payloadType": "num",
+        "x": 110,
+        "y": 620,
+        "wires": [
+            [
+                "94e8e29594123b82"
+            ]
+        ]
+    },
+    {
+        "id": "aaa40ac9f92ccbfc",
+        "type": "debug",
+        "z": "ce7503bf65214c43",
+        "name": "pid out",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 780,
         "wires": []
     },
     {
@@ -3394,7 +4009,8 @@
         "wires": [
             [
                 "f3dd344c36740256",
-                "5d488e53c97b07ab"
+                "5d488e53c97b07ab",
+                "0a78f868775964da"
             ]
         ]
     },
@@ -3403,7 +4019,7 @@
         "type": "debug",
         "z": "78ad727ff3800ccd",
         "name": "payload",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3596,7 +4212,8 @@
         "name": "sensors",
         "mode": "link",
         "links": [
-            "3a0b7c61797ade28"
+            "3a0b7c61797ade28",
+            "e731444c07535ac3"
         ],
         "x": 665,
         "y": 580,
@@ -3615,6 +4232,77 @@
         "wires": [
             [
                 "c438c8cab5ded2a4"
+            ]
+        ]
+    },
+    {
+        "id": "0a78f868775964da",
+        "type": "function",
+        "z": "78ad727ff3800ccd",
+        "name": "filter OAT",
+        "func": "if (msg.topic == 'lae0/PRO')\n  return  {\n    topic :       'weather/OAT',\n    payload :      msg.payload  \n  }\nreturn null;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 680,
+        "wires": [
+            [
+                "80c70da7e48deeb2"
+            ]
+        ]
+    },
+    {
+        "id": "79eec6d42a3cacad",
+        "type": "link out",
+        "z": "78ad727ff3800ccd",
+        "name": "weather",
+        "mode": "link",
+        "links": [
+            "f4d3a3aa4f3e3254"
+        ],
+        "x": 665,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "d450579037b5af3c",
+        "type": "debug",
+        "z": "78ad727ff3800ccd",
+        "name": "weather",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "80c70da7e48deeb2",
+        "type": "rbe",
+        "z": "78ad727ff3800ccd",
+        "name": "",
+        "func": "deadbandEq",
+        "gap": "0.1",
+        "start": "",
+        "inout": "out",
+        "septopics": false,
+        "property": "payload",
+        "topi": "topic",
+        "x": 460,
+        "y": 680,
+        "wires": [
+            [
+                "79eec6d42a3cacad",
+                "d450579037b5af3c"
             ]
         ]
     },
