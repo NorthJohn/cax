@@ -142,31 +142,31 @@
         "in": [
             {
                 "x": 120,
-                "y": 220,
+                "y": 280,
                 "wires": [
                     {
-                        "id": "ec4343cadc8631bd"
+                        "id": "c566712146768d0f"
                     }
                 ]
             }
         ],
         "out": [
             {
-                "x": 620,
+                "x": 660,
                 "y": 200,
                 "wires": [
                     {
-                        "id": "ec4343cadc8631bd",
+                        "id": "c566712146768d0f",
                         "port": 0
                     }
                 ]
             },
             {
-                "x": 640,
+                "x": 680,
                 "y": 260,
                 "wires": [
                     {
-                        "id": "ec4343cadc8631bd",
+                        "id": "c566712146768d0f",
                         "port": 1
                     }
                 ]
@@ -176,7 +176,7 @@
                 "y": 320,
                 "wires": [
                     {
-                        "id": "ec4343cadc8631bd",
+                        "id": "c566712146768d0f",
                         "port": 2
                     }
                 ]
@@ -184,13 +184,21 @@
         ],
         "env": [],
         "meta": {},
-        "color": "#DDAA99",
+        "color": "#FFAAAA",
+        "inputLabels": [
+            "datastream"
+        ],
+        "outputLabels": [
+            "all output",
+            "tracked output",
+            "log"
+        ],
         "status": {
             "x": 620,
             "y": 380,
             "wires": [
                 {
-                    "id": "ec4343cadc8631bd",
+                    "id": "c566712146768d0f",
                     "port": 3
                 }
             ]
@@ -421,6 +429,18 @@
         ]
     },
     {
+        "id": "6d46cf6930c28051",
+        "type": "junction",
+        "z": "fce55c80ba409b3d",
+        "x": 280,
+        "y": 840,
+        "wires": [
+            [
+                "06aca66c9580d0d3"
+            ]
+        ]
+    },
+    {
         "id": "2ce60664f6ba7120",
         "type": "mqtt-broker",
         "name": "hivemq-cloud",
@@ -621,7 +641,7 @@
                 "cols": "12"
             }
         ],
-        "order": 1,
+        "order": 2,
         "className": "",
         "visible": true,
         "disabled": false
@@ -657,7 +677,7 @@
                 "cols": "12"
             }
         ],
-        "order": 2,
+        "order": 1,
         "className": "",
         "visible": "true",
         "disabled": "false"
@@ -737,7 +757,7 @@
     {
         "id": "9c62a4b6cf15630d",
         "type": "ui-group",
-        "name": "Virtual White Box",
+        "name": "White Box",
         "page": "b43082bff9046c6f",
         "width": "6",
         "height": "1",
@@ -1221,7 +1241,7 @@
         "finalize": "",
         "libs": [],
         "x": 320,
-        "y": 140,
+        "y": 40,
         "wires": [
             [],
             [],
@@ -1253,7 +1273,7 @@
         "finalize": "",
         "libs": [],
         "x": 320,
-        "y": 220,
+        "y": 120,
         "wires": [
             [],
             [],
@@ -1267,7 +1287,7 @@
         "type": "function",
         "z": "9e36a25803eb28ab",
         "name": "downsampleV2.1",
-        "func": "/**\n * downsample v2.1 18 Oct 2025\n */\n\n/** rework so it operates on all fields in the payload */\n\n\nfunction toFix(num, precision)\n{\n  return (Math.trunc(num * (10 ** precision)))/ (10 ** precision) ;\n}\n\nconst isSet = (o, prop) => o[prop] ?? false ;\n\nconst store0 = {\n  payload : 0.0,   // last payload\n  mean : 0.0,\n  reportedMean : 0.0,\n  numSamples: 0,\n  begin: true\n}\n\nlet nodeStatus = null ;\n\nfunction deliver(msg)\n{\n  let store = context.get(msg.topic) ?? store0 ;\n  \n  // led indicates messageClass  red : digest, yellow : update, green : writeThrough\n  let colour = msg.writeThrough ? 'green' : 'yellow' ;\n  let statusText = `${msg.topic} ${store.payload}`;\n  if (msg.writeThrough || (msg.payload != store.payload))\n  {\n    statusText = `${statusText}=>${msg.payload}`;\n    store.payload = msg.payload ;\n    context.set(msg.topic, msg);\n    nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n  }\n  else\n    msg = null ;\n  \n  return msg ;\n}\n// ver 1.0 checked 22-09-2024\n\nfunction digest(msg) {\n  \n  // conditions to reset the store\n\n  let store = context.get(msg.topic);\n  if (store === undefined || msg.reset || isNaN(store.mean) ||  isNaN(store.numSamples))\n    store = store0;\n  \n  const dateNow = Date.now()\n\n  // check to see how much payload has changed\n\n  const percentageDiff = store.numSamples ? (msg.payload - store.reportedMean) * 100 * 2 / (msg.payload + store.lastMean) : 0.0;\n \n  const valueDiff1 = store.numSamples ? Math.abs(msg.payload - store.reportedMean) : 0.0;\n  const valueDiff2 = Math.abs(msg.payload - store.payload)\n  const valueTrigger = Math.max(valueDiff1, valueDiff2) >  (msg.reportOnDiff ?? 0) ;\n\n\n  // check if windowPeriod has been reached\n\n  let timeDiff = 0; let timeDiffLog = ''; let timeTrigger = false ;\n  if (msg.windowPeriodSecs)\n  {\n    if (store.timestamp === undefined)\n      store.timestamp = dateNow\n      if (msg.timestamp === undefined)\n        msg.timestamp = dateNow;\n    timeDiff = msg.timestamp - store.timestamp ;\n    timeDiffLog = `Δt:${ Math.round(timeDiff / 1000) }`\n    timeTrigger = timeDiff > (msg.windowPeriodSecs * 1000);\n  }\n\n  // check if window size has been reached \n\n  const windowSizeTrigger = store.numSamples + 1 >= (msg.windowSize ?? 10000)\n\n \n  const endTransition = valueTrigger || timeTrigger || windowSizeTrigger ; // write every maxGap\n  const triggers = (valueTrigger ? \"vt \" : \"\")  +  (timeTrigger ? \"tt \" : \"\") + (windowSizeTrigger ? \"ws \" : \"\");\n  msg.triggers = triggers ;\n\n  // to do put triggers into object \n  //node.error(`my error message ${msg.topic} ${triggers} ${msg.payload} ${valueDiff1} ${valueDiff2}`, msg);\n\n\n  store.payload = msg.payload;\n  store.mean = (store.mean * store.numSamples + msg.payload) / (store.numSamples + 1);   // correct?\n  const storeMeanView = toFix(store.mean, 2);\n  store.numSamples += 1;\n  msg.numSamples = store.numSamples;\n  \n  const statusText = `${msg.topic} ${msg.payload} mean:${storeMeanView} num:${store.numSamples} ${timeDiffLog}`\n  /*\n   *    node.log(`${msg.topic} ${msg.lastPayload} mean: ${store.mean.toFixed(2)}, `\n   *             + `diff% ${percentageDiff}% diff:${valueDiff} numSamples:${msg.numSamples} `\n   *             + `bt ${beginTransition} et ${ endTransition }`);\n   */\n  if (store.begin || endTransition) {\n    msg.payload = storeMeanView ;\n    store.reportedMean = store.mean ;  // don't need to reset store.mean because numSamples is zero\n    store.numSamples = 0 ;\n    store.timestamp = dateNow ;\n    store.begin = false ;\n  }\n  const colour = endTransition ? 'red' : 'blue'  \n  nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n  \n  context.set(msg.topic, store);\n  return endTransition ? msg : null;\n}\n\nconst m = msg.digest ?  digest(msg) : deliver(msg);\n\nconst utils = global.get('utils')\nif (nodeStatus)\n{\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus)\n}\nconst msgStatus = nodeStatus ? { topic : 'status' , payload : nodeStatus } : null ;\n\nconst logRecord = null ;\n\nreturn [[m], [m && isSet(m,'track') ? m : null], [logRecord], [msgStatus] ]\n",
+        "func": "/**\n * downsample v2.1 18 Oct 2025\n */\n\n/** rework so it operates on all fields in the payload */\n\n\nfunction toFix(num, precision)\n{\n  return (Math.round(num * (10 ** precision)))/ (10 ** precision) ;\n}\n\nconst isSet = (o, prop) => o[prop] ?? false ;\n\nconst store0 = {\n  payload : 0.0,   // last payload\n  mean : 0.0,\n  reportedMean : 0.0,\n  numSamples: 0,\n  begin: true\n}\n\nlet nodeStatus = null ;\n\nfunction deliver(msg)\n{\n  let store = context.get(msg.topic) ?? store0 ;\n  \n  // led indicates messageClass  red : digest, yellow : update, green : writeThrough\n  let colour = msg.writeThrough ? 'green' : 'yellow' ;\n  let statusText = `${msg.topic} ${store.payload}`;\n  if (msg.writeThrough || (msg.payload != store.payload))\n  {\n    statusText = `${statusText}=>${msg.payload}`;\n    store.payload = msg.payload ;\n    context.set(msg.topic, msg);\n    nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n  }\n  else\n    msg = null ;\n  \n  return msg ;\n}\n// ver 1.0 checked 22-09-2024\n\nfunction digest(msg) {\n  \n  // conditions to reset the store\n\n  let store = context.get(msg.topic);\n  if (store === undefined || msg.reset || isNaN(store.mean) ||  isNaN(store.numSamples))\n    store = store0;\n  \n  const dateNow = Date.now()\n\n  // check to see how much payload has changed\n\n  const percentageDiff = store.numSamples ? (msg.payload - store.reportedMean) * 100 * 2 / (msg.payload + store.lastMean) : 0.0;\n \n  const valueDiff1 = store.numSamples ? Math.abs(msg.payload - store.reportedMean) : 0.0;\n  const valueDiff2 = Math.abs(msg.payload - store.payload)\n  const valueTrigger = Math.max(valueDiff1, valueDiff2) >  (msg.reportOnDiff ?? 0) ;\n\n\n  // check if windowPeriod has been reached\n\n  let timeDiff = 0; let timeDiffLog = ''; let timeTrigger = false ;\n  if (msg.windowPeriodSecs)\n  {\n    if (store.timestamp === undefined)\n      store.timestamp = dateNow\n      if (msg.timestamp === undefined)\n        msg.timestamp = dateNow;\n    timeDiff = msg.timestamp - store.timestamp ;\n    timeDiffLog = `Δt:${ Math.round(timeDiff / 1000) }`\n    timeTrigger = timeDiff > (msg.windowPeriodSecs * 1000);\n  }\n\n  // check if window size has been reached \n\n  const windowSizeTrigger = store.numSamples + 1 >= (msg.windowSize ?? 10000)\n\n \n  const endTransition = valueTrigger || timeTrigger || windowSizeTrigger ; // write every maxGap\n  const triggers = (valueTrigger ? \"vt \" : \"\")  +  (timeTrigger ? \"tt \" : \"\") + (windowSizeTrigger ? \"ws \" : \"\");\n  msg.triggers = triggers ;\n\n  // to do put triggers into object \n  //node.error(`my error message ${msg.topic} ${triggers} ${msg.payload} ${valueDiff1} ${valueDiff2}`, msg);\n\n\n  store.payload = msg.payload;\n  store.mean = (store.mean * store.numSamples + msg.payload) / (store.numSamples + 1);   // correct?\n  const storeMeanView = toFix(store.mean, msg.precision == undefined ?  2 : msg.precision );\n  store.numSamples += 1;\n  msg.numSamples = store.numSamples;\n  \n  const statusText = `${msg.topic} ${msg.payload} mean:${storeMeanView} num:${store.numSamples} ${timeDiffLog}`\n  /*\n   *    node.log(`${msg.topic} ${msg.lastPayload} mean: ${store.mean.toFixed(2)}, `\n   *             + `diff% ${percentageDiff}% diff:${valueDiff} numSamples:${msg.numSamples} `\n   *             + `bt ${beginTransition} et ${ endTransition }`);\n   */\n  if (store.begin || endTransition) {\n    msg.payload = storeMeanView ;\n    store.reportedMean = store.mean ;  // don't need to reset store.mean because numSamples is zero\n    store.numSamples = 0 ;\n    store.timestamp = dateNow ;\n    store.begin = false ;\n  }\n  const colour = endTransition ? 'red' : 'blue'  \n  nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n  \n  context.set(msg.topic, store);\n  return endTransition ? msg : null;\n}\n\nconst m = msg.digest ?  digest(msg) : deliver(msg);\n\nconst utils = global.get('utils')\nif (nodeStatus)\n{\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus)\n}\nconst msgStatus = nodeStatus ? { topic : 'status' , payload : nodeStatus } : null ;\n\nconst logRecord = null ;\n\nreturn [[m], [m && isSet(m,'track') ? m : null], [logRecord], [msgStatus] ]\n",
         "outputs": 4,
         "timeout": "",
         "noerr": 0,
@@ -1275,7 +1295,7 @@
         "finalize": "",
         "libs": [],
         "x": 330,
-        "y": 340,
+        "y": 200,
         "wires": [
             [],
             [],
@@ -1283,6 +1303,27 @@
             []
         ],
         "info": "key process to reduce data"
+    },
+    {
+        "id": "c566712146768d0f",
+        "type": "function",
+        "z": "9e36a25803eb28ab",
+        "name": "downsample v2.2",
+        "func": "/**\n * downsample v2.2 30 Oct 2025\n */\n\n/** rework so it operates on all fields in the payload */\n\n\nfunction toFix(num, precision)\n{\n  return (Math.round(num * (10 ** precision)))/ (10 ** precision) ;\n}\n\nconst isSet = (o, prop) => o[prop] ?? false ;\n\nconst store0 = {\n  payload : 0.0,   // last payload\n  mean : 0.0,\n  reportedMean : 0.0,\n  numSamples: 0,\n  begin: true\n}\n\nlet nodeStatus = null ;\n\n/**\n * Compare properties on obj2 with obj1. \n * Create a new object with all the new properties that \n * have appeared in obj2 or that have changed from obj1.\n * It's not symmetric, properties that have disappeared \n * in obj2 are just ignored. \n */\n\nconst createDiff = (obj1, obj2) => Object.fromEntries(\n  Object.keys(obj2)\n    .filter(key => obj1.hasOwnProperty(key) == false || obj1[key] != obj2[key])\n    .map(key => [key, obj2[key]])\n);\n\n\nfunction deliver(msg)\n{\n  let store = context.get(msg.topic) ?? store0 ;\n  \n  // led indicates messageClass  red : digest, yellow : update, green : writeThrough\n  let colour = msg.writeThrough ? 'green' : 'yellow' ;\n  let statusText = `${msg.topic} ${store.payload}`;\n  if (typeof msg.payload !== 'object')\n  {\n    if (msg.writeThrough || (msg.payload != store.payload))\n    {\n      statusText = `${statusText}=>${msg.payload}`;\n      store.payload = msg.payload ;\n      context.set(msg.topic, store);\n      nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n    }\n    else \n      msg = null;\n  }\n  else {\n    msg.payload = createDiff(store.payload, msg.payload);\n    const numChanges = Object.keys(msg.payload).length ;\n    if (msg.writeThrough || numChanges) {\n      statusText = `Updated ${numChanges} properties`;\n      store.payload = Object.assign(store.payload, msg.payload);\n      context.set(msg.topic, store);\n      nodeStatus = { fill: 'red', shape: \"ring\", text: statusText };\n    }\n    else\n      msg = null;    \n  }\n  return msg ;\n}\n// ver 1.0 checked 22-09-2024\n\nfunction digest(msg) {\n  \n  // conditions to reset the store\n\n  let store = context.get(msg.topic);\n  if (store === undefined || msg.reset || isNaN(store.mean) ||  isNaN(store.numSamples))\n    store = store0;\n  \n  const dateNow = Date.now()\n\n  // check to see how much payload has changed\n\n  const percentageDiff = store.numSamples ? (msg.payload - store.reportedMean) * 100 * 2 / (msg.payload + store.lastMean) : 0.0;\n \n  const valueDiff1 = store.numSamples ? Math.abs(msg.payload - store.reportedMean) : 0.0;\n  const valueDiff2 = Math.abs(msg.payload - store.payload)\n  const valueTrigger = Math.max(valueDiff1, valueDiff2) >  (msg.reportOnDiff ?? 0) ;\n\n\n  // check if windowPeriod has been reached\n\n  let timeDiff = 0; let timeDiffLog = ''; let timeTrigger = false ;\n  if (msg.windowPeriodSecs)\n  {\n    if (store.timestamp === undefined)\n      store.timestamp = dateNow\n      if (msg.timestamp === undefined)\n        msg.timestamp = dateNow;\n    timeDiff = msg.timestamp - store.timestamp ;\n    timeDiffLog = `Δt:${ Math.round(timeDiff / 1000) }`\n    timeTrigger = timeDiff > (msg.windowPeriodSecs * 1000);\n  }\n\n  // check if window size has been reached \n\n  const windowSizeTrigger = store.numSamples + 1 >= (msg.windowSize ?? 10000)\n\n \n  const endTransition = valueTrigger || timeTrigger || windowSizeTrigger ; // write every maxGap\n  const triggers = (valueTrigger ? \"vt \" : \"\")  +  (timeTrigger ? \"tt \" : \"\") + (windowSizeTrigger ? \"ws \" : \"\");\n  msg.triggers = triggers ;\n\n  // to do put triggers into object \n  //node.error(`my error message ${msg.topic} ${triggers} ${msg.payload} ${valueDiff1} ${valueDiff2}`, msg);\n\n\n  store.payload = msg.payload;\n  store.mean = (store.mean * store.numSamples + msg.payload) / (store.numSamples + 1);   // correct?\n  const storeMeanView = toFix(store.mean, msg.precision == undefined ?  2 : msg.precision );\n  store.numSamples += 1;\n  msg.numSamples = store.numSamples;\n  \n  const statusText = `${msg.topic} ${msg.payload} mean:${storeMeanView} num:${store.numSamples} ${timeDiffLog}`\n  /*\n   *    node.log(`${msg.topic} ${msg.lastPayload} mean: ${store.mean.toFixed(2)}, `\n   *             + `diff% ${percentageDiff}% diff:${valueDiff} numSamples:${msg.numSamples} `\n   *             + `bt ${beginTransition} et ${ endTransition }`);\n   */\n  if (store.begin || endTransition) {\n    msg.payload = storeMeanView ;\n    store.reportedMean = store.mean ;  // don't need to reset store.mean because numSamples is zero\n    store.numSamples = 0 ;\n    store.timestamp = dateNow ;\n    store.begin = false ;\n  }\n  const colour = endTransition ? 'red' : 'blue'  \n  nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n  \n  context.set(msg.topic, store);\n  return endTransition ? msg : null;\n}\n\nconst m = msg.digest ?  digest(msg) : deliver(msg);\n\nconst utils = global.get('utils')\nif (nodeStatus)\n{\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus)\n}\nconst msgStatus = nodeStatus ? { topic : 'status' , payload : nodeStatus } : null ;\n\nconst logRecord = null ;\n\nreturn [[m], [m && isSet(m,'track') ? m : null], [logRecord], [msgStatus] ]\n",
+        "outputs": 4,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 280,
+        "wires": [
+            [],
+            [],
+            [],
+            []
+        ]
     },
     {
         "id": "01189677a0099e03",
@@ -1307,7 +1348,7 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "globalise",
-        "func": "\nlet config = global.get(\"site-config\");\nmsg.topic = config.site + '/' + msg.topic ;\n\n//let ot =  msg.hasOwnProperty('originalTopic') ? msg.originalTopic : '' ; \nlet ot = msg.originalTopic ?? '' ;\nif (ot == msg.topic)\n{\n    //node.log(msg.topic + ' Suppressing echoing')\n    return null ; \n} \nreturn msg ;\n",
+        "func": "\nlet config = global.get(\"site-config\", 'file');\nmsg.topic = config.site + '/' + msg.topic ;\n\n//let ot =  msg.hasOwnProperty('originalTopic') ? msg.originalTopic : '' ; \nlet ot = msg.originalTopic ?? '' ;\nif (ot == msg.topic)\n{\n    //node.log(msg.topic + ' Suppressing echoing')\n    return null ; \n} \nreturn msg ;\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1437,7 +1478,19 @@
             },
             {
                 "t": "regex",
+                "v": "bridge\\/devices",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
                 "v": "bridge",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "^[adprsgmt][^\\d]*[\\d]{1,2}\\/availability$",
                 "vt": "str",
                 "case": false
             },
@@ -1467,13 +1520,13 @@
             },
             {
                 "t": "regex",
-                "v": "app\\/",
+                "v": "sensor0\\/(get|set)\\/",
                 "vt": "str",
                 "case": false
             },
             {
                 "t": "regex",
-                "v": "pid\\/request",
+                "v": "app\\/",
                 "vt": "str",
                 "case": false
             },
@@ -1491,7 +1544,7 @@
             },
             {
                 "t": "regex",
-                "v": "^[^\\/]*\\/(lae0|ashp0|pid)\\/*$",
+                "v": "^[^\\/]*\\/(lae0|ashp0|pid0|sensor0)\\/*$",
                 "vt": "str",
                 "case": false
             },
@@ -1504,7 +1557,7 @@
         ],
         "checkall": "false",
         "repair": false,
-        "outputs": 12,
+        "outputs": 14,
         "x": 390,
         "y": 240,
         "wires": [
@@ -1512,7 +1565,13 @@
                 "6d021d84aed87757"
             ],
             [
+                "19c30800fa95c445"
+            ],
+            [
                 "6d021d84aed87757"
+            ],
+            [
+                "2518a4fd104ebb54"
             ],
             [
                 "d85bfa6a0e81301d"
@@ -1527,10 +1586,10 @@
                 "605b2b84a661dbbc"
             ],
             [
-                "7b7a4dd23fba8082"
+                "a1eb201860b28d15"
             ],
             [
-                "e214bc4b98b2be8f"
+                "7b7a4dd23fba8082"
             ],
             [
                 "e5c04e4bbe660ab9"
@@ -1552,7 +1611,7 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "check-in",
-        "func": "msg.originalTopic = msg.topic ;\n\n// todo: tokenise here!\nlet pos = msg.topic.indexOf('/') ;\n\n// save 'cax'/'local' prefix\nmsg.prefix = msg.topic.substring(0,pos);\n\n// remove prefix from the topic\nmsg.topic = msg.topic.substring(pos+1);\n\n// make sure the message is for us\nlet config = global.get(\"site-config\")\n\nif (!([config.site, 'local', 'bridge'].includes(msg.prefix)))\n{\n  node.error(msg.originalTopic + ' unrecognised prefix, expected to local or ' + config.site + ', retain ' + msg.retain + \" \" + msg.payload);\n  return null ;   // it is not\n}\nnode.status({ fill: \"green\", shape: \"dot\", text: `${msg.originalTopic}`});\nreturn msg;",
+        "func": "msg.originalTopic = msg.topic ;\n\n// todo: tokenise here!\nlet pos = msg.topic.indexOf('/') ;\n\n// save 'cax'/'local' prefix\nmsg.prefix = msg.topic.substring(0,pos);\n\n// remove prefix from the topic\nmsg.topic = msg.topic.substring(pos+1);\n\n// make sure the message is for us\nlet config = global.get(\"site-config\", 'file')\n\nif (!([config.site, 'local', 'bridge'].includes(msg.prefix)))\n{\n  node.error(msg.originalTopic + ' unrecognised prefix, expected to local or ' + config.site + ', retain ' + msg.retain + \" \" + msg.payload);\n  return null ;   // it is not\n}\nnode.status({ fill: \"green\", shape: \"dot\", text: `${msg.originalTopic}`});\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1644,7 +1703,8 @@
         "name": "MQTT cloud",
         "links": [
             "293ae4963a27a257",
-            "8e6fb5fdc6f0bef1"
+            "8e6fb5fdc6f0bef1",
+            "fed19cb666ad3b46"
         ],
         "x": 185,
         "y": 20,
@@ -1676,7 +1736,7 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "unpack",
-        "func": "/**\n * handle incoming traffic from sensors\n * serialize all the properties into single msgs\n */\n\n\nconst source = msg.topic; // e.g. s3\n\n// look up sensor location\n\nconst config = global.get(\"site-config\");\n\nconst location = config.sensorMap.hasOwnProperty(source) \n               ? config.sensorMap[source] : source;  // e.g. s3\n\nconst stream = [] \n\nconst paramList = ['battery','humidity','linkquality','temperature','voltage','windSpeed','windDirection'];\n\nconst m = {}   // Object.assign({}, msg);\n\nm.originalTopic = msg.originalTopic\nm.payload = {}\nm.prefix = msg.prefix \nm.timestamp = msg.timestamp ?? Date.now()\n\n// push out new message for every property in \n// the fileList.\n\nfor (const property in msg.payload) {\n    const n = Object.assign({}, m);\n    n.payload = Object.assign({}, m.payload);\n    if (paramList.includes(property))\n    {\n        n.topic = source + '/' + property\n        n.param = property\n        n.source = source \n        n.location = location\n        n.payload = msg.payload[property]\n        n.writeThrough = msg.writeThrough ?? true ;\n        n.digest = msg.digest ?? false ;\n        n.windowPeriod = msg.windowPeriod ;\n        stream.push(n)\n    }\n}\nreturn [stream]",
+        "func": "/**\n * handle incoming traffic from sensors\n * serialize all the properties into single msgs\n */\n\n\nconst source = msg.topic; // e.g. s3\n\n// look up sensor location, it's edited by user on zigbee2mqtt\n\nconst config = global.get(\"site-config\", 'file');\n\nconst location = config.sensorMap.hasOwnProperty(source) \n               ? config.sensorMap[source] : source;  // e.g. s3\n\nconst stream = [] \n\nconst params = {\n    temperature:   { writeThrough : true },\n    battery:       { digest: true, windowPeriodSecs : 60 * 60 * 24  },\n    voltage:       { digest: true, windowPeriodSecs : 60 * 60 * 24 },\n    humidity:      { digest: true, windowPeriodSecs : 60 * 60 * 1 , reportOnDiff: 5  },\n    linkquality:   { digest: true, windowPeriodSecs : 60 * 60 * 1 , reportOnDiff: 30 },\n\n    windSpeed:     { digest: true, windowPeriodSecs : 60 * 60 * 1   },\n    windDirection: { digest: true, windowPeriodSecs : 60 * 60 * 1   },\n}\n\nconst m = {}   // Object.assign({}, msg);\n\n// create a template message \n\n// m.originalTopic = msg.originalTopic   no needed.\nm.source = source \nm.location = location\nm.prefix = msg.prefix // prevents influx recording copies\n\n//m.writeThrough = true ; //   msg.writeThrough ?? true;\n//m.digest = msg.digest ?? false;\n\n//m.timestamp = msg.timestamp ?? Date.now()\n//if (msg.payload.last_seen)\n  //  m.last_seen = msg.payload.last_seen\n\nm.timestamp = msg.timestamp ?? msg.last_seen ?? Date.now() ;\n\n// now create the variations\n// push out new message for every property in \n// the paramList.\n\n//const utils = global.get('utils')\n\nfor (const property in msg.payload) {\n    // looks like rubbish \n    // n.payload = Object.assign({}, m.payload);\n    if (params.hasOwnProperty(property))\n    {\n        const m1 = RED.util.cloneMessage(m);\n        const n = Object.assign(m1, params[property]);\n        n.topic = source + '/' + property ;\n        n.param = property ;\n        n.payload = msg.payload[property]\n        // round everything apart from temperature\n        n.precision = property == 'temperature' ? 2 : 0 ;\n        stream.push(n)\n    }\n}\nreturn [stream]",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1714,7 +1774,7 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "tag for influx",
-        "func": "if (['local'].includes(msg.prefix) == false) {\n  node.error(msg.topic + \" only storing 'local' sensors \");\n  return null;   // it is not.  Use hops in future?\n}\n\n/*  \n  strip out the known tag fields and place in second array in payload. \n  this is the standard reporting format for influx.\n  The msg.topic is ignored\n*/\n\n//const tagList = ['source'];\n//const paramList = ['battery', 'humidity', 'linkquality', 'temperature', 'voltage', 'windSpeed', 'windDirection', 'kWh'];\n\nconst fields = {};\nconst tags = {};\n\n/** \n * to make the text in grafana look nice\n * all temperatures have to be grouped together under a measurement category\n * you have one named field followed one tag which is the source.\n * Make the named field the location even though this wierd.\n */\n\nfields[msg.location] = msg.payload; \ntags['source'] = msg.source ;  \n\nconst m = \n{\n  measurement : msg.param,\n  topic : msg.topic,\n  payload : [fields,tags]\n}\n\nconst isSet = (o, prop) => Object.hasOwn(o,prop) ? o[prop] : false\n\nif (isSet(msg,'track')) \n  node.status({ fill: \"yellow\", shape: \"dot\", text: `${m.measurement} ${m.location} ${m.source}` });\n\nreturn m;",
+        "func": "if (['local'].includes(msg.prefix) == false) {\n  node.error(msg.topic + \" only storing 'local' sensors \");\n  return null;   // it is not.  Use hops in future?\n}\n\n/*  \n  strip out the known tag fields and place in second array in payload. \n  this is the standard reporting format for influx.\n  The msg.topic is ignored\n*/\n\nconst fields = {};\nconst tags = {};\n\n/** \n * to make the text in grafana look nice\n * all temperatures have to be grouped together under a measurement category\n * you have one named field followed one tag which is the source.\n * Make the named field the location even though this wierd.\n */\nconst location = msg.location ? msg.location : msg.source ;\n\nfields[location] = msg.payload; // e.g. conference room\ntags['source'] = msg.source ;       // e.g M11 \n\nconst m = \n{\n  measurement : msg.param,          // e.g. battery\n  topic : msg.topic,\n  payload : [fields,tags]\n}\n\nconst isSet = (o, prop) => Object.hasOwn(o,prop) ? o[prop] : false\n\n//if (isSet(msg,'track')) \n  node.status({ fill: \"yellow\", shape: \"dot\", text: `${m.measurement} ${location}=${msg.payload} ${msg.source}` });\n\nreturn m;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -1736,7 +1796,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "sampler out",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1745,7 +1805,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 590,
-        "y": 520,
+        "y": 540,
         "wires": []
     },
     {
@@ -1793,7 +1853,7 @@
         "links": [
             "3d273fe27e049b65"
         ],
-        "x": 595,
+        "x": 655,
         "y": 280,
         "wires": []
     },
@@ -1835,7 +1895,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "tracked",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1845,19 +1905,6 @@
         "statusType": "auto",
         "x": 600,
         "y": 620,
-        "wires": []
-    },
-    {
-        "id": "e214bc4b98b2be8f",
-        "type": "link out",
-        "z": "fce55c80ba409b3d",
-        "name": "pid/request legacy",
-        "mode": "link",
-        "links": [
-            "a5b0229895915912"
-        ],
-        "x": 645,
-        "y": 300,
         "wires": []
     },
     {
@@ -1872,7 +1919,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 610,
+        "x": 590,
         "y": 460,
         "wires": [
             [
@@ -1889,7 +1936,7 @@
         "links": [
             "52fa1182d5cd2dff"
         ],
-        "x": 595,
+        "x": 655,
         "y": 200,
         "wires": []
     },
@@ -1987,7 +2034,7 @@
         "links": [
             "067d0e710c60a2bf"
         ],
-        "x": 595,
+        "x": 655,
         "y": 240,
         "wires": []
     },
@@ -2010,7 +2057,7 @@
         "links": [
             "f61b76784c425ebd"
         ],
-        "x": 645,
+        "x": 705,
         "y": 220,
         "wires": []
     },
@@ -2023,7 +2070,7 @@
         "links": [
             "5160c12d4a8d8e95"
         ],
-        "x": 645,
+        "x": 705,
         "y": 260,
         "wires": []
     },
@@ -2058,19 +2105,256 @@
         ]
     },
     {
+        "id": "a944110ef21c8c0c",
+        "type": "inject",
+        "z": "fce55c80ba409b3d",
+        "name": "initialize",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "initialize",
+        "payload": "",
+        "payloadType": "date",
+        "x": 160,
+        "y": 760,
+        "wires": [
+            [
+                "6d33c5ea5374761b"
+            ]
+        ]
+    },
+    {
+        "id": "6d33c5ea5374761b",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "recall",
+        "func": "/**\n * flush through all the settings \n * so that dashboard is intialized\n * and all MQTT topics are updated\n */\n\n\nconst objectNames = ['ashp0','lae0','pid0','clock0']\nconst msgs = objectNames.map((name) => ({ topic: `${name}/get/all`, payload: false}))\nreturn [msgs];",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 760,
+        "wires": [
+            [
+                "169352bc32f5bbd4"
+            ]
+        ]
+    },
+    {
+        "id": "2518a4fd104ebb54",
+        "type": "link out",
+        "z": "fce55c80ba409b3d",
+        "name": "bridge device availability",
+        "mode": "link",
+        "links": [
+            "75b27d2f659b385d"
+        ],
+        "x": 745,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "64a335d0deb77d0a",
+        "type": "inject",
+        "z": "fce55c80ba409b3d",
+        "name": "get m6 info",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "bridge/request/device/options",
+        "payload": "{\"id\":\"p1\",\"options\":\"{}\"}",
+        "payloadType": "json",
+        "x": 160,
+        "y": 840,
+        "wires": [
+            [
+                "6d46cf6930c28051"
+            ]
+        ]
+    },
+    {
+        "id": "19c30800fa95c445",
+        "type": "link out",
+        "z": "fce55c80ba409b3d",
+        "name": "bridge device list",
+        "mode": "link",
+        "links": [
+            "28f2afe4d33649c3"
+        ],
+        "x": 745,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "a1eb201860b28d15",
+        "type": "link out",
+        "z": "fce55c80ba409b3d",
+        "name": "sensor0 get/set",
+        "mode": "link",
+        "links": [
+            "463ad07330f8ce74"
+        ],
+        "x": 705,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "dc86d09650ce95f5",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "tag for influx v2",
+        "func": "if (['local'].includes(msg.prefix) == false) {\n  node.error(msg.topic + \" only storing 'local' sensors \");\n  return null;   // it is not.  Use hops in future?\n}\n\n/*  \n  strip out the known tag fields and place in second array in payload. \n  this is the standard reporting format for influx.\n  The msg.topic is ignored\n*/\n\nlet fields = {};\nlet tags = {};\n\nconst pick = (obj, ...keys) => Object.fromEntries(\n  keys\n    .filter(key => key in obj)\n    .map(key => [key, obj[key]])\n);\n\n\nconst pickNumbers = (obj) => Object.fromEntries(\n  Object.keys(obj)\n    .filter(key => typeof obj[key] === 'number')\n    .map(key => [key, obj[key]])\n);\n\n\n/** \n * to make the text in grafana look nice\n * all temperatures have to be grouped together under a measurement category\n * you have one named field followed one tag which is the source.\n * Make the named field the location even though this wierd.\n */\nconst location = msg.location ? msg.location : msg.source ;\n\nlet nodeStatus = null ;\n\nswitch(typeof msg.payload)\n{\n  case 'number' :\n    fields[location] = msg.payload;     // e.g. conference room\n    tags['source'] = msg.source ;       // e.g M11 \n    nodeStatus = { fill: \"yellow\", shape: \"dot\", text: `m:${msg.param} f:${location}=${msg.payload} t:${msg.source}`};\n    break ;\n\n  case 'object' :\n    fields = pickNumbers(msg.payload) ;\n    tags = msg.source ? {'source': msg.source} : {} ;       // e.g pid0 \n    nodeStatus = { fill: \"blue\", shape: \"dot\", text: `m:${msg.param} (object) t:${msg.source? msg.source:\"\"}`};\n    break ;\n}\nif (Object.keys(fields).length == 0)\n  return null;  // there are no (numeric) field values\n\nconst m = \n{\n  measurement : msg.param,          // e.g. battery\n  topic : msg.topic,\n  payload : [fields,tags]\n}\n\n\n//if (msg.track)) \n{\n  const utils = global.get('utils')\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`\n  node.status(nodeStatus)\n}\nreturn m ;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 1020,
+        "wires": [
+            [
+                "9c0f3e23e9286b36",
+                "75e883d66df4a330",
+                "75bac89abeeb5a27"
+            ]
+        ]
+    },
+    {
+        "id": "1d59f94a2acc3c1a",
+        "type": "link in",
+        "z": "fce55c80ba409b3d",
+        "name": "influx in",
+        "links": [
+            "90da587f91c535d6"
+        ],
+        "x": 95,
+        "y": 900,
+        "wires": [
+            [
+                "b60bd0ec51857556"
+            ]
+        ]
+    },
+    {
+        "id": "f63487691e3285be",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "debug 53",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "b60bd0ec51857556",
+        "type": "switch",
+        "z": "fce55c80ba409b3d",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "log/record/pid0",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 210,
+        "y": 900,
+        "wires": [
+            [
+                "69aa0a3541fa8acf"
+            ]
+        ]
+    },
+    {
+        "id": "69aa0a3541fa8acf",
+        "type": "function",
+        "z": "fce55c80ba409b3d",
+        "name": "downsample v2.2",
+        "func": "/**\n * downsample v2.2 30 Oct 2025\n */\n\n/** rework so it operates on all fields in the payload */\n\n\nfunction toFix(num, precision)\n{\n  return (Math.round(num * (10 ** precision)))/ (10 ** precision) ;\n}\n\nconst isSet = (o, prop) => o[prop] ?? false ;\n\nconst store0 = {\n  payload : 0.0,   // last payload\n  mean : 0.0,\n  reportedMean : 0.0,\n  numSamples: 0,\n  begin: true\n}\n\nlet nodeStatus = null ;\n\n/**\n * Compare properties on obj2 with obj1. \n * Create a new object with all the new properties that \n * have appeared in obj2 or that have changed from obj1.\n * It's not symmetric, properties that have disappeared \n * in obj2 are just ignored. \n */\n\nconst createDiff = (obj1, obj2) => Object.fromEntries(\n  Object.keys(obj2)\n    .filter(key => obj1.hasOwnProperty(key) == false || obj1[key] != obj2[key])\n    .map(key => [key, obj2[key]])\n);\n\n\nfunction deliver(msg)\n{\n  let store = context.get(msg.topic) ?? store0 ;\n  \n  // led indicates messageClass  red : digest, yellow : update, green : writeThrough\n  let colour = msg.writeThrough ? 'green' : 'yellow' ;\n  let statusText = `${msg.topic} ${store.payload}`;\n  if (typeof msg.payload !== 'object')\n  {\n    if (msg.writeThrough || (msg.payload != store.payload))\n    {\n      statusText = `${statusText}=>${msg.payload}`;\n      store.payload = msg.payload ;\n      context.set(msg.topic, store);\n      nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n    }\n    else \n      msg = null;\n  }\n  else {\n    msg.payload = createDiff(store.payload, msg.payload);\n    const numChanges = Object.keys(msg.payload).length ;\n    if (msg.writeThrough || numChanges) {\n      statusText = `Updated ${numChanges} properties`;\n      store.payload = Object.assign(store.payload, msg.payload);\n      context.set(msg.topic, store);\n      nodeStatus = { fill: 'red', shape: \"ring\", text: statusText };\n    }\n    else\n      msg = null;    \n  }\n  return msg ;\n}\n// ver 1.0 checked 22-09-2024\n\nfunction digest(msg) {\n  \n  // conditions to reset the store\n\n  let store = context.get(msg.topic);\n  if (store === undefined || msg.reset || isNaN(store.mean) ||  isNaN(store.numSamples))\n    store = store0;\n  \n  const dateNow = Date.now()\n\n  // check to see how much payload has changed\n\n  const percentageDiff = store.numSamples ? (msg.payload - store.reportedMean) * 100 * 2 / (msg.payload + store.lastMean) : 0.0;\n \n  const valueDiff1 = store.numSamples ? Math.abs(msg.payload - store.reportedMean) : 0.0;\n  const valueDiff2 = Math.abs(msg.payload - store.payload)\n  const valueTrigger = Math.max(valueDiff1, valueDiff2) >  (msg.reportOnDiff ?? 0) ;\n\n\n  // check if windowPeriod has been reached\n\n  let timeDiff = 0; let timeDiffLog = ''; let timeTrigger = false ;\n  if (msg.windowPeriodSecs)\n  {\n    if (store.timestamp === undefined)\n      store.timestamp = dateNow\n      if (msg.timestamp === undefined)\n        msg.timestamp = dateNow;\n    timeDiff = msg.timestamp - store.timestamp ;\n    timeDiffLog = `Δt:${ Math.round(timeDiff / 1000) }`\n    timeTrigger = timeDiff > (msg.windowPeriodSecs * 1000);\n  }\n\n  // check if window size has been reached \n\n  const windowSizeTrigger = store.numSamples + 1 >= (msg.windowSize ?? 10000)\n\n \n  const endTransition = valueTrigger || timeTrigger || windowSizeTrigger ; // write every maxGap\n  const triggers = (valueTrigger ? \"vt \" : \"\")  +  (timeTrigger ? \"tt \" : \"\") + (windowSizeTrigger ? \"ws \" : \"\");\n  msg.triggers = triggers ;\n\n  // to do put triggers into object \n  //node.error(`my error message ${msg.topic} ${triggers} ${msg.payload} ${valueDiff1} ${valueDiff2}`, msg);\n\n\n  store.payload = msg.payload;\n  store.mean = (store.mean * store.numSamples + msg.payload) / (store.numSamples + 1);   // correct?\n  const storeMeanView = toFix(store.mean, msg.precision == undefined ?  2 : msg.precision );\n  store.numSamples += 1;\n  msg.numSamples = store.numSamples;\n  \n  const statusText = `${msg.topic} ${msg.payload} mean:${storeMeanView} num:${store.numSamples} ${timeDiffLog}`\n  /*\n   *    node.log(`${msg.topic} ${msg.lastPayload} mean: ${store.mean.toFixed(2)}, `\n   *             + `diff% ${percentageDiff}% diff:${valueDiff} numSamples:${msg.numSamples} `\n   *             + `bt ${beginTransition} et ${ endTransition }`);\n   */\n  if (store.begin || endTransition) {\n    msg.payload = storeMeanView ;\n    store.reportedMean = store.mean ;  // don't need to reset store.mean because numSamples is zero\n    store.numSamples = 0 ;\n    store.timestamp = dateNow ;\n    store.begin = false ;\n  }\n  const colour = endTransition ? 'red' : 'blue'  \n  nodeStatus = { fill: colour, shape: \"dot\", text: statusText};\n  \n  context.set(msg.topic, store);\n  return endTransition ? msg : null;\n}\n\nconst m = msg.digest ?  digest(msg) : deliver(msg);\n\nconst utils = global.get('utils')\nif (nodeStatus)\n{\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus)\n}\nconst msgStatus = nodeStatus ? { topic : 'status' , payload : nodeStatus } : null ;\n\nconst logRecord = null ;\n\nreturn [[m], [m && isSet(m,'track') ? m : null], [logRecord], [msgStatus] ]\n",
+        "outputs": 4,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 900,
+        "wires": [
+            [
+                "dc86d09650ce95f5",
+                "f63487691e3285be"
+            ],
+            [],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "75e883d66df4a330",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "debug 54",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 680,
+        "y": 1020,
+        "wires": []
+    },
+    {
         "id": "2d28df211ec8ace4",
         "type": "function",
         "z": "a39c97029f2c005f",
-        "name": "response general",
-        "func": "\nconst timeNow = Date.now()\nconst config = global.get(\"site-config\");\nconst instruments = global.get('instrumentation')\nconst utils = global.get(\"utils\")\n\n// should allow a list of sensors to be supplied rather \n// getting them from config\n\nfunction handleRequest()\n{\n  msg.topic = msg.topic.replace('request', 'response');\n\n  let tokens = msg.topic.split('/') ;\n  let topic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  //node.error('ddd ' + topic)\n\n  switch(topic)\n  {\n    case 'siteConfig' :\n      msg.payload = config ;  \n      break \n\n    case 'online' :\n    case 'offline' :\n    case 'timedOut' :\n      const sensorsKnown = Object.keys(config['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instruments, 29, timeNow) \n      msg.payload = res[topic] ?? 'topic'\n      break\n\n    case 'pid' :\n      msg.payload = global.get('pid') || {nothing: 'here'}\n      break\n  } \n  return msg \n}\n\n\nreturn handleRequest(msg)\n\n/*\nmsg.payload = JSON.stringify(config, undefined, 4);\nmsg.payload = `ffeferf<br>809f8f0ef0ef80ef\\n3rd line`\nlet msgs = [\n        { topic: 'tty' ,  payload : 'trte tetert'},\n        { topic: 'tty' ,  payload : '3r34r34r4'}\n]\nlet msg1 = RED.util.cloneMessage(msg)\nmsg1 = Object()\nmsg1.topic = 'dwdd'\nmsg1.payload = 'refreferf'\nmsgs = [\n        msg,\n        msg\n]\n\nreturn [msgs];\n*/",
+        "name": "response general v1",
+        "func": "\nconst timeNow = Date.now()\nconst config = global.get(\"site-config\", 'file');\nconst instruments = global.get('instrumentation')\nconst utils = global.get(\"utils\")\n\n// should allow a list of sensors to be supplied rather \n// getting them from config\n\nfunction handleRequest()\n{\n  msg.topic = msg.topic.replace('request', 'response');\n\n  let tokens = msg.topic.split('/') ;\n  let topic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  //node.error('ddd ' + topic)\n\n  switch(topic)\n  {\n    case 'siteConfig' :\n      msg.payload = config ;  \n      break \n\n    case 'online' :\n    case 'offline' :\n    case 'timedOut' :\n      const sensorsKnown = Object.keys(config['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instruments, 29, timeNow) \n      msg.payload = res[topic] ?? 'topic'\n      break\n\n    case 'pid' :\n      msg.payload = global.get('pid') || {nothing: 'here'}\n      break\n  } \n  return msg \n}\n\n\nreturn handleRequest(msg)\n\n/*\nmsg.payload = JSON.stringify(config, undefined, 4);\nmsg.payload = `ffeferf<br>809f8f0ef0ef80ef\\n3rd line`\nlet msgs = [\n        { topic: 'tty' ,  payload : 'trte tetert'},\n        { topic: 'tty' ,  payload : '3r34r34r4'}\n]\nlet msg1 = RED.util.cloneMessage(msg)\nmsg1 = Object()\nmsg1.topic = 'dwdd'\nmsg1.payload = 'refreferf'\nmsgs = [\n        msg,\n        msg\n]\n\nreturn [msgs];\n*/",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/*\nvar defaultSensorMap = {\n    s0: 'outside',\n    s1: '1stFloor-hallway',\n    s2: 'entrance-hallway',\n    s3: 'bedroom2',\n    s4: 'unmapped',\n    s5: 'unmapped',\n    s6: 'unmapped',        \n    s10: 'test-location'\n};\n\nflow.set(\"sensorMap\", defaultSensorMap);\n\nvar defaultSite = '40hg';\nflow.set(\"site\"     , defaultSite);\n*/",
         "finalize": "",
         "libs": [],
-        "x": 510,
-        "y": 200,
+        "x": 520,
+        "y": 220,
         "wires": [
             [
                 "f07bdf58f4238213",
@@ -2173,8 +2457,8 @@
             "3ae42568f19fb87e",
             "95659a05514705b8"
         ],
-        "x": 385,
-        "y": 280,
+        "x": 435,
+        "y": 180,
         "wires": []
     },
     {
@@ -2226,27 +2510,6 @@
         ]
     },
     {
-        "id": "a0072afbb111de1d",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "msg fetch",
-        "func": "\nconst instrumentation = global.get(\"instrumentation\") || {}\nlet ar = Object.values(instrumentation)\nnode.status({ fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items`});\nreturn [ar] ;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 340,
-        "y": 480,
-        "wires": [
-            [
-                "c7515d6ac70f764e",
-                "f07bdf58f4238213"
-            ]
-        ]
-    },
-    {
         "id": "cdc2849e83ce87c7",
         "type": "switch",
         "z": "a39c97029f2c005f",
@@ -2254,12 +2517,6 @@
         "property": "topic",
         "propertyType": "msg",
         "rules": [
-            {
-                "t": "regex",
-                "v": "app\\/request\\/pid0\\/",
-                "vt": "str",
-                "case": false
-            },
             {
                 "t": "regex",
                 "v": "app\\/request\\/weather",
@@ -2280,13 +2537,7 @@
             },
             {
                 "t": "regex",
-                "v": "app\\/request/networkmap",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "app\\/request/refresh",
+                "v": "app\\/request\\/refresh",
                 "vt": "str",
                 "case": false
             },
@@ -2299,13 +2550,10 @@
         ],
         "checkall": "false",
         "repair": false,
-        "outputs": 7,
+        "outputs": 5,
         "x": 190,
         "y": 300,
         "wires": [
-            [
-                "58d70b01b04781c8"
-            ],
             [
                 "3576a0b9dd48029d"
             ],
@@ -2316,31 +2564,13 @@
                 "73f3bd8747e9b9e9"
             ],
             [
-                "0c1d94776d82f5d4"
-            ],
-            [
-                "a0072afbb111de1d",
-                "c7515d6ac70f764e",
-                "58d70b01b04781c8"
+                "c7515d6ac70f764e"
             ],
             [
                 "2d28df211ec8ace4"
             ]
         ],
         "info": "the regex here \n\nhttps://regex101.com/r/wlRMWz/1"
-    },
-    {
-        "id": "0c1d94776d82f5d4",
-        "type": "link out",
-        "z": "a39c97029f2c005f",
-        "name": "app/request/networkmap",
-        "mode": "link",
-        "links": [
-            "aa15016c69354ddd"
-        ],
-        "x": 705,
-        "y": 420,
-        "wires": []
     },
     {
         "id": "c7515d6ac70f764e",
@@ -2356,7 +2586,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 620,
-        "y": 480,
+        "y": 400,
         "wires": []
     },
     {
@@ -2367,8 +2597,8 @@
         "links": [
             "7b7a4dd23fba8082"
         ],
-        "x": 145,
-        "y": 400,
+        "x": 195,
+        "y": 200,
         "wires": [
             [
                 "cdc2849e83ce87c7"
@@ -2392,8 +2622,8 @@
         "id": "95191d0245230bea",
         "type": "debug",
         "z": "a39c97029f2c005f",
-        "name": "data store",
-        "active": false,
+        "name": "updateMQTT",
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2401,45 +2631,23 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 640,
-        "y": 540,
+        "x": 650,
+        "y": 460,
         "wires": []
-    },
-    {
-        "id": "46d23788ce3bdc8f",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "store message",
-        "func": "\n\nconst siteConfig = global.get('site-config') ?? {}\nconst sensorsKnown = Object.keys(siteConfig['sensorMap'])\nconst utils = global.get('utils')\n\n// don't store items that are not objects \n\nfunction validateMessage(msg, instrumentation)\n{\n    //node.error('abc', msg)\n    if (typeof msg !== 'object') \n    {\n        node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, not an object` });\n        return false ;\n    }\n\n    if (msg.payload === undefined) \n    {\n        node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, no payload` });\n        return false ;\n    }\n    if (!Object.hasOwn(msg, 'timestamp') || !msg.timestamp) \n        msg.timestamp = Date.now()\n\n    if (!msg.timestamp) \n    {\n        node.error(\"my error message \" +  msg.timestamp);\n        return false ;\n    }\n    instrumentation[msg.topic] = msg;\n    return true ;\n}\n\nfunction timeOutOldMessages(sensorStatus, instrumentation, updates)\n{\n    let numTimeouts = 0 \n//    node.error(\"my error message 1b \" + JSON.stringify(sensorStatus.timedOut2), msg);  \n    for (const name of sensorStatus.timedOut2)\n    {\n        const topic = name + \"/temperature\" ;\n        numTimeouts +=1 \n        if (instrumentation[topic] !== undefined)\n        {\n            if (!instrumentation[topic].hasTimedOut) \n            { \n                instrumentation[topic].hasTimedOut = true ;\n                //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n                updates.push(instrumentation[topic])   // push message out to UI\n            }\n        }\n    }\n    return numTimeouts ;\n}\n\n\nconst instrumentation = global.get(\"instrumentation\") ?? {}\nvalidateMessage(msg, instrumentation)\n//node.error(\"my error message 1 \" + JSON.stringify(msg), msg);\nconst sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n//node.error(\"my error message 2 \" + JSON.stringify(sensorStatus), msg);\nlet updates = []\nlet numTimeouts= timeOutOldMessages(sensorStatus, instrumentation, updates)\nupdates.unshift(msg)\nglobal.set(\"instrumentation\", instrumentation );\nconst numSensors = sensorsKnown.length ;\nconst numTimedOut = sensorStatus.timedOut  ;\n//node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\nconst texxt = `${msg.topic}, ${numTimeouts} sensors timed out, total ${numSensors}`; \nnode.status({ fill: \"green\", shape: \"dot\", text : texxt })\n/*\nlet m = {\n    topic : 'instrumentation', \n    payload : instrumentation \n}\n*/\nreturn [updates];  ",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n// uncomment once if you need to clear store\n\n// flow.set(\"instrumentation\", {});",
-        "finalize": "",
-        "libs": [],
-        "x": 360,
-        "y": 600,
-        "wires": [
-            [
-                "95191d0245230bea",
-                "4155f40899b57319"
-            ]
-        ]
     },
     {
         "id": "6e4f4737d3d2738b",
         "type": "link in",
         "z": "a39c97029f2c005f",
-        "name": "data in",
+        "name": "downsampler in",
         "links": [
             "2384d6ea06ea6969"
         ],
         "x": 185,
-        "y": 600,
+        "y": 500,
         "wires": [
             [
-                "46d23788ce3bdc8f",
-                "76c380e8f0091c9a"
+                "ca4c7e7c54ba2693"
             ]
         ]
     },
@@ -2457,198 +2665,20 @@
         "wires": []
     },
     {
-        "id": "9e57d76bb8e871d7",
-        "type": "inject",
-        "z": "a39c97029f2c005f",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 180,
-        "y": 820,
-        "wires": [
-            [
-                "24af47e7e1338dfa"
-            ]
-        ]
-    },
-    {
-        "id": "24af47e7e1338dfa",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "dump sensors",
-        "func": "\nconst instrumentation = global.get(\"instrumentation\") ?? {}\nlet m = {}\nm.topic = 'instrumentation'\nm.payload = instrumentation ;\nreturn m;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 400,
-        "y": 820,
-        "wires": [
-            [
-                "eea14150cfa98bd1"
-            ]
-        ]
-    },
-    {
-        "id": "eea14150cfa98bd1",
-        "type": "debug",
-        "z": "a39c97029f2c005f",
-        "name": "debug 7",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 620,
-        "y": 820,
-        "wires": []
-    },
-    {
         "id": "cc00546b6d89d585",
         "type": "debug",
         "z": "a39c97029f2c005f",
         "name": "debug 8",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 610,
-        "y": 340,
+        "x": 640,
+        "y": 360,
         "wires": []
-    },
-    {
-        "id": "58d70b01b04781c8",
-        "type": "link out",
-        "z": "a39c97029f2c005f",
-        "name": "request/PID0",
-        "mode": "link",
-        "links": [
-            "b27cee27b9d6f4b1"
-        ],
-        "x": 705,
-        "y": 240,
-        "wires": []
-    },
-    {
-        "id": "dd793b9131285a2d",
-        "type": "file in",
-        "z": "a39c97029f2c005f",
-        "name": "read config file",
-        "filename": "/mnt/dietpi_userdata/site-config.yaml",
-        "filenameType": "str",
-        "format": "utf8",
-        "chunk": false,
-        "sendError": false,
-        "encoding": "none",
-        "allProps": false,
-        "x": 340,
-        "y": 960,
-        "wires": [
-            [
-                "8e01751ffc91da73"
-            ]
-        ]
-    },
-    {
-        "id": "8e01751ffc91da73",
-        "type": "yaml",
-        "z": "a39c97029f2c005f",
-        "property": "payload",
-        "name": "",
-        "x": 510,
-        "y": 960,
-        "wires": [
-            [
-                "5e632bcd3eb2c3ec"
-            ]
-        ]
-    },
-    {
-        "id": "e45e88337a59659f",
-        "type": "debug",
-        "z": "a39c97029f2c005f",
-        "name": "config",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 690,
-        "y": 1020,
-        "wires": []
-    },
-    {
-        "id": "5e632bcd3eb2c3ec",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "set config",
-        "func": "let config = msg.payload;\nglobal.set(\"site-config\", config);\nnode.log('Site config loaded for ' + config.site);\nreturn msg;",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 500,
-        "y": 1020,
-        "wires": [
-            [
-                "e45e88337a59659f"
-            ]
-        ]
-    },
-    {
-        "id": "9b111b1a593b741c",
-        "type": "inject",
-        "z": "a39c97029f2c005f",
-        "name": "reload",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "0.0",
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 150,
-        "y": 960,
-        "wires": [
-            [
-                "dd793b9131285a2d"
-            ]
-        ]
     },
     {
         "id": "f15ca2197c7843a7",
@@ -2659,81 +2689,14 @@
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    oneDecPoint : (n) => (Math.round(n * 10) / 10),\n    twoDecPoint : (n) => (Math.round(n * 100) / 100),\n    //toFix : (num, precision) => (Math.trunc(num * (10 ** precision))) / (10 ** precision),\n    toFix: (num, precision) => (Math.round(num * (10 ** precision))) / (10 ** precision),\n\n    getHHMM: (millis) => new Date(millis).toTimeString().substring(0, 5),\n    getHHMMSS: (millis) => new Date(millis).toTimeString().substring(0, 8),\n\n    getHHMMNow: () => utils.getHHMM(Date.now()),\n    getHHMMSSNow: () => utils.getHHMMSS(Date.now()),\n    \n    getTimeNow: () => utils.getHHMM(Date.now()),\n\n    sensorStatus: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + minutes * 60 * 1000 < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const sensorsOffline = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut2 = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const sensorsOnline = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: sensorsOnline, timedOut: timedOut, timedOut2: timedOut2,  offline: sensorsOffline }\n    }\n\n}\nglobal.set(\"utils\", utils)",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    oneDecPoint : (n) => (Math.round(n * 10) / 10),\n    twoDecPoint : (n) => (Math.round(n * 100) / 100),\n    //toFix : (num, precision) => (Math.trunc(num * (10 ** precision))) / (10 ** precision),\n    toFix: (num, precision) => (Math.round(num * (10 ** precision))) / (10 ** precision),\n\n    getHHMM: (millis) => new Date(millis).toTimeString().substring(0, 5),\n    getHHMMSS: (millis) => new Date(millis).toTimeString().substring(0, 8),\n\n    getHHMMNow: () => utils.getHHMM(Date.now()),\n    getHHMMSSNow: () => utils.getHHMMSS(Date.now()),\n    \n    getTimeNow: () => utils.getHHMM(Date.now()),\n\n    sensorStatus: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + 1000 * 60 * minutes < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const sensorsOffline = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut2 = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const sensorsOnline = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: sensorsOnline, timedOut: timedOut, timedOut2: timedOut2,  offline: sensorsOffline }\n    }\n\n}\nglobal.set(\"utils\", utils)",
         "finalize": "",
         "libs": [],
-        "x": 130,
-        "y": 1020,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "95732ec3fceeeced",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "clear instrumentation (sensor) values",
-        "func": "global.set(\"instrumentation\", {});\n//node.status({ fill: \"green\", shape: \"dot\", text: `instrumenation cleared`})\nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 510,
+        "x": 120,
         "y": 760,
         "wires": [
             []
         ]
-    },
-    {
-        "id": "60b4266997bd589a",
-        "type": "inject",
-        "z": "a39c97029f2c005f",
-        "name": "clear instrumentation",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 210,
-        "y": 760,
-        "wires": [
-            [
-                "95732ec3fceeeced"
-            ]
-        ]
-    },
-    {
-        "id": "f0dfef5d56b657be",
-        "type": "comment",
-        "z": "a39c97029f2c005f",
-        "name": "Recall last messages on every topic and rebroadcast",
-        "info": "",
-        "x": 250,
-        "y": 440,
-        "wires": []
-    },
-    {
-        "id": "8811da0a0933a4b4",
-        "type": "comment",
-        "z": "a39c97029f2c005f",
-        "name": "store last message on every topic",
-        "info": "",
-        "x": 190,
-        "y": 540,
-        "wires": []
     },
     {
         "id": "4155f40899b57319",
@@ -2745,72 +2708,25 @@
             "f2e5754610a2a6d1"
         ],
         "x": 595,
-        "y": 600,
+        "y": 580,
         "wires": []
     },
     {
         "id": "93a735363165e2dd",
         "type": "comment",
         "z": "a39c97029f2c005f",
-        "name": "combine fetch and store into message recall",
+        "name": "store last message, timeout and fetch all",
         "info": "",
-        "x": 270,
-        "y": 720,
+        "x": 220,
+        "y": 380,
         "wires": []
-    },
-    {
-        "id": "6ccdc0c620f99c0e",
-        "type": "function",
-        "z": "a39c97029f2c005f",
-        "name": "recall",
-        "func": "/*\nconst instrumentation = node.get(\"instrumentation\") || {}\n\nfetch  \n\nlet ar = Object.values(instrumentation)\nnode.status({ fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items`});\nreturn [ar] ;\n\nclear \n\nglobal.set(\"instrumentation\", {});\n//node.status({ fill: \"green\", shape: \"dot\", text: `instrumenation cleared`})\nreturn msg;\n\ndump \n\nlet m = {}\nm.topic = 'instrumentation'\nm.payload = instrumentation ;\nreturn m;\n\n\n\n\n\n\nfunction handleMessage(msg, instrumentation)\n{\n  // check for a command \n\n  switch(msg.topic){\n    case 'clearAll' :\n      instrumentation.clear() ;\n      break   \n    case 'dumpAll' :\n      let m = {}\n      m.topic = 'instrumentation'\n      m.payload = instrumentation;\n  \n    // no command, just store message\n    default : \n      m = validateMessageAndStore(msg, instrumentation)\n  }\n  return [m, instrumentation]\n}\n\n\n// don't store items that are not objects \n\nfunction validateMessageAndStore(msg, instrumentation)\n{\n  const siteConfig = global.get('site-config') ?? {}\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  const utils = global.get('utils')\n\n  //node.error('abc', msg)\n  if (typeof msg !== 'object') \n  {\n    node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, not an object` });\n    return false ;\n  }\n\n  if (msg.payload === undefined) \n  {\n    node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, no payload` });\n    return false ;\n  }\n  if (!Object.hasOwn(msg, 'timestamp') || !msg.timestamp) \n    msg.timestamp = Date.now()\n\n  if (!msg.timestamp) \n  {\n    node.error(\"my error message \" +  msg.timestamp);\n    return false ;\n  }\n  instrumentation[msg.topic] = msg;\n  return true ;\n}\n\nfunction timeOutOldMessages(sensorStatus, instrumentation, updates)\n{\n  let numTimeouts = 0 \n//    node.error(\"my error message 1b \" + JSON.stringify(sensorStatus.timedOut2), msg);  \n  for (const name of sensorStatus.timedOut2)\n  {\n    const topic = name + \"/temperature\" ;\n    numTimeouts +=1 \n    if (instrumentation[topic] !== undefined)\n    {\n      if (!instrumentation[topic].hasTimedOut) \n      { \n          instrumentation[topic].hasTimedOut = true ;\n          node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n          updates.push(instrumentation[topic])   // push message out to UI\n      }\n    }\n  }\n  return numTimeouts ;\n}\n\n\nconst instrumentation = global.get(\"instrumentation\") ?? {}\nvalidateMessage(msg, instrumentation)\n//node.error(\"my error message 1 \" + JSON.stringify(msg), msg);\nconst sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n//node.error(\"my error message 2 \" + JSON.stringify(sensorStatus), msg);\nlet updates = []\nlet numTimeouts= timeOutOldMessages(sensorStatus, instrumentation, updates)\nupdates.unshift(msg)\nglobal.set(\"instrumentation\", instrumentation );\nconst numSensors = sensorsKnown.length ;\nconst numTimedOut = sensorStatus.timedOut  ;\n//node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\nconst texxt = `${msg.topic}, ${numTimeouts} sensors timed out, total ${numSensors}`; \nnode.status({ fill: \"green\", shape: \"dot\", text : texxt })\n\nlet m = {\n    topic : 'instrumentation', \n    payload : instrumentation \n}\n\nreturn [updates];  \n\n*/",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 310,
-        "y": 880,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "b1558ab63013371f",
-        "type": "inject",
-        "z": "a39c97029f2c005f",
-        "name": "g3/temperature is 17",
-        "props": [
-            {
-                "p": "topic",
-                "vt": "str"
-            },
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "g3/temperature",
-        "payload": "17",
-        "payloadType": "jsonata",
-        "x": 150,
-        "y": 660,
-        "wires": [
-            [
-                "76c380e8f0091c9a"
-            ]
-        ]
     },
     {
         "id": "7a541e60b47ceaf0",
         "type": "debug",
         "z": "a39c97029f2c005f",
         "name": "b0",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2818,8 +2734,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 650,
-        "y": 700,
+        "x": 640,
+        "y": 760,
         "wires": []
     },
     {
@@ -2827,15 +2743,15 @@
         "type": "function",
         "z": "a39c97029f2c005f",
         "name": "calculate b0",
-        "func": "\n\n/**\n *\n * ver 1.0\n */\n\nconst timeNow = Date.now()\nconst siteConfig = global.get('site-config') ?? {}\nconst instrumentation = global.get(\"instrumentation\") ?? {}\nconst utils = global.get('utils')\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 1 }, // main entrance \n    { name: 'g4', weight: 1 }, // cu ground\n    { name: 'm0', weight: 2 }, // first floor corridor\n    { name: 'm3', weight: 1 }, // cu front\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorStatus(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMM(timeNow)} b0:${buildingTemperature.toFixed(1)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let b0 = null\n  let setpoint1 = null \n  let setpoint2 = null \n\n  const sensorsSelected = sensorWeight.map((e) => e.name)\n  if (sensorsSelected.includes(sensorName)) \n    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      param:        'temperature',  // needed for influx\n      digest:       true,\n      prefix:       'local',        // pretend to be a sensor, albeit virtual, so influx stores\n      reportOnDiff: 0.1,            \n      windowPeriodSecs: 15 * 60 ,       // report every 10 minutes regardless\n      track: true                   // update status text under node\n    }\n  }\n  return b0\n}\n\nconst msgs = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn msgs",
+        "func": "/**\n *\n * ver 2.0\n */\n\nconst timeNow = Date.now()\n\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst utils = global.get('utils')\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 1 }, // main entrance \n    { name: 'g4', weight: 1 }, // cu ground\n    { name: 'm0', weight: 2 }, // first floor corridor\n    { name: 'm3', weight: 1 }, // cu front\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorStatus(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMMSS(timeNow)} b0:${buildingTemperature.toFixed(1)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n//  const tokens = msg.topic.split(\"/\")\n//  const sensorName = tokens[0]\n//  const sensorProperty = tokens[1]\n\n  const instrumentation = msg.payload ;\n\n  let b0 = null\n\n\n//  const sensorsSelected = sensorWeight.map((e) => e.name)\n//  if (sensorsSelected.includes(sensorName)) \n//    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      param:        'temperature',  // needed for influx\n      digest:       true,\n      prefix:       'local',        // pretend to be a sensor, albeit virtual, so influx stores\n      reportOnDiff: 0.1,            \n      windowPeriodSecs: 15 * 60 ,   // report every 10 minutes regardless\n      track: true                   // update status text under node\n    }\n    //b0 = isNaN(bt) ? null : b0 ;\n  }\n  return b0\n}\n\nconst m = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn m",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 390,
-        "y": 660,
+        "x": 400,
+        "y": 760,
         "wires": [
             [
                 "7a541e60b47ceaf0",
@@ -2855,27 +2771,352 @@
             "a1813311ef8ad85c"
         ],
         "x": 595,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "3d6616cfe2646003",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "clear",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 140,
+        "y": 560,
+        "wires": [
+            [
+                "ca4c7e7c54ba2693"
+            ]
+        ]
+    },
+    {
+        "id": "d9119ac89c432692",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "get/all",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 140,
+        "y": 600,
+        "wires": [
+            [
+                "ca4c7e7c54ba2693"
+            ]
+        ]
+    },
+    {
+        "id": "56c75ff589319c10",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "updateDashboard",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 670,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "75b27d2f659b385d",
+        "type": "link in",
+        "z": "a39c97029f2c005f",
+        "name": "bridge device availability",
+        "links": [
+            "2518a4fd104ebb54"
+        ],
+        "x": 185,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fed19cb666ad3b46",
+        "type": "link out",
+        "z": "a39c97029f2c005f",
+        "name": "MQTT cloud",
+        "mode": "link",
+        "links": [
+            "ae83978daa30c005"
+        ],
+        "x": 595,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "2c5be8f103fc9a6b",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "set config v2",
+        "func": "const sensorList = msg.payload ;\n\nconst sensorMap = {} ;\n\nfor (const dev of sensorList)\n  if (dev.description)\n    sensorMap[dev.friendly_name] = dev.description ;\n\nconst numDevices = Object.keys(sensorMap).length; \n\nconst siteConfig = { site: 'cax',  sensorMap: sensorMap} \n\nglobal.set(\"site-config\", siteConfig, 'file');\n\nconst utils = global.get('utils');\nnode.status({\n    fill: \"green\", shape: \"dot\",\n    text: `${utils.getHHMMSSNow()} zigbee2mqtt map saved, ${numDevices} devices`\n});\n\nreturn { topic: 'site-config', payload: siteConfig };\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 840,
+        "wires": [
+            [
+                "e83e0411a2fb1b2a"
+            ]
+        ]
+    },
+    {
+        "id": "e83e0411a2fb1b2a",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "debug 49",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "28f2afe4d33649c3",
+        "type": "link in",
+        "z": "a39c97029f2c005f",
+        "name": "bridge device list",
+        "links": [
+            "19c30800fa95c445"
+        ],
+        "x": 175,
+        "y": 840,
+        "wires": [
+            [
+                "2c5be8f103fc9a6b"
+            ]
+        ]
+    },
+    {
+        "id": "eb32ad981cfd4d2e",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "msg table",
+        "func": "\n/**\n * handle requests for sensor messsage recalls\n */\nlet nodeStatus = null ;\n//{ fill: \"green\", shape: \"dot\", text: `not-set` };\n\n\nfunction clearProperties(ob){\n  for (let k in ob)\n    delete ob[k] \n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isValidMessage(msg, instrumentation)\n{\n  //node.error('abc', msg)\n  if (typeof msg !== 'object')\n  {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false ;\n  }\n\n  if (msg.payload === undefined)\n  {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` } ;\n    return false ;\n  }\n  return true ;\n}\n\n\nconst updateMQTT = [] ;\nconst updateDashboard = [];\n\n\nfunction handleMessage(msg, instrumentation)\n{\n  if (msg.topic === undefined) \n    node.red(msg.payload)\n\n  switch(msg.topic)\n  {\n    case 'app/request/refresh' :\n    case 'get/all' :\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items`};\n      // and replay the stream of messages\n      //return [] ;\n      updateMQTT.push(...ar)\n      break ;\n\n    case 'clear' :\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items`};\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break ;\n\n    case 'availability' :\n      const m = instrumentation[msg.topic]     \n      m.state = msg.payload; \n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break ;\n\n    default :\n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}`};\n      if (isValidMessage(msg, instrumentation))\n      {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n        instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)        \n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}`};\n        \n      }\n      else\n        node.error('invalid message', msg)\n      break ;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg)\n{\n  const siteConfig = global.get('site-config') ?? {}\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  const utils = global.get('utils')\n\n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation ); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length ;\n  const numTimedOut = sensorStatus.timedOut  ;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimeouts} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text : texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\nsensorHousekeeping()\n\nif (nodeStatus)\n{\n  const utils = global.get('utils');\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n} \n\nconst mtable = { topic: 'mtable', payload: instrumentation}\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 940,
+        "wires": [
+            [],
+            [],
+            []
+        ],
+        "inputLabels": [
+            "data stream"
+        ],
+        "outputLabels": [
+            "updateMQTT",
+            "updateDashboard",
+            "instrumentation"
+        ]
+    },
+    {
+        "id": "ca4c7e7c54ba2693",
+        "type": "function",
+        "z": "a39c97029f2c005f",
+        "name": "msg table",
+        "func": "\n\nconst utils = global.get('utils');\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst timeNow = Date.now();\nlet nodeStatus = null;\nconst updateMQTT = [];\nconst updateDashboard = [];\n\n/**\n * handle requests for sensor messsage recalls\n */\n\nfunction clearProperties(ob) {\n  for (let k in ob)\n    delete ob[k]\n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isSensorMessage(msg) {\n\n  if (typeof msg !== 'object') {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false;\n  }\n  // sensor pattern, 1 letter, 1 or 2 digits\n  //if (/^[adprsgmt][^\\d]*[\\d]{1,2}/.test(msg.topic) == false)\n    //return false;\n\n  if (msg.payload === undefined) {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` };\n    return false;\n  }\n  return true;\n}\n\n\nfunction handleMessage(msg, instrumentation) {\n  if (msg.topic === undefined)\n    node.error(msg)\n    \n  let tokens = msg.topic.split('/') ;\n  let subtopic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  const replyTopic = msg.topic.replace('sensor0/get', 'sensor0');  \n\n  switch (msg.topic) {\n    \n    case 'recall' :\n    case 'sensor0/get/all':\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items` };\n      // and replay the stream of messages\n      // return [] ;\n      updateMQTT.push(...ar)\n      break;\n\n    case 'sensor0/get/siteConfig' :\n      const mout = {\n        topic:  replyTopic,\n        payload: siteConfig\n      }\n      updateMQTT.push(mout);\n      break       \n      \n    case 'sensor0/get/online':\n    case 'sensor0/get/offline':\n    case 'sensor0/get/timedOut':\n    \n      \n      const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instrumentation, 29, timeNow)\n      const n = {\n        topic:  replyTopic,\n        payload: res[subtopic] ?? 'topic'\n      }\n      updateMQTT.push(n);\n      break\n      \n      \n    case 'clear':\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items` };\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break;\n      \n    case 'availability':\n      const m = instrumentation[msg.topic]\n      m.state = msg.payload;\n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break;\n    \n    default:\n      if (msg.topic.startsWith('sensor0'))   // suppress echo of sensor0 output!\n        break \n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` };\n      if (isSensorMessage(msg)) {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n          instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)\n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` }; \n      }\n      else\n        node.error('invalid message ' + JSON.stringify(msg), msg)\n        break;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg) \n{\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  \n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length;\n  const numTimedOut = sensorStatus.timedOut;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimedOut} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text: texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\n//sensorHousekeeping()\n\nif (nodeStatus) {\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n}\n\nconst mtable = { topic: 'sensorTable', payload: instrumentation }\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 560,
+        "wires": [
+            [
+                "95191d0245230bea",
+                "fed19cb666ad3b46"
+            ],
+            [
+                "4155f40899b57319",
+                "56c75ff589319c10"
+            ],
+            [
+                "76c380e8f0091c9a"
+            ]
+        ],
+        "inputLabels": [
+            "data stream"
+        ],
+        "outputLabels": [
+            "updateMQTT",
+            "updateDashboard",
+            "instrumentation"
+        ]
+    },
+    {
+        "id": "465c4179d88871f8",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "sensor0/get/timedOut",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 190,
         "y": 640,
+        "wires": [
+            [
+                "ca4c7e7c54ba2693"
+            ]
+        ]
+    },
+    {
+        "id": "3673e8287d4e94c9",
+        "type": "inject",
+        "z": "a39c97029f2c005f",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "sensor0/get/offline",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 180,
+        "y": 680,
+        "wires": [
+            [
+                "ca4c7e7c54ba2693"
+            ]
+        ]
+    },
+    {
+        "id": "9cbc7538419f9d28",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "debug 51",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 450,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "463ad07330f8ce74",
+        "type": "link in",
+        "z": "a39c97029f2c005f",
+        "name": "sensor0 get/set",
+        "links": [
+            "a1eb201860b28d15"
+        ],
+        "x": 185,
+        "y": 460,
+        "wires": [
+            [
+                "ca4c7e7c54ba2693",
+                "673ce2f87b4e34ac"
+            ]
+        ]
+    },
+    {
+        "id": "673ce2f87b4e34ac",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "debug 52",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 330,
+        "y": 460,
         "wires": []
     },
     {
         "id": "ee6878a5cca418a8",
         "type": "inject",
         "z": "e7fcf1f501be8b60",
-        "name": "every 1 min",
+        "name": "tick 30 secs",
         "props": [
             {
                 "p": "topic",
                 "vt": "str"
             }
         ],
-        "repeat": "60",
+        "repeat": "30",
         "crontab": "",
         "once": true,
         "onceDelay": 0.1,
         "topic": "tick",
         "x": 130,
-        "y": 80,
+        "y": 140,
         "wires": [
             [
                 "514bcf2a52af1cf0"
@@ -2886,7 +3127,7 @@
         "id": "bacb43412f50be7f",
         "type": "function",
         "z": "e7fcf1f501be8b60",
-        "name": "scheduler",
+        "name": "scheduler v1",
         "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date()\n  return d.toTimeString().substring(0, 5)\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet schedule = flow.get(\"schedule\") || { start: '12:00', stop: '12:00', unit: { status : null} }\n\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n\n// Note that if start and stop time are the same, that means 24 operation\n// text string comparison\n\nlet unitShouldBeOn = schedule.start <= timeNow && timeNow <= schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `${timeNow}:  ${schedule.start} -> ${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n\n  node.error(s.payload);\n}\n\n\n\nlet control = null\nif (schedule && schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  // unit status is unchanged\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [response ?? null, control ?? null];\n",
         "outputs": 2,
         "timeout": 0,
@@ -2894,8 +3135,8 @@
         "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//flow.set(\"schedule\", { start: '06:00', stop: '16:30', unit: {} })",
         "finalize": "",
         "libs": [],
-        "x": 340,
-        "y": 360,
+        "x": 350,
+        "y": 420,
         "wires": [
             [
                 "b8d9de514450140a"
@@ -2992,7 +3233,7 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "scheduler 2",
-        "func": "const defaultSchedule = \n{\n  start : '00:02',\n  stop  : '23:58',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'recall': \n        recall = true ;   \n    case 'tick':    \n        break ;\n        \n    // from the webform \n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nconst offOn = schedule.start <= timeNow && timeNow <= schedule.stop; \n\nconst texxt = `${timeNow}:  ${schedule.start} -> ${schedule.stop}  on:${offOn}`\n\nif (timeChange || recall)\n{\n  formResponse = { 'topic' : 'clock0/set/schedule', 'payload' : schedule };\n\n  const mstart = {}\n  mstart.topic = `clock0/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `clock0/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  const s = {} \n  s.topic = 'clock0/set/recall'\n  s.payload = texxt ;\n\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  //node.error(s.payload);\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { 'topic' : 'schedule', 'payload' : offOn }\n    node.status({fill:offOn ? \"red\":\"blue\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule)\n\nreturn [[formResponse], responses, [control]];",
+        "func": "const defaultSchedule = \n{\n  start : '23:40',\n  stop  : '23:45',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\", \"file\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'all': \n        recall = true ;   \n    case 'tick': \n        break ;\n    \n    case 'advance' :\n        advance = true ;   \n        break ;\n\n        \n    // from the webform and MQTT\n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'start': 'stop' \n\nconst texxt = `${timeNow}: ${offOnText} 🕐${schedule.start}↦${schedule.stop}`\n\nif (timeChange || recall)\n{\n  formResponse = { 'topic' : 'clock0/set/schedule', 'payload' : schedule };\n\n  const mstart = {}\n  mstart.topic = `clock0/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `clock0/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  //node.error(s.payload);\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { topic : 'schedule', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3042,7 +3283,7 @@
             "605b2b84a661dbbc",
             "848510da6b3c8e83"
         ],
-        "x": 165,
+        "x": 185,
         "y": 180,
         "wires": [
             [
@@ -3111,30 +3352,6 @@
         "wires": []
     },
     {
-        "id": "f41416c16960c955",
-        "type": "inject",
-        "z": "e7fcf1f501be8b60",
-        "name": "",
-        "props": [
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "2",
-        "topic": "recall",
-        "x": 110,
-        "y": 120,
-        "wires": [
-            [
-                "514bcf2a52af1cf0"
-            ]
-        ]
-    },
-    {
         "id": "0a617bea90cec73f",
         "type": "ui-form",
         "z": "e7fcf1f501be8b60",
@@ -3146,14 +3363,14 @@
         "height": "0",
         "options": [
             {
-                "label": "Weekday Start time",
+                "label": "Weekend Start time",
                 "key": "start",
                 "type": "time",
                 "required": true,
                 "rows": null
             },
             {
-                "label": "Weekday Stop time",
+                "label": "Weekend Stop time",
                 "key": "stop",
                 "type": "time",
                 "required": true,
@@ -3508,6 +3725,26 @@
         "wires": []
     },
     {
+        "id": "4b601d377068ab43",
+        "type": "function",
+        "z": "ce7503bf65214c43",
+        "name": "heat controller",
+        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1]  = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n\n  let flowSetPoint = prop.hrEnabled ? wcTemp + trim : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = utils.twoDecPoint(Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin))\n  \n  let heatSource = 'off' \n  if (prop.schedule)      // scheduled to run\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, trim, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, trim, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'switch/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.twoDecPoint(settings.pidOut),\n    lcLow: settings.lcLow,  \n    lcHigh: settings.lcHigh,  \n    lc: loadComp,\n    tr: trim,\n    sch: settings.schedule,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'log/record/pid0',\n    payload: calcs,\n    prefix: 'local'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp} schedule:${settings.schedule}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${utils.twoDecPoint(settings.pidOut)} lc:${loadComp}`,\n  `hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n\n  notices.push({\n    topic:      'log/text/pid0',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 200,
+        "y": 580,
+        "wires": [
+            [],
+            [],
+            []
+        ]
+    },
+    {
         "id": "00c4ccd08c5fc11a",
         "type": "link in",
         "z": "81037ebb658aa24a",
@@ -3532,7 +3769,7 @@
         "links": [
             "f61b76784c425ebd"
         ],
-        "x": 685,
+        "x": 675,
         "y": 540,
         "wires": []
     },
@@ -3543,9 +3780,10 @@
         "name": "to MQTT out",
         "mode": "link",
         "links": [
-            "8b799875a8ef011e",
+            "1d59f94a2acc3c1a",
             "60e979b6c169619f",
-            "8b087c86912319a1"
+            "8b087c86912319a1",
+            "8b799875a8ef011e"
         ],
         "x": 675,
         "y": 180,
@@ -3556,7 +3794,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "heat controller",
-        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  // add the weather compensation and the load compensation (needs fixing)\n\n  let flowSetPoint = prop.hrEnabled ? wcTemp + lcTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = utils.twoDecPoint(Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin))\n  \n  let heatSource = 'off' \n  if (prop.schedule)      // scheduled to run\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'switch/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.twoDecPoint(settings.pidOut),\n    lcLow: settings.lcLow,  \n    lcHigh: settings.lcHigh,  \n    lcComp: loadComp,\n    sch: settings.schedule,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'pid0/calcs',\n    payload: calcs,\n    prefix: 'local'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp} schedule:${settings.schedule}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${utils.twoDecPoint(settings.pidOut)} lc:${loadComp}`,\n  `hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n  /*\n  notices.push({\n    topic:      'app/response/pid/log',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n  */\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
+        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1]  = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n\n  let flowSetPoint = prop.hrEnabled ? wcTemp + trim : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = utils.twoDecPoint(Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin))\n  \n  let heatSource = 'off' \n  if (prop.schedule)      // scheduled to run\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, trim, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, trim, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'switch/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.twoDecPoint(settings.pidOut),\n    lcLow: settings.lcLow,  \n    lcHigh: settings.lcHigh,  \n    lc: loadComp,\n    tr: trim,\n    sch: settings.schedule,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'log/record/pid0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param:  'control',   // for influx\n    //source: 'pid0'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp} schedule:${settings.schedule}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${utils.twoDecPoint(settings.pidOut)} lc:${loadComp}`,\n  `hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n\n  notices.push({\n    topic:      'log/text/pid0',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3584,7 +3822,7 @@
         "type": "debug",
         "z": "81037ebb658aa24a",
         "name": "mqtt",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3617,8 +3855,8 @@
         "topic": "b0/temperature",
         "payload": "0.75",
         "payloadType": "num",
-        "x": 160,
-        "y": 460,
+        "x": 150,
+        "y": 480,
         "wires": [
             [
                 "d7cca6955dfae8fe"
@@ -3646,8 +3884,8 @@
         "topic": "b0/temperature",
         "payload": "0.33",
         "payloadType": "num",
-        "x": 160,
-        "y": 500,
+        "x": 150,
+        "y": 520,
         "wires": [
             [
                 "d7cca6955dfae8fe"
@@ -3675,8 +3913,8 @@
         "topic": "weather/oat",
         "payload": "3",
         "payloadType": "num",
-        "x": 160,
-        "y": 300,
+        "x": 150,
+        "y": 320,
         "wires": [
             [
                 "94e8e29594123b82"
@@ -3704,8 +3942,8 @@
         "topic": "weather/oat",
         "payload": "12",
         "payloadType": "num",
-        "x": 160,
-        "y": 380,
+        "x": 150,
+        "y": 400,
         "wires": [
             [
                 "94e8e29594123b82"
@@ -3783,7 +4021,7 @@
         "septopics": true,
         "property": "payload",
         "topi": "topic",
-        "x": 190,
+        "x": 160,
         "y": 580,
         "wires": [
             [
@@ -3956,8 +4194,8 @@
         "topic": "weather/oat",
         "payload": "6",
         "payloadType": "num",
-        "x": 160,
-        "y": 340,
+        "x": 150,
+        "y": 360,
         "wires": [
             [
                 "94e8e29594123b82"
@@ -3986,7 +4224,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "heat settings",
-        "func": "/*\n\nthe primary function of this node is to store every \nsetting change and present the complete set control \nof control values to the heat 'controller' node so it can \ncalculate a new flow temperature\n\n*/\nconst utils = global.get(\"utils\");\n\nconst noticeOf = (settings, subTopic) => ({\n  topic:      'pid0/' + subTopic,\n  param:      'temperature',\n  payload:     settings[subTopic],\n  prefix:     'local'\n})\n\nconst initSettings =  {\n\n  // weather compensation.\n  // As outside temperature drops from OatFull 15C to OatNone 5C,\n  //            weatherComp rises from flowFull 25C to flowNone 40C\n\n  hrEnabled : false,\n  hrOatFull : 20,\n  hrOatNone : 3,\n  hrFlowFull : 25,\n  hrFlowNone : 45,\n\n  prop_band :    1.0,\n  t_integral :   9999, \n  t_derivative : 0, \n\n  lcLow : 32,\n  lcHigh: 50,  // must be  than min and gas or ashp not switched off huh?\n\n  flowMin : 28,\n  flowGas : 45,\n  flowMax : 48,\n\n  oat: 10,\n  bt : 19.8, \n  setpoint : 20.5,\n\n  schedule :  false,\n  heatingMode     : 'auto',\n  pumpOverrun :   1      // overrun time in minutes\n}\n\nconst heatingHelpers =   // this should be in the heat controller !\n{\n  manual : 'Heating unmanaged.\\n\\\n  Use the virtual White Box and ASHP panels left and below \\\n  to control the heating.\\n\\\n  Alternatively use the physical white box in the plant \\\n  and the touch panel on the front of the ASHP. ',\n\n  auto :   'Heating managed. ASHP/Gas is switched on/off as needed and flow\\\n  temperature is adjusted to maintain the desired building temperature during\\\n  the period that the building is occupied.',\n\n  off  :   'Override. ASHP and gas boiler off.',\n  ashp :   'Override. ASHP stays on.',\n  gas  :   'Override. Gas boiler stays on. The switch on the gas boiler must be switched on \\\n  in the plant room.'\n}\n\n/*\n *    every time we process an incoming message\n *    just push out notices indicating what's going on\n */\n\nfunction handleIncomingMessage(msg, contextName, settings, notices)\n{\n  const tokens = msg.topic.split(/[\\/]/)\n  let subTopic = tokens.at(-1)\n  let logText = null \n  let updateSetting = false \n\n  switch (msg.topic) {\n\n    case 'pid0/set/reset':\n      settings = initSettings;\n      updateSetting = true ;\n      context.set(contextName, settings);\n      logText = `${utils.getTimeNow()} reset settings`\n      /// this is very inelegant\n      return null ;\n\n    case 'pid0/get/all':\n    case 'pid0/set/recall':\n      for (const key in initSettings)\n        notices.push(noticeOf(settings, key))\n      logText = `${utils.getTimeNow()} recall`\n      break\n\n    case 'pid0/set/heatingMode' :\n      const help = heatingHelpers[msg.payload] ?? 'Missing help'\n      // create a properties object with one property of heatingModeHelp\n      notices.push(noticeOf({ heatingModeHelp : help }, 'heatingModeHelp'))\n      updateSetting = true \n      break\n\n    case 'schedule' :  // 0 or 1 \n      updateSetting = true\n      break ;       \n\n    case 'b0/temperature' :\n      subTopic = 'bt'    \n      // this is building temperature\n      // intentional dropthrough \n\n    default : \n      updateSetting = true \n      break   \n\n  }\n  if (updateSetting)\n  {\n    if (subTopic in initSettings)\n    {\n      if (typeof msg.payload === \"number\") \n        settings[subTopic] = utils.twoDecPoint(parseFloat(msg.payload));\n      else \n        settings[subTopic] = msg.payload;\n\n      // node.error(\"my error message C \" +  subTopic + \" \" + settings[subTopic]);\n      // store setting change\n      context.set(contextName, settings, 'file');\n      notices.push(noticeOf(settings, subTopic))\n      logText = `${utils.getTimeNow()} ${subTopic}:${settings[subTopic]}`\n    }\n    else {\n      logText = `${utils.getTimeNow()} No handler for topic:${msg.topic} and not a known setting`\n      node.error(logText)          \n    }\n  }\n  if (logText)\n  {\n    notices.push({\n      topic:      'app/response/pid/log',\n      payload:     logText,\n      prefix:     'local'\n    })\n\n    node.status({\n      fill: \"blue\", shape: \"dot\",\n      text:  logText\n    })\n  }\n}\n\n\n\nconst contextName = 'pidv2'\nconst settings = Object.assign(initSettings, context.get(contextName, 'file') ?? {})\n\nconst notices = []\n\nhandleIncomingMessage(msg, contextName, settings, notices)\n\nconst msgPID = \n{ \n  topic : 'bt', \n  payload : settings.bt,    // PV - process value\n  setpoint : settings.setpoint, \n  prop_band : settings.prop_band, \n  settingsPassingThrough : settings\n}\nreturn [msgPID, notices]\n\n\n/*\nAvailable PID params:\n  process_value\n  setpoint\n  prop_band\n  t_integral\n  t_derivative\n  max_interval\n  smooth_factor\n*/",
+        "func": "/*\n\nthe primary function of this node is to store every \nsetting change and present the complete set control \nof control values to the heat 'controller' node so it can \ncalculate a new flow temperature\n\n*/\nconst utils = global.get(\"utils\");\n\nconst noticeOf = (settings, subTopic) => ({\n  topic:      'pid0/' + subTopic,\n  param:      'temperature',\n  payload:     settings[subTopic],\n  prefix:     'local'\n})\n\nconst initSettings =  {\n\n  // weather compensation.\n  // As outside temperature drops from OatFull 15C to OatNone 5C,\n  //            weatherComp rises from flowFull 25C to flowNone 40C\n\n  hrEnabled : false,\n  hrOatFull : 20,\n  hrOatNone : 3,\n  hrFlowFull : 25,\n  hrFlowNone : 45,\n\n  prop_band :    1.0,\n  t_integral :   9999, \n  t_derivative : 0, \n\n  lcLow : 32,\n  lcHigh: 50,  // must be  than min and gas or ashp not switched off huh?\n  lcTrim: 3,\n\n  flowMin : 28,\n  flowGas : 45,\n  flowMax : 48,\n\n  oat: 10,\n  bt : 19.8, \n  setpoint : 20.5,\n\n  schedule    :  false,\n  heatingMode : 'auto',\n  pumpOverrun :   1      // overrun time in minutes\n}\n\nconst heatingHelpers =   // this should be in the heat controller !\n{\n  manual : 'Heating unmanaged.\\n\\\n  Use the virtual White Box and ASHP panels left and below \\\n  to control the heating.\\n\\\n  Alternatively use the physical white box in the plant \\\n  and the touch panel on the front of the ASHP. ',\n\n  auto :   'Heating managed. ASHP/Gas is switched on/off as needed and flow\\\n  temperature is adjusted to maintain the desired building temperature during\\\n  the period that the building is occupied.',\n\n  off  :   'Override. ASHP and gas boiler off.',\n  ashp :   'Override. ASHP stays on.',\n  gas  :   'Override. Gas boiler stays on. The switch on the gas boiler must be switched on \\\n  in the plant room.'\n}\n\n/*\n *    every time we process an incoming message\n *    just push out notices indicating what's going on\n */\n\nfunction handleIncomingMessage(msg, contextName, settings, notices)\n{\n  const tokens = msg.topic.split(/[\\/]/)\n  let subTopic = tokens.at(-1)\n  let logText = null \n  let updateSetting = false \n\n  switch (msg.topic) {\n\n    case 'pid0/set/reset':\n      settings = initSettings;\n      updateSetting = true ;\n      context.set(contextName, settings);\n      logText = `${utils.getTimeNow()} reset settings`\n      /// this is very inelegant\n      return null ;\n\n    case 'pid0/get/all':\n    case 'recall':\n      for (const key in initSettings)\n        notices.push(noticeOf(settings, key))\n      logText = `${utils.getTimeNow()} recall`\n      break\n\n    case 'pid0/set/heatingMode' :\n      const help = heatingHelpers[msg.payload] ?? 'Missing help'\n      // create a properties object with one property of heatingModeHelp\n      notices.push(noticeOf({ heatingModeHelp : help }, 'heatingModeHelp'))\n      updateSetting = true \n      break\n\n    case 'schedule' :  // 0 or 1 \n      updateSetting = true\n      break ;       \n\n    case 'b0/temperature' :\n      subTopic = 'bt'    \n      // this is building temperature\n      // intentional dropthrough \n\n    default : \n      updateSetting = true \n      break   \n\n  }\n  if (updateSetting)\n  {\n    if (subTopic in initSettings)\n    {\n      if (typeof msg.payload === \"number\") \n        settings[subTopic] = utils.twoDecPoint(parseFloat(msg.payload));\n      else \n        settings[subTopic] = msg.payload;\n\n      // drag flow min/max around so no control conflict\n      switch(subTopic) {\n        case 'flowMin' :\n          if (settings.flowMax < settings.flowMin) \n          {\n            settings.flowMax = settings.flowMin ; \n            notices.push(noticeOf(settings, 'flowMax'))            \n          }\n          break \n        case 'flowMax':\n          if (settings.flowMin > settings.flowMax) \n          {\n            settings.flowMin = settings.flowMax ; \n            notices.push(noticeOf(settings, 'flowMin'))            \n          }\n          break \n      }\n\n      context.set(contextName, settings, 'file');\n      notices.push(noticeOf(settings, subTopic))\n      logText = `${utils.getTimeNow()} ${subTopic}:${settings[subTopic]}`\n    }\n    else {\n      logText = `${utils.getTimeNow()} No handler for topic:${msg.topic} and not a known setting`\n      node.error(logText)          \n    }\n  }\n  if (logText)\n  {\n    notices.push({\n      topic:      'log/text/pid0',\n      payload:     logText,\n      prefix:     'local'\n    })\n\n    node.status({\n      fill: \"blue\", shape: \"dot\",\n      text:  logText\n    })\n  }\n}\n\n\n\nconst contextName = 'pidv2'\nconst settings = Object.assign(initSettings, context.get(contextName, 'file') ?? {})\n\nconst notices = []\n\nhandleIncomingMessage(msg, contextName, settings, notices)\n\nconst msgPID = \n{ \n  topic : 'bt', \n  payload : settings.bt,    // PV - process value\n  setpoint : settings.setpoint, \n  prop_band : settings.prop_band, \n  settingsPassingThrough : settings\n}\nreturn [msgPID, notices]\n\n\n/*\nAvailable PID params:\n  process_value\n  setpoint\n  prop_band\n  t_integral\n  t_derivative\n  max_interval\n  smooth_factor\n*/",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -4010,7 +4248,7 @@
         "type": "debug",
         "z": "81037ebb658aa24a",
         "name": "settings",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -4028,8 +4266,8 @@
         "z": "81037ebb658aa24a",
         "name": "Test buttons",
         "info": "",
-        "x": 90,
-        "y": 640,
+        "x": 150,
+        "y": 620,
         "wires": []
     },
     {
@@ -4053,8 +4291,8 @@
         "topic": "b0/temperature",
         "payload": "20.1",
         "payloadType": "num",
-        "x": 160,
-        "y": 220,
+        "x": 150,
+        "y": 240,
         "wires": [
             [
                 "94e8e29594123b82"
@@ -4119,8 +4357,8 @@
         "topic": "pid0/set/recall",
         "payload": "",
         "payloadType": "num",
-        "x": 160,
-        "y": 420,
+        "x": 150,
+        "y": 440,
         "wires": [
             [
                 "94e8e29594123b82"
@@ -4165,8 +4403,8 @@
         "topic": "b0/temperature",
         "payload": "19.8",
         "payloadType": "num",
-        "x": 160,
-        "y": 260,
+        "x": 150,
+        "y": 280,
         "wires": [
             [
                 "94e8e29594123b82"
@@ -4430,7 +4668,7 @@
         "id": "5b3cfcf45023a7d1",
         "type": "delay-topic-message",
         "z": "81037ebb658aa24a",
-        "delay": "5",
+        "delay": "3",
         "x": 380,
         "y": 160,
         "wires": [
@@ -4496,6 +4734,16 @@
             [],
             []
         ]
+    },
+    {
+        "id": "f3e66e93b7f47329",
+        "type": "comment",
+        "z": "81037ebb658aa24a",
+        "name": "todo suppress start temps",
+        "info": "",
+        "x": 150,
+        "y": 140,
+        "wires": []
     },
     {
         "id": "f2e5754610a2a6d1",
@@ -4806,7 +5054,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "ui_update sensors",
-        "func": "\n\nconst indoorGauge = {\n  measurement : 'tba',\n  min : 17, \n  max : 24,\n  units : \"°C\",\n  sectors: [\n    { \"start\": 0, \"color\": \"blue\"}, \n    { \"start\": 20, \"color\": \"yellow\"},\n    { \"start\": 21, \"color\": \"green\"}, \n    { \"start\": 22, \"color\": \"red\"}\n  ]\n}\n\n//node.error(\"my error message \" + msg.topic, msg);\n\n\nswitch(msg.topic) \n{\n  case 'lae0/1SP' :\n    msg.ui_update = {\n      label: 'Use gas below (SP1)',\n      color : 'red',\n      colorTrack : 'grey',    \n      min : 0,\n      max : 24,\n      thumbNail : 'always'\n    }\n    break ; \n\n  case 'lae0/2SP' :\n    msg.ui_update = {\n      label: 'Use heat below (SP2)',\n      color : 'green',\n      colorTrack : 'grey',    \n      min : 0,\n      max : 24,\n      thumbNail : 'always'\n    }\n    break ;  \n\n  case 'lae0/OUT' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off', 'Ambiguous setting SP1 > SP2 !! ', 'Using ASHP',  'Using Gas' ]\n    const statusColour = ['grey','purple','green', 'red']\n    msg.ui_update = {\n//      options : [statusText[msg.state]],\n      oncolor : statusColour[msg.state],\n      label   : statusText[msg.state]\n    }\n    //node.error(' out ' + msg.topic)\n    break \n\n\n  case 'lae0/PRO':  // roof temp \n    msg.ui_update = {\n      label: 'Roof',\n      measurement: 'Outdoors', // + \" \" + msg.source, \n      min: 0,\n      max: 25,\n      units: \"°C\",\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    }\n    break\n\n  case 'b0/temperature' :\n    msg.ui_update = indoorGauge\n    msg.ui_update.measurement = 'b0'\n    msg.ui_update.label = 'Indoors'\n    break \n\n  default :  // used by all the room/zone sensors\n    msg.ui_update = indoorGauge\n    msg.ui_update.label = msg.location // + \" \" + msg.source, \n    msg.ui_update.measurement = msg.source  // + \" \" + msg.source, \n    break\n}\nif (msg.hasTimedOut)\n{\n  msg.ui_update.sectors = [{ \"start\": 0, \"color\":  \"orange\"}]\n  msg.ui_update.measurement = msg.source + \" Timed Out\"\n}\n//msg.ui_update.sectors = [{ \"start\": 0, \"color\":  \"orange\"}]\n//msg.ui_update.prefix = 'ha ha'\n//msg.ui_update.suffix = 'OK'\nreturn msg;\n",
+        "func": "\n\nconst indoorGauge = {\n  measurement : 'tba',\n  min : 17, \n  max : 24,\n  units : \"°C\",\n  sectors: [\n    { \"start\": 0, \"color\": \"blue\"}, \n    { \"start\": 20, \"color\": \"yellow\"},\n    { \"start\": 21, \"color\": \"green\"}, \n    { \"start\": 22, \"color\": \"red\"}\n  ]\n}\n\n//node.error(\"my error message \" + msg.topic, msg);\n\n\nswitch(msg.topic) \n{\n  case 'lae0/1SP' :\n    msg.ui_update = {\n      label: 'Use gas below (SP1)',\n      color : 'red',\n      colorTrack : 'grey',    \n      min : 0,\n      max : 24,\n      thumbNail : 'always'\n    }\n    break ; \n\n  case 'lae0/2SP' :\n    msg.ui_update = {\n      label: 'Use heat below (SP2)',\n      color : 'green',\n      colorTrack : 'grey',    \n      min : 0,\n      max : 24,\n      thumbNail : 'always'\n    }\n    break ;  \n\n  case 'lae0/OUT' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off', 'Ambiguous setting SP1 > SP2 !! ', 'Using ASHP',  'Using Gas' ]\n    const statusColour = ['grey','purple','green', 'red']\n    msg.ui_update = {\n//      options : [statusText[msg.state]],\n      oncolor : statusColour[msg.state],\n      label   : statusText[msg.state]\n    }\n    //node.error(' out ' + msg.topic)\n    break \n\n\n  case 'lae0/PRO':  // roof temp \n    msg.ui_update = {\n      label: 'Outdoors',\n      measurement: 'Roof', // + \" \" + msg.source, \n      min: 0,\n      max: 25,\n      units: \"°C\",\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    }\n    break\n\n  case 'b0/temperature' :\n    msg.ui_update = indoorGauge\n    msg.ui_update.measurement = 'b0'\n    msg.ui_update.label = 'Indoors'\n    break \n\n  default :  // used by all the room/zone sensors\n    msg.ui_update = indoorGauge\n    msg.ui_update.label = msg.location // + \" \" + msg.source, \n    msg.ui_update.measurement = msg.source  // + \" \" + msg.source, \n    break\n}\nif (msg.hasTimedOut)\n{\n  msg.ui_update.sectors = [{ \"start\": 0, \"color\":  \"orange\"}]\n  msg.ui_update.measurement = msg.source + \" Timed Out\"\n}\n//msg.ui_update.sectors = [{ \"start\": 0, \"color\":  \"orange\"}]\n//msg.ui_update.prefix = 'ha ha'\n//msg.ui_update.suffix = 'OK'\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -5077,7 +5325,7 @@
         "name": "building setpoint",
         "label": "not initialised",
         "tooltip": "",
-        "order": 3,
+        "order": 2,
         "width": 0,
         "height": 0,
         "passthru": false,
@@ -5307,6 +5555,12 @@
             },
             {
                 "t": "regex",
+                "v": "trim",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
                 "v": "PUMPCONF_w_dt_spt",
                 "vt": "str",
                 "case": false
@@ -5320,13 +5574,11 @@
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 16,
+        "outputs": 17,
         "x": 130,
         "y": 360,
         "wires": [
-            [
-                "c5478bc9a8dab1f5"
-            ],
+            [],
             [
                 "8a81b4dda778a32a"
             ],
@@ -5366,6 +5618,9 @@
             ],
             [
                 "5f41ef31211919be"
+            ],
+            [
+                "0da7a18550db5f18"
             ],
             [],
             [
@@ -6713,7 +6968,7 @@
         "name": "flow setpoint",
         "label": "not initialised",
         "tooltip": "",
-        "order": 4,
+        "order": 3,
         "width": 0,
         "height": 0,
         "passthru": false,
@@ -6744,7 +6999,7 @@
         "z": "3187bd06ef664359",
         "name": "flow setpoint",
         "group": "7d2a07e2b30dad87",
-        "order": 5,
+        "order": 4,
         "width": "4",
         "height": "1",
         "min": "20",
@@ -6930,7 +7185,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "returned",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -7027,28 +7282,6 @@
         "wires": []
     },
     {
-        "id": "c5478bc9a8dab1f5",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "7d2a07e2b30dad87",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "name": "helper",
-        "label": "help",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "Arial,Arial,Helvetica,sans-serif",
-        "fontSize": 16,
-        "color": "#000000",
-        "wrapText": true,
-        "className": "",
-        "x": 730,
-        "y": 120,
-        "wires": []
-    },
-    {
         "id": "9a8aa58508996f67",
         "type": "ui-switch",
         "z": "3187bd06ef664359",
@@ -7123,7 +7356,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "sensor data prep",
-        "func": "const sensorRegex = /^[bsdgmt][\\d]{1,2}$/\n\nif (!msg.source.match(sensorRegex))\n  return null ;\n\nconst utils = global.get('utils') ?? null ;\n\n// ja \n// source is m1, m2, m3  (desired rows)\n// measurement is temperature, humidity  (desired cols)\n\nconst columns =  // define the initial column order\n{\n  time : 0,\n  source : '?',\n  location : '?',\n  temperature : 0\n}\nconst frame = context.get('frame') ?? { a : { } }\n\nconst row = frame[msg.source] ?? columns ;\n// \nrow['time'] =  utils.getHHMM(msg.timestamp) ;\nrow['source'] = msg.source ;\nrow['location'] = msg.location ;\nrow[msg.param] = msg.payload ;\nframe[msg.source] = row ;\ncontext.set('frame', frame)\n\nconst ar = Object.values(frame);\nconst arsort = (a, b) => a.source.localeCompare(b.source);\nar.sort(arsort);\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.topic })\nreturn { topic : 'frame',  payload :  ar};",
+        "func": "const sensorRegex = /^[bsdgmt][\\d]{1,2}$/\n\nif (!msg.source.match(sensorRegex))\n  return null ;\n\nconst utils = global.get('utils') ?? null ;\n\n// ja \n// source is m1, m2, m3  (desired rows)\n// measurement is temperature, humidity  (desired cols)\n\nconst columns =  // define the initial column order\n{\n  time : 0,\n  source : '?',\n  location : '?',\n  temperature : 0\n}\nconst frame = context.get('frame') ?? { }\n\nconst row = frame[msg.source] ?? columns ;\n// \nrow['time'] =  utils.getHHMM(msg.timestamp);\nif (msg.last_seen)\n  row['lastSeen'] =  utils.getHHMM(msg.last_seen);\nrow['source'] = msg.source ;\nrow['location'] = msg.location ;\nrow['state'] = msg.state ;\nrow[msg.param] = msg.payload ;\nframe[msg.source] = row ;\ncontext.set('frame', frame)\n\nconst ar = Object.values(frame);\nconst arsort = (a, b) => a.source.localeCompare(b.source);\nar.sort(arsort);\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.topic })\nreturn { topic : 'frame',  payload :  ar};",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -7188,12 +7421,13 @@
         "id": "fb957731e504a9d1",
         "type": "ui-text",
         "z": "3187bd06ef664359",
+        "d": true,
         "group": "9c62a4b6cf15630d",
         "order": 1,
         "width": 0,
         "height": 0,
         "name": "",
-        "label": "White box settings",
+        "label": "",
         "format": "{{msg.payload}}",
         "layout": "row-spread",
         "style": false,
@@ -7202,7 +7436,9 @@
         "color": "#717171",
         "wrapText": false,
         "className": "",
-        "x": 190,
+        "value": "payload",
+        "valueType": "msg",
+        "x": 150,
         "y": 660,
         "wires": []
     },
@@ -7293,7 +7529,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "PID0 data prep",
-        "func": "\nif (msg.topic != 'pid0/calcs')\n  return null ;\n\nconst log = context.get('logCalcs') ?? [{ }]\n\nif (log.length >= 10) \n  log.pop()\nlog.unshift(msg.payload)\ncontext.set('logCalcs', log)\n\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload.time })\nreturn { topic : msg.topic,  payload :  log};",
+        "func": "\nif (msg.topic != 'log/record/pid0')\n  return null ;\n\nconst log = context.get('logCalcs') ?? [{ }]\n\nif (log.length >= 10) \n  log.pop()\nlog.unshift(msg.payload)\ncontext.set('logCalcs', log)\n\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload.time })\nreturn { topic : msg.topic,  payload :  log};",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -7416,12 +7652,12 @@
         ]
     },
     {
-        "id": "3801255bef2ce0e6",
+        "id": "0da7a18550db5f18",
         "type": "ui-slider",
         "z": "3187bd06ef664359",
         "group": "8fddc7545b8b993d",
-        "name": "PUMPCONF_w_dt_spt",
-        "label": "waiting for initialisation...",
+        "name": "lcTrim",
+        "label": "wc lc Trim",
         "tooltip": "",
         "order": 6,
         "width": 0,
@@ -7432,8 +7668,8 @@
         "topicType": "msg",
         "thumbLabel": "true",
         "showTicks": "always",
-        "min": "5",
-        "max": "12",
+        "min": 0,
+        "max": "5",
         "step": 1,
         "className": "",
         "iconPrepend": "",
@@ -7442,10 +7678,12 @@
         "colorTrack": "",
         "colorThumb": "",
         "showTextField": false,
-        "x": 450,
+        "x": 390,
         "y": 700,
         "wires": [
-            []
+            [
+                "4ccc68756097fca2"
+            ]
         ]
     },
     {
@@ -10865,5 +11103,149 @@
         "x": 310,
         "y": 640,
         "wires": []
+    },
+    {
+        "id": "dd793b9131285a2d",
+        "type": "file in",
+        "z": "892c223a74ad0925",
+        "name": "read config file",
+        "filename": "/mnt/dietpi_userdata/site-config.yaml",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 340,
+        "y": 760,
+        "wires": [
+            [
+                "8e01751ffc91da73"
+            ]
+        ]
+    },
+    {
+        "id": "8e01751ffc91da73",
+        "type": "yaml",
+        "z": "892c223a74ad0925",
+        "property": "payload",
+        "name": "",
+        "x": 510,
+        "y": 760,
+        "wires": [
+            [
+                "5e632bcd3eb2c3ec"
+            ]
+        ]
+    },
+    {
+        "id": "e45e88337a59659f",
+        "type": "debug",
+        "z": "892c223a74ad0925",
+        "name": "config",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "5e632bcd3eb2c3ec",
+        "type": "function",
+        "z": "892c223a74ad0925",
+        "name": "set config",
+        "func": "let config = msg.payload;\nglobal.set(\"site-config-old\", config);\nnode.log('Site config old loaded for ' + config.site);\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 820,
+        "wires": [
+            [
+                "e45e88337a59659f"
+            ]
+        ]
+    },
+    {
+        "id": "9b111b1a593b741c",
+        "type": "inject",
+        "z": "892c223a74ad0925",
+        "name": "reload",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.0",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 760,
+        "wires": [
+            [
+                "dd793b9131285a2d"
+            ]
+        ]
+    },
+    {
+        "id": "daa3ae479434d39b",
+        "type": "function",
+        "z": "892c223a74ad0925",
+        "name": "msg store v0",
+        "func": "\n/**\n * handle requests for sensor messsage recalls\n */\n\n\nfunction handleMessage(msg, instrumentation)\n{\n  if (msg.topic === undefined) \n    node.red(msg.payload)\n\n  switch(msg.topic)\n  {\n    case 'app/request/refresh' :\n    case 'get/all' :\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      node.status({ fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items`});\n      // and replay the stream of messages\n      return [] ;\n      return ar  ;\n\n    case 'clear' :\n      context.set(\"instrumentation\", {});\n      node.status({ fill: \"green\", shape: \"dot\", text: `instrumentation cleared`})\n      return [] ;\n\n    default :\n      if (isValidMessage(msg, instrumentation))\n      {\n        instrumentation[msg.topic] = msg;\n        context.set('instrumentation', instrumentation)\n      }\n      return []\n  }\n}\n\n\n// don't store items that are not objects\n\nfunction isValidMessage(msg, instrumentation)\n{\n  //node.error('abc', msg)\n  if (typeof msg !== 'object')\n  {\n    node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, not an object` });\n    return false ;\n  }\n\n  if (msg.payload === undefined)\n  {\n    node.status({ fill: \"red\", shape: \"triange\", text: `rejecting ${msg.topic}, no payload` });\n    return false ;\n  }\n\n  if (!msg.timestamp)\n    msg.timestamp = Date.now()\n\n  return true ;\n}\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg)\n{\n  const siteConfig = global.get('site-config') ?? {}\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  const utils = global.get('utils')\n\n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus), msg);\n  let updates = []\n  let numTimeouts = 0\n  //    node.error(\"my error message 1b \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (!instrumentation[topic].hasTimedOut) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updates.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  updates.unshift(msg);   // push current message into ds\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation ); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length ;\n  const numTimedOut = sensorStatus.timedOut  ;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${msg.topic}, ${numTimeouts} sensors timed out, total ${numSensors}`;\n  //node.status({ fill: \"green\", shape: \"dot\", text : texxt })\n  return updates ;  // send updates for messages\n}\n\n\n// save and store message if validated\nconst instrumentation = context.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\nconst dashboardUpdates = [] //sensorHousekeeping()\n\nreturn [mqtt, dashboardUpdates];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 170,
+        "y": 880,
+        "wires": [
+            [],
+            []
+        ],
+        "inputLabels": [
+            "data stream"
+        ],
+        "outputLabels": [
+            "message stream",
+            "timed out messages"
+        ]
+    },
+    {
+        "id": "fd11889651c04edd",
+        "type": "function",
+        "z": "892c223a74ad0925",
+        "name": "calculate b0 v0",
+        "func": "\n\n/**\n *\n * ver 1.0\n */\n\nconst timeNow = Date.now()\nconst siteConfig = global.get('site-config') ?? {}\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst utils = global.get('utils')\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 1 }, // main entrance \n    { name: 'g4', weight: 1 }, // cu ground\n    { name: 'm0', weight: 2 }, // first floor corridor\n    { name: 'm3', weight: 1 }, // cu front\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorStatus(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMM(timeNow)} b0:${buildingTemperature.toFixed(1)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n  const tokens = msg.topic.split(\"/\")\n  const sensorName = tokens[0]\n  const sensorProperty = tokens[1]\n\n  let b0 = null\n  let setpoint1 = null \n  let setpoint2 = null \n\n  const sensorsSelected = sensorWeight.map((e) => e.name)\n  if (sensorsSelected.includes(sensorName)) \n    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 31)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      param:        'temperature',  // needed for influx\n      digest:       true,\n      prefix:       'local',        // pretend to be a sensor, albeit virtual, so influx stores\n      reportOnDiff: 0.1,            \n      windowPeriodSecs: 15 * 60 ,   // report every 10 minutes regardless\n      track: true                   // update status text under node\n    }\n    b0 = isNaN(bt) ? null : b0 ;\n  }\n  return b0\n}\n\nconst msgs = processUpdates(msg)\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn msgs",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 880,
+        "wires": [
+            []
+        ]
     }
 ]
