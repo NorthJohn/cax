@@ -16,18 +16,18 @@
         "env": []
     },
     {
-        "id": "e7fcf1f501be8b60",
-        "type": "tab",
-        "label": "scheduler",
-        "disabled": false,
-        "info": "",
-        "env": []
-    },
-    {
         "id": "ce7503bf65214c43",
         "type": "tab",
         "label": "PID 2024",
         "disabled": true,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e7fcf1f501be8b60",
+        "type": "tab",
+        "label": "clock0",
+        "disabled": false,
         "info": "",
         "env": []
     },
@@ -67,7 +67,7 @@
         "id": "86219b48706129b6",
         "type": "tab",
         "label": "playspace",
-        "disabled": true,
+        "disabled": false,
         "info": "",
         "env": []
     },
@@ -433,7 +433,7 @@
         "type": "junction",
         "z": "3187bd06ef664359",
         "x": 300,
-        "y": 1340,
+        "y": 1200,
         "wires": [
             []
         ]
@@ -443,7 +443,7 @@
         "type": "junction",
         "z": "3187bd06ef664359",
         "x": 320,
-        "y": 1340,
+        "y": 1200,
         "wires": [
             []
         ]
@@ -457,20 +457,6 @@
         "wires": [
             [
                 "911fc6b6c3ef646a"
-            ]
-        ]
-    },
-    {
-        "id": "7f820c0f9477eb3f",
-        "type": "junction",
-        "z": "3187bd06ef664359",
-        "x": 40,
-        "y": 2960,
-        "wires": [
-            [
-                "c60061332293cb39",
-                "c46180bd2674fe18",
-                "94aac4c5e81fde15"
             ]
         ]
     },
@@ -719,7 +705,7 @@
     {
         "id": "7d2a07e2b30dad87",
         "type": "ui-group",
-        "name": "Overall Control",
+        "name": "Overall Control  (disabled at moment)",
         "page": "b43082bff9046c6f",
         "width": "6",
         "height": "1",
@@ -1484,7 +1470,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "MQTT out",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1650,7 +1636,8 @@
                 "2518a4fd104ebb54"
             ],
             [
-                "d85bfa6a0e81301d"
+                "d85bfa6a0e81301d",
+                "3e074b5f8fbffc1a"
             ],
             [
                 "c0fb1b96b917cbc1"
@@ -1659,7 +1646,8 @@
                 "f1ec3b162b1184a0"
             ],
             [
-                "605b2b84a661dbbc"
+                "605b2b84a661dbbc",
+                "3e074b5f8fbffc1a"
             ],
             [
                 "a1eb201860b28d15"
@@ -1824,7 +1812,8 @@
         "y": 460,
         "wires": [
             [
-                "9c4759a5aa1a682f"
+                "9c4759a5aa1a682f",
+                "f272c8a8c6613009"
             ]
         ]
     },
@@ -1906,8 +1895,8 @@
         "links": [
             "3d273fe27e049b65"
         ],
-        "x": 655,
-        "y": 280,
+        "x": 705,
+        "y": 300,
         "wires": []
     },
     {
@@ -2173,16 +2162,14 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": 0.1,
+        "onceDelay": "2",
         "topic": "initialize",
         "payload": "",
         "payloadType": "date",
-        "x": 180,
+        "x": 160,
         "y": 900,
         "wires": [
-            [
-                "6d33c5ea5374761b"
-            ]
+            []
         ]
     },
     {
@@ -2190,18 +2177,19 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "recall",
-        "func": "/**\n * flush through all the settings \n * so that dashboard is intialized\n * and all MQTT topics are updated\n */\n\n\nconst objectNames = ['ashp0','lae0','pid0','clock0']\nconst msgs = objectNames.map((name) => ({ topic: `${name}/get/all`, payload: false}))\nreturn [msgs];",
+        "func": "",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/**\n * flush through all the settings \n * so that dashboard is intialized\n * and all MQTT topics are updated\n * even if they are retained from \n * previous settiing\n */\n\n\nconst utils = global.get('utils')\nnode.status = { fill: \"yellow\", shape: \"dot\", text: `${utils.getHHMMSSNow()} recall` };\n\nconst objectNames = ['ashp0', 'lae0', 'pid0', 'clock0'] ;\nconst msgs = objectNames.map((name) => ({ topic: `${name}/get/all`, payload: false }))\nreturn [msgs];",
         "finalize": "",
         "libs": [],
-        "x": 310,
+        "x": 330,
         "y": 900,
         "wires": [
             [
-                "169352bc32f5bbd4"
+                "169352bc32f5bbd4",
+                "8350556c47ead2d6"
             ]
         ]
     },
@@ -2240,8 +2228,8 @@
         "links": [
             "463ad07330f8ce74"
         ],
-        "x": 705,
-        "y": 300,
+        "x": 655,
+        "y": 280,
         "wires": []
     },
     {
@@ -2340,6 +2328,54 @@
         "statusType": "auto",
         "x": 600,
         "y": 340,
+        "wires": []
+    },
+    {
+        "id": "3e074b5f8fbffc1a",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "debug 56",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "8350556c47ead2d6",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "debug 57",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 750,
+        "y": 860,
+        "wires": []
+    },
+    {
+        "id": "f272c8a8c6613009",
+        "type": "debug",
+        "z": "fce55c80ba409b3d",
+        "name": "debug 61",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 500,
         "wires": []
     },
     {
@@ -2625,7 +2661,7 @@
         "type": "debug",
         "z": "a39c97029f2c005f",
         "name": "updateMQTT",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2691,7 +2727,7 @@
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    oneDecPoint : (n) => (Math.round(n * 10) / 10),\n    twoDecPoint : (n) => (Math.round(n * 100) / 100),\n    //toFix : (num, precision) => (Math.trunc(num * (10 ** precision))) / (10 ** precision),\n    toFix: (num, precision) => (Math.round(num * (10 ** precision))) / (10 ** precision),\n\n    getHHMM: (millis) => new Date(millis).toTimeString().substring(0, 5),\n    getHHMMSS: (millis) => new Date(millis).toTimeString().substring(0, 8),\n\n    getHHMMNow: () => utils.getHHMM(Date.now()),\n    getHHMMSSNow: () => utils.getHHMMSS(Date.now()),\n    \n    getTimeNow: () => utils.getHHMM(Date.now()),\n\n    sensorStatus: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + 1000 * 60 * minutes < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const sensorsOffline = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut2 = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const sensorsOnline = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: sensorsOnline, timedOut: timedOut, timedOut2: timedOut2,  offline: sensorsOffline }\n    }\n\n}\nglobal.set(\"utils\", utils)",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/**\n * Formats a timestamp in milliseconds.\n * Returns the time (hhmm) if the date is today, or the date (DD/MM/YYYY) if it's not today.\n *\n * @param {number} timestampMs - The datetime in milliseconds.\n * @returns {string} The formatted time or date string.\n */\nconst formatTimeOrDate = (timestampMs) => {\n    // 1. Create Date objects for the given timestamp and the current time\n    const inputDate = new Date(timestampMs);\n    const today = new Date();\n\n    // 2. Helper function to check if a date is today\n    // We compare the year, month, and day of the month.\n    const isToday = (date) => {\n        return date.getFullYear() === today.getFullYear() &&\n            date.getMonth() === today.getMonth() &&\n            date.getDate() === today.getDate();\n    };\n\n    // 3. Format components with leading zeros\n    const pad = (num) => String(num).padStart(2, '0');\n\n    if (isToday(inputDate)) {\n        // Return time in hhmm format (e.g., 1435)\n        const hours = pad(inputDate.getHours());\n        const minutes = pad(inputDate.getMinutes());\n        return `${hours}:${minutes}`; // \n\n    } else {\n        // Return date in DD/MM/YYYY format (e.g., 25/11/2025)\n        const day = pad(inputDate.getDate());\n        const monthName = inputDate.toLocaleString('default', { month: 'short' });\n        return `${monthName} ${day}`; // \n    }\n};\n\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    oneDecPoint : (n) => (Math.round(n * 10) / 10),\n    twoDecPoint : (n) => (Math.round(n * 100) / 100),\n    //toFix : (num, precision) => (Math.trunc(num * (10 ** precision))) / (10 ** precision),\n    toFix: (num, precision) => (Math.round(num * (10 ** precision))) / (10 ** precision),\n\n    getHHMM: (millis) => new Date(millis).toTimeString().substring(0, 5),\n    getHHMMSS: (millis) => new Date(millis).toTimeString().substring(0, 8),\n\n    getHHMMNow: () => utils.getHHMM(Date.now()),\n    getHHMMSSNow: () => utils.getHHMMSS(Date.now()),\n    \n    getTimeNow: () => utils.getHHMM(Date.now()),\n\n    getTimeOrDate: (millis) => formatTimeOrDate(millis),\n\n    sensorStatus: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + 1000 * 60 * minutes < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const neverSeen = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut2 = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const online = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: online, timedOut: timedOut, timedOut2: timedOut2,  neverSeen: neverSeen }\n    }\n\n}\nglobal.set(\"utils\", utils)",
         "finalize": "",
         "libs": [],
         "x": 120,
@@ -2823,7 +2859,7 @@
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
-        "topic": "get/all",
+        "topic": "recall",
         "payload": "true",
         "payloadType": "bool",
         "x": 140,
@@ -2839,7 +2875,7 @@
         "type": "debug",
         "z": "a39c97029f2c005f",
         "name": "updateDashboard",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2934,7 +2970,7 @@
         "id": "eb32ad981cfd4d2e",
         "type": "function",
         "z": "a39c97029f2c005f",
-        "name": "msg table",
+        "name": "msg table old",
         "func": "\n/**\n * handle requests for sensor messsage recalls\n */\nlet nodeStatus = null ;\n//{ fill: \"green\", shape: \"dot\", text: `not-set` };\n\n\nfunction clearProperties(ob){\n  for (let k in ob)\n    delete ob[k] \n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isValidMessage(msg, instrumentation)\n{\n  //node.error('abc', msg)\n  if (typeof msg !== 'object')\n  {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false ;\n  }\n\n  if (msg.payload === undefined)\n  {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` } ;\n    return false ;\n  }\n  return true ;\n}\n\n\nconst updateMQTT = [] ;\nconst updateDashboard = [];\n\n\nfunction handleMessage(msg, instrumentation)\n{\n  if (msg.topic === undefined) \n    node.red(msg.payload)\n\n  switch(msg.topic)\n  {\n    case 'app/request/refresh' :\n    case 'get/all' :\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items`};\n      // and replay the stream of messages\n      //return [] ;\n      updateMQTT.push(...ar)\n      break ;\n\n    case 'clear' :\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items`};\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break ;\n\n    case 'availability' :\n      const m = instrumentation[msg.topic]     \n      m.state = msg.payload; \n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break ;\n\n    default :\n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}`};\n      if (isValidMessage(msg, instrumentation))\n      {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n        instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)        \n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}`};\n        \n      }\n      else\n        node.error('invalid message', msg)\n      break ;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg)\n{\n  const siteConfig = global.get('site-config') ?? {}\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  const utils = global.get('utils')\n\n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation ); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length ;\n  const numTimedOut = sensorStatus.timedOut  ;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimeouts} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text : texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\nsensorHousekeeping()\n\nif (nodeStatus)\n{\n  const utils = global.get('utils');\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n} \n\nconst mtable = { topic: 'mtable', payload: instrumentation}\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
         "outputs": 3,
         "timeout": 0,
@@ -2942,8 +2978,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 940,
+        "x": 110,
+        "y": 1180,
         "wires": [
             [],
             [],
@@ -2963,7 +2999,7 @@
         "type": "function",
         "z": "a39c97029f2c005f",
         "name": "msg table",
-        "func": "\n\nconst utils = global.get('utils');\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst timeNow = Date.now();\nlet nodeStatus = null;\nconst updateMQTT = [];\nconst updateDashboard = [];\n\n/**\n * handle requests for sensor messsage recalls\n */\n\nfunction clearProperties(ob) {\n  for (let k in ob)\n    delete ob[k]\n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isSensorMessage(msg) {\n\n  if (typeof msg !== 'object') {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false;\n  }\n  // sensor pattern, 1 letter, 1 or 2 digits\n  //if (/^[adprsgmt][^\\d]*[\\d]{1,2}/.test(msg.topic) == false)\n    //return false;\n\n  if (msg.payload === undefined) {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` };\n    return false;\n  }\n  return true;\n}\n\n\nfunction handleMessage(msg, instrumentation) {\n  if (msg.topic === undefined)\n    node.error(msg)\n    \n  let tokens = msg.topic.split('/') ;\n  let subtopic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  const replyTopic = msg.topic.replace('sensor0/get', 'sensor0');  \n\n  switch (msg.topic) {\n    \n    case 'recall' :\n    case 'sensor0/get/all':\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items` };\n      // and replay the stream of messages\n      // return [] ;\n      updateMQTT.push(...ar)\n      break;\n\n    case 'sensor0/get/siteConfig' :\n      const mout = {\n        topic:  replyTopic,\n        payload: siteConfig\n      }\n      updateMQTT.push(mout);\n      break       \n      \n    case 'sensor0/get/online':\n    case 'sensor0/get/offline':\n    case 'sensor0/get/timedOut':\n    \n      const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instrumentation, 29, timeNow)\n      const n = {\n        topic:  replyTopic,\n        payload: res[subtopic] ?? 'topic'\n      }\n      updateMQTT.push(n);\n      break\n      \n      \n    case 'clear':\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items` };\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break;\n      \n    case 'availability':\n      const m = instrumentation[msg.topic]\n      m.state = msg.payload;\n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break;\n    \n    default:\n      if (msg.topic.startsWith('sensor0'))   // suppress echo of sensor0 output!\n        break \n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` };\n      if (isSensorMessage(msg)) {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n          instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)\n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` }; \n      }\n      else\n        node.error('invalid message ' + JSON.stringify(msg), msg)\n        break;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg) \n{\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  \n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length;\n  const numTimedOut = sensorStatus.timedOut;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimedOut} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text: texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\n//sensorHousekeeping()\n\nif (nodeStatus) {\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n}\n\nconst mtable = { topic: 'sensorTable', payload: instrumentation }\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
+        "func": "\n\nconst utils = global.get('utils');\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst timeNow = Date.now();\nlet nodeStatus = null;\nconst updateMQTT = [];\nconst updateDashboard = [];\n\n/**\n * handle requests for sensor messsage recalls\n */\n\nfunction clearProperties(ob) {\n  for (let k in ob)\n    delete ob[k]\n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isSensorMessage(msg) {\n\n  if (typeof msg !== 'object') {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false;\n  }\n  // sensor pattern, 1 letter, 1 or 2 digits\n  //if (/^[adprsgmt][^\\d]*[\\d]{1,2}/.test(msg.topic) == false)\n    //return false;\n\n  if (msg.payload === undefined) {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` };\n    return false;\n  }\n  return true;\n}\n\n\nfunction handleMessage(msg, instrumentation) {\n  if (msg.topic === undefined)\n    node.error(msg)\n    \n  let tokens = msg.topic.split('/') ;\n  let subtopic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  const replyTopic = msg.topic.replace('sensor0/get', 'sensor0');  \n\n  switch (msg.topic) {\n    \n    case 'recall' :\n    case 'sensor0/get/all':\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items` };\n      // and replay the stream of messages\n      // return [] ;\n      updateMQTT.push(...ar)\n      updateDashboard.push(...ar)\n      break;\n\n    case 'sensor0/get/siteConfig' :\n      const mout = {\n        topic:  replyTopic,\n        payload: siteConfig\n      }\n      updateMQTT.push(mout);\n      break       \n      \n    case 'sensor0/get/online':\n    case 'sensor0/get/neverSeen':\n    case 'sensor0/get/timedOut':\n    \n      const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instrumentation, 29, timeNow)\n      const n = {\n        topic:  replyTopic,\n        payload: res[subtopic] ?? 'topic'\n      }\n      updateMQTT.push(n);\n      break\n      \n      \n    case 'clear':\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items` };\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break;\n      \n    case 'availability':\n      const m = instrumentation[msg.topic]\n      m.state = msg.payload;\n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break;\n    \n    default:\n      if (msg.topic.startsWith('sensor0'))   // suppress echo of sensor0 output!\n        break \n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` };\n      if (isSensorMessage(msg)) {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n          instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)\n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` }; \n      }\n      else\n        node.error('invalid message ' + JSON.stringify(msg), msg)\n        break;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg) \n{\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  \n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length;\n  const numTimedOut = sensorStatus.timedOut;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimedOut} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text: texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\n//sensorHousekeeping()\n\nif (nodeStatus) {\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n}\n\nconst mtable = { topic: 'sensorTable', payload: instrumentation }\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3041,10 +3077,10 @@
         "crontab": "",
         "once": false,
         "onceDelay": 0.1,
-        "topic": "sensor0/get/offline",
+        "topic": "sensor0/get/neverSeen",
         "payload": "true",
         "payloadType": "bool",
-        "x": 180,
+        "x": 200,
         "y": 680,
         "wires": [
             [
@@ -3106,7 +3142,7 @@
         "type": "debug",
         "z": "a39c97029f2c005f",
         "name": "debug 53",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3118,301 +3154,69 @@
         "wires": []
     },
     {
-        "id": "ee6878a5cca418a8",
+        "id": "2d277fcfe027f04a",
         "type": "inject",
-        "z": "e7fcf1f501be8b60",
-        "name": "tick 30 secs",
+        "z": "a39c97029f2c005f",
+        "name": "",
         "props": [
+            {
+                "p": "payload"
+            },
             {
                 "p": "topic",
                 "vt": "str"
             }
         ],
-        "repeat": "30",
+        "repeat": "",
         "crontab": "",
-        "once": true,
+        "once": false,
         "onceDelay": 0.1,
-        "topic": "tick",
-        "x": 130,
-        "y": 140,
-        "wires": [
-            [
-                "514bcf2a52af1cf0"
-            ]
-        ]
-    },
-    {
-        "id": "bacb43412f50be7f",
-        "type": "function",
-        "z": "e7fcf1f501be8b60",
-        "name": "scheduler v1",
-        "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date()\n  return d.toTimeString().substring(0, 5)\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet schedule = flow.get(\"schedule\") || { start: '12:00', stop: '12:00', unit: { status : null} }\n\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n\n// Note that if start and stop time are the same, that means 24 operation\n// text string comparison\n\nlet unitShouldBeOn = schedule.start <= timeNow && timeNow <= schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `${timeNow}:  ${schedule.start} -> ${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n\n  node.error(s.payload);\n}\n\n\n\nlet control = null\nif (schedule && schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  // unit status is unchanged\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [response ?? null, control ?? null];\n",
-        "outputs": 2,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//flow.set(\"schedule\", { start: '06:00', stop: '16:30', unit: {} })",
-        "finalize": "",
-        "libs": [],
-        "x": 350,
-        "y": 420,
-        "wires": [
-            [
-                "b8d9de514450140a"
-            ],
-            [
-                "207bd26d97d91d04"
-            ]
-        ]
-    },
-    {
-        "id": "b8d9de514450140a",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "response",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 640,
-        "y": 380,
-        "wires": []
-    },
-    {
-        "id": "207bd26d97d91d04",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "control",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 630,
-        "y": 460,
-        "wires": []
-    },
-    {
-        "id": "c98b6b30b5fddbb3",
-        "type": "ui-form",
-        "z": "e7fcf1f501be8b60",
-        "name": "scheduler0",
-        "group": "a08f5caa6b7f253a",
-        "label": "",
-        "order": 1,
-        "width": null,
-        "height": null,
-        "options": [
-            {
-                "label": "Weekday Start time",
-                "key": "start",
-                "type": "time",
-                "required": true,
-                "rows": null
-            },
-            {
-                "label": "Weekday Stop time",
-                "key": "stop",
-                "type": "time",
-                "required": true,
-                "rows": null
-            }
-        ],
-        "formValue": {
-            "start": "",
-            "stop": ""
-        },
+        "topic": "",
         "payload": "",
-        "submit": "submit",
-        "cancel": "clear",
-        "resetOnSubmit": true,
-        "topic": "set/schedule",
-        "topicType": "str",
-        "splitLayout": "",
-        "className": "",
-        "passthru": false,
-        "dropdownOptions": [],
-        "x": 350,
-        "y": 40,
+        "payloadType": "date",
+        "x": 120,
+        "y": 1040,
         "wires": [
             [
-                "514bcf2a52af1cf0"
+                "c62b3b84d897e3c1"
             ]
         ]
     },
     {
-        "id": "514bcf2a52af1cf0",
+        "id": "8c5f3662d97c6763",
+        "type": "debug",
+        "z": "a39c97029f2c005f",
+        "name": "test utils",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 1040,
+        "wires": []
+    },
+    {
+        "id": "c62b3b84d897e3c1",
         "type": "function",
-        "z": "e7fcf1f501be8b60",
-        "name": "scheduler 2",
-        "func": "const defaultSchedule = \n{\n  start : '23:40',\n  stop  : '23:45',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\", \"file\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'all': \n        recall = true ;   \n    case 'tick': \n        break ;\n    \n    case 'advance' :\n        advance = true ;   \n        break ;\n\n        \n    // from the webform and MQTT\n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'start': 'stop' \n\nconst texxt = `${timeNow}: ${offOnText} 🕐${schedule.start}↦${schedule.stop}`\n\nif (timeChange || recall)\n{\n  formResponse = { 'topic' : 'clock0/set/schedule', 'payload' : schedule };\n\n  const mstart = {}\n  mstart.topic = `clock0/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `clock0/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  //node.error(s.payload);\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { topic : 'schedule', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
-        "outputs": 3,
+        "z": "a39c97029f2c005f",
+        "name": "test util functions",
+        "func": "\n\nconst utils = global.get('utils')\n\nconst ti = [\n  utils.getTimeOrDate(msg.payload - (0 * 24  * 3600 * 1000)),\n  utils.getTimeOrDate(msg.payload - (1 * 24  * 3600 * 1000)),\n  utils.getTimeOrDate(msg.payload - (2 * 24  * 3600 * 1000)),\n  utils.getTimeOrDate(msg.payload - (3 * 24  * 3600 * 1000)),\n  utils.getTimeOrDate(msg.payload - (4 * 24  * 3600 * 1000))\n];\n\nmsg.payload = ti ;\n\nreturn msg;",
+        "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 350,
-        "y": 140,
+        "x": 390,
+        "y": 1040,
         "wires": [
             [
-                "c98b6b30b5fddbb3",
-                "2b8ee51b72781f75"
-            ],
-            [
-                "942e10aa6b9bc92e",
-                "7972b448b09af4d9"
-            ],
-            [
-                "38c8f9bc814df53b",
-                "e70ba65277e5fe4f"
+                "8c5f3662d97c6763"
             ]
-        ]
-    },
-    {
-        "id": "2b8ee51b72781f75",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "formResponse",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 660,
-        "y": 100,
-        "wires": []
-    },
-    {
-        "id": "5160c12d4a8d8e95",
-        "type": "link in",
-        "z": "e7fcf1f501be8b60",
-        "name": "clock0",
-        "links": [
-            "605b2b84a661dbbc",
-            "848510da6b3c8e83"
-        ],
-        "x": 185,
-        "y": 180,
-        "wires": [
-            [
-                "514bcf2a52af1cf0"
-            ]
-        ]
-    },
-    {
-        "id": "942e10aa6b9bc92e",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "mqttResponse",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 660,
-        "y": 200,
-        "wires": []
-    },
-    {
-        "id": "7972b448b09af4d9",
-        "type": "link out",
-        "z": "e7fcf1f501be8b60",
-        "name": "clock0",
-        "mode": "link",
-        "links": [
-            "8b799875a8ef011e"
-        ],
-        "x": 595,
-        "y": 160,
-        "wires": []
-    },
-    {
-        "id": "38c8f9bc814df53b",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "control",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 630,
-        "y": 300,
-        "wires": []
-    },
-    {
-        "id": "e70ba65277e5fe4f",
-        "type": "link out",
-        "z": "e7fcf1f501be8b60",
-        "name": "scheduleControl",
-        "mode": "link",
-        "links": [
-            "52fa1182d5cd2dff"
-        ],
-        "x": 595,
-        "y": 260,
-        "wires": []
-    },
-    {
-        "id": "0a617bea90cec73f",
-        "type": "ui-form",
-        "z": "e7fcf1f501be8b60",
-        "name": "scheduler1",
-        "group": "3b9fea2ad4f5df3c",
-        "label": "",
-        "order": 1,
-        "width": null,
-        "height": null,
-        "options": [
-            {
-                "label": "Weekend Start time",
-                "key": "start",
-                "type": "time",
-                "required": true,
-                "rows": null
-            },
-            {
-                "label": "Weekend Stop time",
-                "key": "stop",
-                "type": "time",
-                "required": true,
-                "rows": null
-            }
-        ],
-        "formValue": {
-            "start": "",
-            "stop": ""
-        },
-        "payload": "",
-        "submit": "submit",
-        "cancel": "clear",
-        "resetOnSubmit": true,
-        "topic": "updateSchedule",
-        "topicType": "str",
-        "splitLayout": "",
-        "className": "",
-        "passthru": false,
-        "dropdownOptions": [],
-        "x": 550,
-        "y": 40,
-        "wires": [
-            []
         ]
     },
     {
@@ -3757,6 +3561,321 @@
         ]
     },
     {
+        "id": "ee6878a5cca418a8",
+        "type": "inject",
+        "z": "e7fcf1f501be8b60",
+        "name": "tick 30 secs",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "30",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "tick",
+        "x": 130,
+        "y": 140,
+        "wires": [
+            [
+                "514bcf2a52af1cf0"
+            ]
+        ]
+    },
+    {
+        "id": "bacb43412f50be7f",
+        "type": "function",
+        "z": "e7fcf1f501be8b60",
+        "name": "scheduler v1",
+        "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date()\n  return d.toTimeString().substring(0, 5)\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet schedule = flow.get(\"schedule\") || { start: '12:00', stop: '12:00', unit: { status : null} }\n\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n\n// Note that if start and stop time are the same, that means 24 operation\n// text string comparison\n\nlet unitShouldBeOn = schedule.start <= timeNow && timeNow <= schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `${timeNow}:  ${schedule.start} -> ${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n\n  node.error(s.payload);\n}\n\n\n\nlet control = null\nif (schedule && schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  // unit status is unchanged\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [response ?? null, control ?? null];\n",
+        "outputs": 2,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//flow.set(\"schedule\", { start: '06:00', stop: '16:30', unit: {} })",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 420,
+        "wires": [
+            [
+                "b8d9de514450140a"
+            ],
+            [
+                "207bd26d97d91d04"
+            ]
+        ]
+    },
+    {
+        "id": "b8d9de514450140a",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "207bd26d97d91d04",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "control",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "c98b6b30b5fddbb3",
+        "type": "ui-form",
+        "z": "e7fcf1f501be8b60",
+        "name": "scheduler0",
+        "group": "a08f5caa6b7f253a",
+        "label": "",
+        "order": 1,
+        "width": null,
+        "height": null,
+        "options": [
+            {
+                "label": "Weekday Start time",
+                "key": "start",
+                "type": "time",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Weekday Stop time",
+                "key": "stop",
+                "type": "time",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "start": "",
+            "stop": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "clear",
+        "resetOnSubmit": true,
+        "topic": "set/schedule",
+        "topicType": "str",
+        "splitLayout": "",
+        "className": "",
+        "passthru": false,
+        "dropdownOptions": [],
+        "x": 350,
+        "y": 40,
+        "wires": [
+            [
+                "514bcf2a52af1cf0"
+            ]
+        ]
+    },
+    {
+        "id": "514bcf2a52af1cf0",
+        "type": "function",
+        "z": "e7fcf1f501be8b60",
+        "name": "scheduler 2",
+        "func": "const defaultSchedule = \n{\n  start : '23:40',\n  stop  : '23:45',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\", \"file\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'all': \n        recall = true ;   \n    case 'tick': \n        break ;\n    \n    case 'advance' :\n        advance = true ;   \n        break ;\n\n        \n    // from the webform and MQTT\n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'start': 'stop' \n\nconst texxt = `${timeNow}: ${offOnText} 🕐${schedule.start}↦${schedule.stop}`\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/set/schedule', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/schedule/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/schedule/start`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  if (recall) \n    node.error('recall pressed');\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { topic : 'schedule', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 140,
+        "wires": [
+            [
+                "c98b6b30b5fddbb3",
+                "2b8ee51b72781f75"
+            ],
+            [
+                "942e10aa6b9bc92e",
+                "7972b448b09af4d9"
+            ],
+            [
+                "38c8f9bc814df53b",
+                "e70ba65277e5fe4f"
+            ]
+        ]
+    },
+    {
+        "id": "2b8ee51b72781f75",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "formResponse",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "5160c12d4a8d8e95",
+        "type": "link in",
+        "z": "e7fcf1f501be8b60",
+        "name": "clock0",
+        "links": [
+            "605b2b84a661dbbc",
+            "848510da6b3c8e83"
+        ],
+        "x": 185,
+        "y": 180,
+        "wires": [
+            [
+                "514bcf2a52af1cf0",
+                "271b7a950a8cd796"
+            ]
+        ]
+    },
+    {
+        "id": "942e10aa6b9bc92e",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "mqttResponse",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 660,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "7972b448b09af4d9",
+        "type": "link out",
+        "z": "e7fcf1f501be8b60",
+        "name": "clock0",
+        "mode": "link",
+        "links": [
+            "8b799875a8ef011e"
+        ],
+        "x": 595,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "38c8f9bc814df53b",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "control",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 630,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "e70ba65277e5fe4f",
+        "type": "link out",
+        "z": "e7fcf1f501be8b60",
+        "name": "scheduleControl",
+        "mode": "link",
+        "links": [
+            "52fa1182d5cd2dff"
+        ],
+        "x": 595,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "0a617bea90cec73f",
+        "type": "ui-form",
+        "z": "e7fcf1f501be8b60",
+        "name": "scheduler1",
+        "group": "3b9fea2ad4f5df3c",
+        "label": "",
+        "order": 1,
+        "width": null,
+        "height": null,
+        "options": [
+            {
+                "label": "Weekend Start time",
+                "key": "start",
+                "type": "time",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "Weekend Stop time",
+                "key": "stop",
+                "type": "time",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "start": "",
+            "stop": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "clear",
+        "resetOnSubmit": true,
+        "topic": "updateSchedule",
+        "topicType": "str",
+        "splitLayout": "",
+        "className": "",
+        "passthru": false,
+        "dropdownOptions": [],
+        "x": 550,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "271b7a950a8cd796",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "debug 55",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 310,
+        "y": 280,
+        "wires": []
+    },
+    {
         "id": "00c4ccd08c5fc11a",
         "type": "link in",
         "z": "81037ebb658aa24a",
@@ -3806,7 +3925,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "heat controller",
-        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1]  = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n  const wclcTemp = wcTemp + trim ;\n\n  let flowSetPoint = prop.hrEnabled ? wclcTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = utils.twoDecPoint(Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin))\n  \n  let heatSource = 'off' \n  if (prop.schedule)      // scheduled to run\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, trim, wclcTemp, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, trim, wclcTemp, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'switch/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.twoDecPoint(settings.pidOut),\n//    lcLow: settings.lcLow,  \n//    lcHigh: settings.lcHigh, \n    lc: loadComp,\n    trim: trim,   \n    wclc: wclcTemp,\n//    sch: settings.schedule,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'log/record/pid0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param:  'control',   // for influx\n    //source: 'pid0'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp} schedule:${settings.schedule}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${utils.twoDecPoint(settings.pidOut)} lc:${loadComp}`,\n  `hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n\n  notices.push({\n    topic:      'log/text/pid0',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
+        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1]  = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n  const wclcTemp = wcTemp + trim ;\n\n  let flowSetPoint = prop.hrEnabled ? wclcTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = utils.twoDecPoint(Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin))\n  \n  let heatSource = 'off' \n  if (prop.schedule)      // scheduled to run\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, trim, wclcTemp, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, trim, wclcTemp, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'pid0/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.twoDecPoint(settings.pidOut),\n//    lcLow: settings.lcLow,  \n//    lcHigh: settings.lcHigh, \n    lc: loadComp,\n    trim: trim,   \n    wclc: wclcTemp,\n//    sch: settings.schedule,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'log/record/pid0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param:  'control',   // for influx\n    //source: 'pid0'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp} schedule:${settings.schedule}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${utils.twoDecPoint(settings.pidOut)} lc:${loadComp}`,\n  `hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n\n  notices.push({\n    topic:      'log/text/pid0',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -4399,38 +4518,11 @@
         "wires": []
     },
     {
-        "id": "c4ec4ac0cef1582e",
-        "type": "inject",
-        "z": "81037ebb658aa24a",
-        "name": "reset setttings",
-        "props": [
-            {
-                "p": "topic",
-                "vt": "str"
-            },
-            {
-                "p": "payload"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "pid0/set/reset",
-        "payload": "",
-        "payloadType": "str",
-        "x": 130,
-        "y": 60,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "5f759ecd8912dbca",
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "heatSource",
-        "func": "\n\nconst utils = global.get(\"utils\");\n\nconst controlOf = (target, payload, delay = 1) => ({\n  topic:       target,\n  param:      'state',\n  payload:     payload,\n  delay:       delay\n})\n\nlet ashpControl = []\nlet switchControl = []\nlet notices = []\n\nfunction changeHeatSource(currentHeatSource, heatSource, ashpControl, switchControl,  notices) \n{\n  // override the preset LAE0 temperatures to force \n  // the controller into the required heating mode \n\n  let pumpOverrun = false \n\n  switch(heatSource) {\n    case 'off' :   // heating off, low band \n      if (currentHeatSource == 'off')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0)) \n      pumpOverrun =  (currentHeatSource == 'ashp');\n      const delay = (pumpOverrun ? 60 : 1) * 1000  ;\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n        delay: delay\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 1.5,\n        delay: delay\n      })\n      break ;\n\n    case 'ashp':   // ASHP on, wide band \n      if (currentHeatSource == 'ashp')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 1)) \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      }) \n      break  \n\n    case 'gas' :   // gas on, high band \n      if (currentHeatSource == 'gas')\n        break\n        \n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0))   \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 17.5,\n      }) \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      })        \n      break  \n\n\n    default : \n      node.error(\"Unrecognised heat source\", heatSource);\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 5,\n      })\n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18,\n      })\n      return null ;\n  }\n\n  const heatSourceColour = { off: 'yellow', ashp: 'green', gas: 'red'}\n  const logText  = `${currentHeatSource}->${heatSource} pumpOverrun:${pumpOverrun}`\n  node.status({\n    fill: heatSourceColour[heatSource], shape: \"dot\",\n    text: `${utils.getTimeNow()} ${logText}`\n  })\n\n  notices.push({\n    topic:      'app/response/pid/log',\n    payload:     `${utils.getTimeNow()} ${logText}`, \n    prefix:      'local'\n  })\n}\n\nif (msg.topic != 'switch/heatSource')\n{\n  node.error(`Received ${msg.topic}, expect only switch/heatSource`, msg);\n  return null ;\n}\n\nconst currentHeatSource = context.get('heatSource') ?? 'off' \nconst futureHeatSource = msg.payload ;\nconst pumpOverrun = changeHeatSource(currentHeatSource, futureHeatSource, ashpControl, switchControl,  notices)\ncontext.set('heatSource', futureHeatSource)\n\nreturn [ashpControl, switchControl,  notices]\n\n\n",
+        "func": "\n\nconst utils = global.get(\"utils\");\n\nconst controlOf = (target, payload, delay = 1) => ({\n  topic:       target,\n  param:      'state',\n  payload:     payload,\n  delay:       delay\n})\n\nlet ashpControl = []\nlet switchControl = []\nlet notices = []\n\nfunction changeHeatSource(currentHeatSource, heatSource, ashpControl, switchControl,  notices) \n{\n  // override the preset LAE0 temperatures to force \n  // the controller into the required heating mode \n\n  let pumpOverrun = false \n\n  switch(heatSource) {\n    case 'off' :   // heating off, low band \n      if (currentHeatSource == 'off')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0)) \n      pumpOverrun =  (currentHeatSource == 'ashp');\n      const delay = (pumpOverrun ? 60 : 1) * 1000  ;\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n        delay: delay\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 1.5,\n        delay: delay\n      })\n      break ;\n\n    case 'ashp':   // ASHP on, wide band \n      if (currentHeatSource == 'ashp')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 1)) \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      }) \n      break  \n\n    case 'gas' :   // gas on, high band \n      if (currentHeatSource == 'gas')\n        break\n        \n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0))   \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 17.5,\n      }) \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      })        \n      break  \n\n\n    default : \n      node.error(\"Unrecognised heat source\", heatSource);\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 5,\n      })\n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18,\n      })\n      return null ;\n  }\n\n  const heatSourceColour = { off: 'yellow', ashp: 'green', gas: 'red'}\n  const logText  = `${currentHeatSource}->${heatSource} pumpOverrun:${pumpOverrun}`\n  node.status({\n    fill: heatSourceColour[heatSource], shape: \"dot\",\n    text: `${utils.getTimeNow()} ${logText}`\n  })\n\n  notices.push({\n    topic:      'app/response/pid/log',\n    payload:     `${utils.getTimeNow()} ${logText}`, \n    prefix:      'local'\n  })\n}\n\nif (msg.topic != 'pid0/heatSource')\n{\n  node.error(`Received ${msg.topic}, expect only switch/heatSource`, msg);\n  return null ;\n}\n\nconst currentHeatSource = context.get('heatSource') ?? 'off' \nconst futureHeatSource = msg.payload ;\nconst pumpOverrun = changeHeatSource(currentHeatSource, futureHeatSource, ashpControl, switchControl,  notices)\ncontext.set('heatSource', futureHeatSource)\n\nreturn [ashpControl, switchControl,  notices]\n\n\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -4646,7 +4738,7 @@
         "type": "debug",
         "z": "81037ebb658aa24a",
         "name": "debug 42",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -4708,14 +4800,13 @@
             "4155f40899b57319"
         ],
         "x": 165,
-        "y": 1940,
+        "y": 1800,
         "wires": [
             [
                 "aa3572b743cf326b",
                 "0021c59646b5c822",
                 "ce189e38ee1ada7b",
-                "4cfbb5d77596f936",
-                "7f820c0f9477eb3f"
+                "4cfbb5d77596f936"
             ]
         ]
     },
@@ -4923,7 +5014,7 @@
         "repair": false,
         "outputs": 26,
         "x": 150,
-        "y": 2720,
+        "y": 2920,
         "wires": [
             [
                 "91a5b7441a976c4e"
@@ -5009,15 +5100,15 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "ui_update sensors",
-        "func": "\n\nconst indoorGauge = {\n  measurement : 'tba',\n  min : 17, \n  max : 24,\n  units : \"°C\",\n  sectors: [\n    { \"start\": 0, \"color\": \"blue\"}, \n    { \"start\": 20, \"color\": \"yellow\"},\n    { \"start\": 21, \"color\": \"green\"}, \n    { \"start\": 22, \"color\": \"red\"}\n  ]\n}\n\n//node.error(\"my error message \" + msg.topic, msg);\n\n\nswitch(msg.topic) \n{\n  case 'lae0/1SP' :\n    msg.ui_update = {\n      label: 'Use gas below (SP1)',\n      color : 'red',\n      colorTrack : 'grey',    \n      min : 0,\n      max : 24,\n      thumbNail : 'always'\n    }\n    break ; \n\n  case 'lae0/2SP' :\n    msg.ui_update = {\n      label: 'Use heat below (SP2)',\n      color : 'green',\n      colorTrack : 'grey',    \n      min : 0,\n      max : 24,\n      thumbNail : 'always'\n    }\n    break ;  \n\n  case 'lae0/OUT' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off', 'Ambiguous setting SP1 > SP2 !! ', 'Using ASHP',  'Using Gas' ]\n    const statusColour = ['grey','purple','green', 'red']\n    msg.ui_update = {\n//      options : [statusText[msg.state]],\n      oncolor : statusColour[msg.state],\n      label   : statusText[msg.state]\n    }\n    //node.error(' out ' + msg.topic)\n    break \n\n\n  case 'lae0/PRO':  // roof temp \n    msg.ui_update = {\n      label: 'Outdoors',\n      measurement: 'Roof', // + \" \" + msg.source, \n      min: 0,\n      max: 25,\n      units: \"°C\",\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    }\n    break\n\n  case 'b0/temperature' :\n    msg.ui_update = indoorGauge\n    msg.ui_update.measurement = 'b0'\n    msg.ui_update.label = 'Indoors'\n    break \n\n  default :  // used by all the room/zone sensors\n    msg.ui_update = indoorGauge\n    msg.ui_update.label = msg.location // + \" \" + msg.source, \n    msg.ui_update.measurement = msg.source  // + \" \" + msg.source, \n    break\n}\nif (msg.hasTimedOut)\n{\n  msg.ui_update.sectors = [{ \"start\": 0, \"color\":  \"orange\"}]\n  msg.ui_update.measurement = msg.source + \" Timed Out\"\n}\n//msg.ui_update.sectors = [{ \"start\": 0, \"color\":  \"orange\"}]\n//msg.ui_update.prefix = 'ha ha'\n//msg.ui_update.suffix = 'OK'\nreturn msg;\n",
+        "func": "\n\nconst indoorGauge = {\n  measurement : 'tba',\n  min : 17, \n  max : 24,\n  units : \"°C\",\n  sectors: [{\"start\": 0, \"color\":  \"orange\"}]  // assume inactive\n}\n\nconst coloursForActiveIndoorSensor = \n[\n  { \"start\": 0, \"color\": \"blue\"}, \n  { \"start\": 20, \"color\": \"yellow\"},\n  { \"start\": 21, \"color\": \"green\"}, \n  { \"start\": 22, \"color\": \"red\"}\n]\n\n//node.error(\"my error message \" + msg.topic, msg);\n\n// has sensor been seen in the last hour?\n\nconst sensorActive = (msg) => msg.timestamp  > Date.now() -  (1000 * 60 * 60)\n\nswitch(msg.topic) \n{\n  case 'lae0/1SP' :\n    msg.ui_update = {\n      label: 'Use gas below (SP1)',\n      color : 'red',\n      colorTrack : 'grey',    \n      min : -5,\n      max : 25,\n      thumbNail : 'always'\n    }\n    break ; \n\n  case 'lae0/2SP' :\n    msg.ui_update = {\n      label: 'Use heat below (SP2)',\n      color : 'green',\n      colorTrack : 'grey',    \n      min : -5,\n      max : 25,\n      thumbNail : 'always'\n    }\n    break ;  \n\n  case 'lae0/OUT' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off', 'Ambiguous setting SP1 > SP2 !! ', 'Using ASHP',  'Using Gas' ]\n    const statusColour = ['grey','purple','green', 'red']\n    msg.ui_update = {\n//      options : [statusText[msg.state]],\n      oncolor : statusColour[msg.state],\n      label   : statusText[msg.state]\n    }\n    //node.error(' out ' + msg.topic)\n    break \n\n\n  case 'lae0/PRO':  // roof temp \n    msg.ui_update = {\n      label: 'Outdoors',\n      measurement: 'Roof', // + \" \" + msg.source, \n      min: 0,\n      max: 25,\n      units: \"°C\",\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    }\n    break\n\n  case 'b0/temperature' :\n    msg.ui_update = indoorGauge\n    msg.ui_update.measurement = 'b0'\n    msg.ui_update.label = 'Indoors'\n    msg.ui_update.sectors = coloursForActiveIndoorSensor ; \n    break \n\n  default :  // used by all the room/zone sensors\n    msg.ui_update = indoorGauge\n    msg.ui_update.label = msg.location // + \" \" + msg.source, \n    //const utils = global.get('utils')\n    //const lastSeen = utils.getTimeOrDate(msg.timestamp)\n    msg.ui_update.measurement = msg.source ; // + \" @ \" + lastSeen ; \n\n    if (sensorActive(msg))\n      msg.ui_update.sectors = coloursForActiveIndoorSensor ; \n\n    break\n}\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 250,
-        "y": 2340,
+        "x": 330,
+        "y": 2500,
         "wires": [
             [
                 "9bfc50e58ff45907"
@@ -5029,7 +5120,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "ui update PID",
-        "func": "\nconst tokens = msg.topic.split('/')\nconst label = tokens[tokens.length - 1]\n\n//node.error(\"label: \"  + label, msg);\n\nconst defaultGauge = {\n  style : 'Rounded',\n  class : label, \n  label : label,  // the subtopic\n  min : 25, \n  step : 1,\n  max : 50,\n  units : \"°C\",\n  color : 'red',\n  colorTrack : 'grey',\n  \n  oncolor : 'red',\n  showTicks : 'always',\n  thumbLabel : 'always'\n}\n\nconst outsideWeatherGauge = {\n  min : 0,\n  max : 20,\n  step : 1,\n  color : 'lightblue',\n  colorTrack : 'grey',\n}\n\nmsg.ui_update = defaultGauge ;\n\n//node.error(\"my error message \" + msg.payload, msg);\n\nswitch(msg.topic)\n{\n  case 'pid0/heatingMode' :\n    context.set('heatingMode', msg.payload)\n  case 'pid0/heatingModeHelp' :\n    msg.ui_update.label = ''\n    break ; \n\n  case 'pid0/flowMin' :\n    msg.ui_update.label = 'Min'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/flowMax' :\n    msg.ui_update.label = 'Max'\n    msg.ui_update.color = 'red'\n    break ;\n    \n  case 'pid0/flowGas' :\n    msg.ui_update.label = 'Crossover to Gas above'\n    msg.ui_update.color = 'purple'\n    msg.ui_update.min = 42\n    msg.ui_update.max = 50\n    msg.ui_update.step = 1     \n    break ;\n\n  case 'pid0/lcLow' :\n    msg.ui_update.label = 'Low'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/lcHigh' :\n    msg.ui_update.label = 'High'\n    msg.ui_update.color = 'red'\n    break ;\n\n  case 'pid0/lcTrim' :\n    msg.ui_update.min = 0\n    msg.ui_update.max = 10\n    break ;\n\n  case 'pid0/setpoint' :\n    msg.ui_update.min = 20\n    msg.ui_update.max = 22\n    msg.ui_update.step = 0.1\n    msg.ui_update.label = 'Desired building temperature'\n    break ;\n\n  case 'pid0/flowSetpoint' :\n    msg.ui_update.min = 25\n    msg.ui_update.max = 52\n    msg.ui_update.step = 1\n    msg.ui_update.label = 'Flow setpoint'\n    const mode = context.get('heatingMode')\n    const color = mode == 'auto' ?  'red' : 'grey' \n    msg.ui_update.color = color \n    break ;\n\n  case 'pid0/hrOatNone' :\n  case 'pid0/hrOatFull' :\n    msg.ui_update = Object.assign(defaultGauge, outsideWeatherGauge) \n    break \n\n  case 'pid0/hrEnabled' :\n    msg.ui_update.label = 'Enabled'\n    break   \n\n  case 'pid0/prop_band' :\n    msg.ui_update.label = 'Proportional band' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1 ;\n    msg.ui_update.step = 0.1 ;\n    break ;\n\n  case 'pid0/t_integral' :\n    msg.ui_update.label = 'Integral' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1000 ;\n    msg.ui_update.step = 100 ;\n    break ;\n\n  case 'pid0/t_derivative' :\n    msg.ui_update.label = 'Derivative'; \n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1 ;\n    msg.ui_update.step = 0.1 ;\n    break ;\n\n\n}\nreturn msg;\n\n",
+        "func": "\nconst tokens = msg.topic.split('/')\nconst label = tokens[tokens.length - 1]\n\n//node.error(\"label: \"  + label, msg);\n\nconst defaultGauge = {\n  style : 'Rounded',\n  class : label, \n  label : label,  // the subtopic\n  min : 25, \n  step : 1,\n  max : 50,\n  units : \"°C\",\n  color : 'red',\n  colorTrack : 'grey',\n  \n  oncolor : 'red',\n  showTicks : 'always',\n  thumbLabel : 'always'\n}\n\nconst outsideWeatherGauge = {\n  min : 0,\n  max : 20,\n  step : 1,\n  color : 'lightblue',\n  colorTrack : 'grey',\n}\n\nmsg.ui_update = defaultGauge ;\n\n//node.error(\"my error message \" + msg.payload, msg);\n\nswitch(msg.topic)\n{\n  case 'pid0/heatingMode' :\n    context.set('heatingMode', msg.payload)\n  case 'pid0/heatingModeHelp' :\n    msg.ui_update.label = ''\n    break ; \n\n  case 'pid0/flowMin' :\n    msg.ui_update.label = 'Min'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/flowMax' :\n    msg.ui_update.label = 'Max'\n    msg.ui_update.color = 'red'\n    break ;\n    \n  case 'pid0/flowGas' :\n    msg.ui_update.label = 'Crossover to Gas above'\n    msg.ui_update.color = 'purple'\n    msg.ui_update.min = 42\n    msg.ui_update.max = 50\n    msg.ui_update.step = 1     \n    break ;\n\n  case 'pid0/lcLow' :\n    msg.ui_update.label = 'Low'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/lcHigh' :\n    msg.ui_update.label = 'High'\n    msg.ui_update.color = 'red'\n    break ;\n\n  case 'pid0/lcTrim' :\n    msg.ui_update.min = 0\n    msg.ui_update.max = 10\n    break ;\n\n  case 'pid0/setpoint' :\n    msg.ui_update.min = 20\n    msg.ui_update.max = 22\n    msg.ui_update.step = 0.1\n    msg.ui_update.label = 'Desired building temperature'\n    break ;\n\n  case 'pid0/flowSetpoint' :\n    msg.ui_update.min = 25\n    msg.ui_update.max = 52\n    msg.ui_update.step = 1\n    msg.ui_update.label = 'Flow setpoint'\n    const mode = context.get('heatingMode')\n    const color = mode == 'auto' ?  'red' : 'grey' \n    msg.ui_update.color = color \n    break ;\n\n  case 'pid0/hrOatNone' :\n  case 'pid0/hrOatFull' :\n    msg.ui_update = Object.assign(defaultGauge, outsideWeatherGauge) \n    node.send( { topic : 'pid0/hrNoneFull', payload : [33,45] })\n    break \n\n  case 'pid0/hrEnabled' :\n    msg.ui_update.label = 'Enabled'\n    break   \n\n  case 'pid0/prop_band' :\n    msg.ui_update.label = 'Proportional band' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1 ;\n    msg.ui_update.step = 0.1 ;\n    break ;\n\n  case 'pid0/t_integral' :\n    msg.ui_update.label = 'Integral' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1000 ;\n    msg.ui_update.step = 100 ;\n    break ;\n\n  case 'pid0/t_derivative' :\n    msg.ui_update.label = 'Derivative'; \n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1 ;\n    msg.ui_update.step = 0.1 ;\n    break ;\n\n\n}\nreturn msg;\n\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -5041,7 +5132,8 @@
         "wires": [
             [
                 "4eb69a7cf8aca82f",
-                "1c45ecd7fdc8802c"
+                "1c45ecd7fdc8802c",
+                "736d5b1b88975cb4"
             ]
         ]
     },
@@ -5509,6 +5601,12 @@
             },
             {
                 "t": "regex",
+                "v": "hrNoneFull",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
                 "v": "lcTrim",
                 "vt": "str",
                 "case": false
@@ -5546,7 +5644,7 @@
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 20,
+        "outputs": 21,
         "x": 130,
         "y": 360,
         "wires": [
@@ -5592,6 +5690,10 @@
             ],
             [
                 "5f41ef31211919be"
+            ],
+            [
+                "c46180bd2674fe18",
+                "736d5b1b88975cb4"
             ],
             [
                 "0da7a18550db5f18"
@@ -5640,7 +5742,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 550,
-        "y": 2560,
+        "y": 2760,
         "wires": []
     },
     {
@@ -5672,7 +5774,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 550,
-        "y": 2600,
+        "y": 2800,
         "wires": []
     },
     {
@@ -5704,7 +5806,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 550,
-        "y": 2640,
+        "y": 2840,
         "wires": []
     },
     {
@@ -5736,7 +5838,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 550,
-        "y": 2680,
+        "y": 2880,
         "wires": []
     },
     {
@@ -5768,7 +5870,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 550,
-        "y": 2720,
+        "y": 2920,
         "wires": []
     },
     {
@@ -5800,7 +5902,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2500,
+        "y": 2700,
         "wires": []
     },
     {
@@ -5832,7 +5934,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2620,
+        "y": 2820,
         "wires": []
     },
     {
@@ -5864,7 +5966,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2940,
+        "y": 3140,
         "wires": []
     },
     {
@@ -5896,14 +5998,14 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 550,
-        "y": 2760,
+        "y": 2960,
         "wires": []
     },
     {
-        "id": "2386c4ee327379c4",
+        "id": "88576d1c5452f48e",
         "type": "ui-gauge-classic",
         "z": "3187bd06ef664359",
-        "name": "t0",
+        "name": "t1",
         "group": "6bb44fe3ca0ba894",
         "order": 1,
         "width": "2",
@@ -5928,14 +6030,14 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 550,
-        "y": 2840,
+        "y": 3080,
         "wires": []
     },
     {
-        "id": "88576d1c5452f48e",
+        "id": "c3b17e516e580d04",
         "type": "ui-gauge-classic",
         "z": "3187bd06ef664359",
-        "name": "t1",
+        "name": "t2",
         "group": "6bb44fe3ca0ba894",
         "order": 2,
         "width": "2",
@@ -5960,39 +6062,7 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 550,
-        "y": 2880,
-        "wires": []
-    },
-    {
-        "id": "c3b17e516e580d04",
-        "type": "ui-gauge-classic",
-        "z": "3187bd06ef664359",
-        "name": "t2",
-        "group": "6bb44fe3ca0ba894",
-        "order": 4,
-        "width": "2",
-        "height": "2",
-        "min": 0,
-        "max": 10,
-        "sectors": [],
-        "major_division": 1,
-        "minor_division": 0.2,
-        "value_decimal_places": 1,
-        "scale_decimal_places": 0,
-        "label": "",
-        "measurement": "temperature",
-        "units": "°C",
-        "needles": [
-            {
-                "topic": "",
-                "color": "black",
-                "lengthPercent": "100"
-            }
-        ],
-        "sweep_angle": 250,
-        "myclass": "",
-        "x": 550,
-        "y": 2920,
+        "y": 3120,
         "wires": []
     },
     {
@@ -6024,7 +6094,7 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 550,
-        "y": 2960,
+        "y": 3160,
         "wires": []
     },
     {
@@ -6056,7 +6126,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2580,
+        "y": 2780,
         "wires": []
     },
     {
@@ -6088,7 +6158,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2540,
+        "y": 2740,
         "wires": []
     },
     {
@@ -6120,7 +6190,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2660,
+        "y": 2860,
         "wires": []
     },
     {
@@ -6152,7 +6222,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2700,
+        "y": 2900,
         "wires": []
     },
     {
@@ -6184,7 +6254,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2820,
+        "y": 3020,
         "wires": []
     },
     {
@@ -6216,7 +6286,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2780,
+        "y": 2980,
         "wires": []
     },
     {
@@ -6248,7 +6318,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2740,
+        "y": 2940,
         "wires": []
     },
     {
@@ -6280,7 +6350,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2860,
+        "y": 3060,
         "wires": []
     },
     {
@@ -6312,7 +6382,7 @@
         "sweep_angle": "250",
         "myclass": "",
         "x": 710,
-        "y": 2900,
+        "y": 3100,
         "wires": []
     },
     {
@@ -6344,7 +6414,7 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 580,
-        "y": 2340,
+        "y": 2580,
         "wires": []
     },
     {
@@ -6352,7 +6422,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "ui update ASHP",
-        "func": "// set source, location and topic \n// should this be done by common routine\n\nlet tokens = msg.topic.split('/') \nconst source = tokens[0]\nconst subtopic = tokens[1]\n\nif (source != 'ashp0')\n  return null \n\nif (msg.track)\n  node.status({ fill: 'green', shape: \"dot\", text:`source:${source} subtopic:${subtopic}`})\n\nswitch (msg.topic)\n{\n  case 'ashp0/UNIT_STATUS' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off','Running','Stopping', 'Delay','4 ish','Ready','6 ish','Defrost' ]\n    const statusColour = ['grey','red',   'yellow',   'orange','blue','green','yellow','lightblue' ]\n    msg.ui_update = {\n      label :   'ASHP ' + statusText[msg.state],\n      oncolor : statusColour[msg.state],\n      offcolor : statusColour[msg.state]\n    }\n    break ;\n    \n  case 'ashp0/GENUNIT_CTRL_PNT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 25, \n      max : 52,\n      step : 1,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n\n  case 'ashp0/TEMP_LWT' :\n  case 'ashp0/TEMP_EWT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 0, \n      max : 52,\n      step : 5,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n  case 'ashp0/PUMPSTAT_CAPPOWER' :\n    msg.ui_update = {\n      //label : 'xxx', \n      measurement : 'Output power',\n      min : 0, \n      max : 50,\n      step : 5,\n      units : \"kw\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"grey\"}, \n        { \"start\": 20, \"color\": \"pink\"}, \n        { \"start\": 30, \"color\": \"green\"}, \n        { \"start\": 40, \"color\": \"red\"}, \n      ]\n    }\n    break \n\n  case 'ashp0/today/kWh' :\n    msg.ui_update = {\n      label : 'Output energy today kWh ', \n      fontSize : 20      \n    }\n    break \n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break     \n  default :\n\n}\n\nreturn msg;",
+        "func": "// set source, location and topic \n// should this be done by common routine\n\nlet tokens = msg.topic.split('/') \nconst source = tokens[0]\nconst subtopic = tokens[1]\n\nif (source != 'ashp0')\n  return null \n\nif (msg.track)\n  node.status({ fill: 'green', shape: \"dot\", text:`source:${source} subtopic:${subtopic}`})\n\nswitch (msg.topic)\n{\n  case 'ashp0/UNIT_STATUS' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off','Running','Stopping', 'Delay', 'Alarm','Ready','6 ish','Defrost' ]\n    const statusColour = ['grey','green', 'yellow',   'orange','red',  'blue','yellow','lightblue' ]\n    msg.ui_update = {\n      label :   'ASHP ' + statusText[msg.state],\n      oncolor : statusColour[msg.state],\n      offcolor : statusColour[msg.state]\n    }\n    break ;\n\n  /*\n    Alarm state:\n    Normal = No alarm\n    Partial = There is an alarm, but the unit continues to operate\n    Shutdown = Unit shuts down\n  */\n\n  case 'ashp0/UNIT_ALM':\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statText =   ['No alarm', 'Alarm - Partial shutdown', 'Alarm - Shutdown']\n    const statColour = ['grey',  'orange', 'red']\n    msg.ui_update = {\n      label :   'ASHP ' + statText[msg.state],\n      oncolor : statColour[msg.state],\n      offcolor : statColour[msg.state]\n    }\n    break ;  \n    \n  case 'ashp0/GENUNIT_CTRL_PNT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 25, \n      max : 52,\n      step : 1,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n\n  case 'ashp0/TEMP_LWT' :\n  case 'ashp0/TEMP_EWT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 0, \n      max : 52,\n      step : 5,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n  case 'ashp0/PUMPSTAT_CAPPOWER' :\n    msg.ui_update = {\n      //label : 'xxx', \n      measurement : 'Output power',\n      min : 0, \n      max : 50,\n      step : 5,\n      units : \"kw\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"grey\"}, \n        { \"start\": 20, \"color\": \"pink\"}, \n        { \"start\": 30, \"color\": \"green\"}, \n        { \"start\": 40, \"color\": \"red\"}, \n      ]\n    }\n    break \n\n  case 'ashp0/today/kWh' :\n    msg.ui_update = {\n      label : 'Output energy today kWh ', \n      fontSize : 20      \n    }\n    break \n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break   \n\n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break   \n\n  case 'ashp0/ALARMRST_alarm_1c' :\n  case 'ashp0/ALARMRST_alarm_2c' :\n  case 'ashp0/ALARMRST_alarm_3c' :\n  case 'ashp0/ALARMRST_alarm_4c' :\n  case 'ashp0/ALARMRST_alarm_5c' :\n  case 'ashp0/ALARMRST_alarm_1':\n  case 'ashp0/ALARMRST_alarm_2':\n  case 'ashp0/ALARMRST_alarm_3':\n  case 'ashp0/ALARMRST_alarm_4':\n  case 'ashp0/ALARMRST_alarm_5': \n\n  default :\n\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -6360,7 +6430,7 @@
         "finalize": "",
         "libs": [],
         "x": 580,
-        "y": 1360,
+        "y": 1220,
         "wires": [
             [
                 "2d6f3fff36f36fec",
@@ -6374,7 +6444,7 @@
         "z": "3187bd06ef664359",
         "name": "Flow in/out",
         "group": "d3987b783abbd512",
-        "order": 3,
+        "order": 4,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -6402,7 +6472,7 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 570,
-        "y": 1580,
+        "y": 1440,
         "wires": []
     },
     {
@@ -6416,6 +6486,12 @@
             {
                 "t": "regex",
                 "v": "UNIT_STATUS",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "UNIT_ALM",
                 "vt": "str",
                 "case": false
             },
@@ -6452,12 +6528,15 @@
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 6,
+        "outputs": 7,
         "x": 270,
-        "y": 1600,
+        "y": 1460,
         "wires": [
             [
                 "2fb23cde95534f2d"
+            ],
+            [
+                "0e195b8c9e93c4b3"
             ],
             [
                 "46840e3a9559d36d"
@@ -6505,7 +6584,7 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 580,
-        "y": 2300,
+        "y": 2520,
         "wires": []
     },
     {
@@ -6515,7 +6594,7 @@
         "name": "Building sensor temperatures page, 'input registers'",
         "info": "",
         "x": 270,
-        "y": 2380,
+        "y": 2580,
         "wires": []
     },
     {
@@ -6535,7 +6614,7 @@
         "topicType": "msg",
         "thumbLabel": "always",
         "showTicks": "always",
-        "min": 0,
+        "min": "-5",
         "max": "20",
         "step": 1,
         "className": "",
@@ -6570,7 +6649,7 @@
         "topicType": "msg",
         "thumbLabel": "always",
         "showTicks": "always",
-        "min": 0,
+        "min": "-5",
         "max": "20",
         "step": 1,
         "className": "",
@@ -6628,7 +6707,7 @@
         "z": "3187bd06ef664359",
         "name": "Output power",
         "group": "d3987b783abbd512",
-        "order": 4,
+        "order": 5,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -6651,33 +6730,11 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 580,
-        "y": 1620,
+        "y": 1480,
         "wires": []
     },
     {
         "id": "31f30a7c661ae413",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "d3987b783abbd512",
-        "order": 5,
-        "width": 0,
-        "height": 0,
-        "name": "Output energy",
-        "label": "Output energy",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": false,
-        "className": "",
-        "x": 580,
-        "y": 1700,
-        "wires": []
-    },
-    {
-        "id": "823b75b14cac43ad",
         "type": "ui-text",
         "z": "3187bd06ef664359",
         "group": "d3987b783abbd512",
@@ -6695,7 +6752,31 @@
         "wrapText": false,
         "className": "",
         "x": 580,
-        "y": 1660,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "823b75b14cac43ad",
+        "type": "ui-text",
+        "z": "3187bd06ef664359",
+        "group": "d3987b783abbd512",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "Output energy",
+        "label": "Output energy",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 580,
+        "y": 1540,
         "wires": []
     },
     {
@@ -6704,7 +6785,7 @@
         "z": "3187bd06ef664359",
         "name": "Control",
         "group": "d3987b783abbd512",
-        "order": 2,
+        "order": 3,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -6727,7 +6808,7 @@
         "sweep_angle": 250,
         "myclass": "",
         "x": 560,
-        "y": 1540,
+        "y": 1400,
         "wires": []
     },
     {
@@ -6757,7 +6838,7 @@
         "officon": "heat-wave",
         "offcolor": "",
         "x": 550,
-        "y": 1500,
+        "y": 1300,
         "wires": [
             []
         ]
@@ -6789,7 +6870,7 @@
         "payload": "1",
         "payloadType": "num",
         "x": 230,
-        "y": 1440,
+        "y": 1300,
         "wires": [
             [
                 "0021c59646b5c822"
@@ -6823,7 +6904,7 @@
         "payload": "0",
         "payloadType": "num",
         "x": 230,
-        "y": 1480,
+        "y": 1340,
         "wires": [
             [
                 "0021c59646b5c822"
@@ -6857,7 +6938,7 @@
         "payload": "5",
         "payloadType": "num",
         "x": 230,
-        "y": 1400,
+        "y": 1260,
         "wires": [
             [
                 "0021c59646b5c822"
@@ -6871,7 +6952,7 @@
         "name": "LAE0 data should ONLY come from downsampler",
         "info": "",
         "x": 260,
-        "y": 2420,
+        "y": 2620,
         "wires": []
     },
     {
@@ -6901,7 +6982,7 @@
         "payload": "7",
         "payloadType": "num",
         "x": 270,
-        "y": 1320,
+        "y": 1180,
         "wires": [
             [
                 "0021c59646b5c822"
@@ -6935,7 +7016,7 @@
         "payload": "6",
         "payloadType": "num",
         "x": 280,
-        "y": 1360,
+        "y": 1220,
         "wires": [
             [
                 "0021c59646b5c822"
@@ -7187,7 +7268,7 @@
         "name": "ASHP panel, 'input registers'",
         "info": "",
         "x": 540,
-        "y": 1220,
+        "y": 1080,
         "wires": []
     },
     {
@@ -7212,8 +7293,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 800,
-        "y": 1360,
+        "x": 780,
+        "y": 1220,
         "wires": []
     },
     {
@@ -7221,7 +7302,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "downsampler in",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -7229,8 +7310,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 660,
-        "y": 2440,
+        "x": 400,
+        "y": 1800,
         "wires": []
     },
     {
@@ -7240,7 +7321,7 @@
         "name": "patch",
         "links": [],
         "x": 155,
-        "y": 1220,
+        "y": 1080,
         "wires": [
             [
                 "0021c59646b5c822",
@@ -7260,8 +7341,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 800,
-        "y": 1300,
+        "x": 780,
+        "y": 1160,
         "wires": []
     },
     {
@@ -7328,8 +7409,8 @@
         "mobileBreakpoint": "lg",
         "mobileBreakpointType": "defaults",
         "action": "replace",
-        "x": 750,
-        "y": 1140,
+        "x": 590,
+        "y": 2420,
         "wires": [
             []
         ]
@@ -7339,18 +7420,19 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "sensor data prep",
-        "func": "const sensorRegex = /^[bsdgmt][\\d]{1,2}$/\n\nif (!msg.source.match(sensorRegex))\n  return null ;\n\nconst utils = global.get('utils') ?? null ;\n\n// ja \n// source is m1, m2, m3  (desired rows)\n// measurement is temperature, humidity  (desired cols)\n\nconst columns =  // define the initial column order\n{\n  time : 0,\n  source : '?',\n  location : '?',\n  temperature : 0\n}\nconst frame = context.get('frame') ?? { }\n\nconst row = frame[msg.source] ?? columns ;\n// \nrow['time'] =  utils.getHHMM(msg.timestamp);\nif (msg.last_seen)\n  row['lastSeen'] =  utils.getHHMM(msg.last_seen);\nrow['source'] = msg.source ;\nrow['location'] = msg.location ;\nrow['state'] = msg.state ;\nrow[msg.param] = msg.payload ;\nframe[msg.source] = row ;\ncontext.set('frame', frame)\n\nconst ar = Object.values(frame);\nconst arsort = (a, b) => a.source.localeCompare(b.source);\nar.sort(arsort);\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.topic })\nreturn { topic : 'frame',  payload :  ar};",
+        "func": "\nif (msg.source === undefined) // all sensors expected to have source set e.g. 't2'\n  return null ;\n\nconst sensorRegex = /^[bsdgmt][\\d]{1,2}$/\n\nif (!msg.source.match(sensorRegex))\n  return null ;\n\nconst utils = global.get('utils') ?? null ;\n\n// ja \n// source is m1, m2, m3  (desired rows)\n// measurement is temperature, humidity  (desired cols)\n\nconst columns =  // define the initial column order\n{\n  time : 0,\n  source : '?',\n  location : '?',\n  temperature : 0\n}\nconst frame = context.get('frame') ?? { }\n\nconst row = frame[msg.source] ?? columns ;\n// \n\nrow['time'] =  utils.getTimeOrDate(msg.timestamp);\n\nrow['source'] = msg.source ;\nrow['location'] = msg.location ;\nrow['state'] = msg.state ;\nrow[msg.param] = msg.payload ;\nframe[msg.source] = row ;\ncontext.set('frame', frame)\n\nconst ar = Object.values(frame);\nconst arsort = (a, b) => a.source.localeCompare(b.source);\nar.sort(arsort);\n\nconst statText = `${msg.topic} - ${row['time']}`\nnode.status({ fill: \"green\", shape: \"dot\", text : statText })\n\nreturn { topic : 'frame',  payload :  ar};",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 450,
-        "y": 1140,
+        "x": 330,
+        "y": 2420,
         "wires": [
             [
-                "dc4128c790f0602d"
+                "dc4128c790f0602d",
+                "892e382aebc86371"
             ]
         ]
     },
@@ -7375,8 +7457,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 240,
-        "y": 1140,
+        "x": 110,
+        "y": 2420,
         "wires": [
             [
                 "4cfbb5d77596f936"
@@ -7502,7 +7584,7 @@
         "mobileBreakpointType": "defaults",
         "action": "replace",
         "x": 540,
-        "y": 1800,
+        "y": 1660,
         "wires": [
             []
         ]
@@ -7520,7 +7602,7 @@
         "finalize": "",
         "libs": [],
         "x": 350,
-        "y": 1800,
+        "y": 1660,
         "wires": [
             [
                 "921885113d64bd0d",
@@ -7537,7 +7619,7 @@
             "90da587f91c535d6"
         ],
         "x": 165,
-        "y": 1800,
+        "y": 1660,
         "wires": [
             [
                 "a11d7964c3f91c50"
@@ -7566,7 +7648,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 240,
-        "y": 1700,
+        "y": 1560,
         "wires": [
             [
                 "a11d7964c3f91c50"
@@ -7595,7 +7677,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 120,
-        "y": 1520,
+        "y": 1380,
         "wires": [
             [
                 "2fb23cde95534f2d"
@@ -7828,7 +7910,7 @@
         "mobileBreakpointType": "defaults",
         "action": "replace",
         "x": 560,
-        "y": 1860,
+        "y": 1720,
         "wires": [
             []
         ]
@@ -7840,72 +7922,86 @@
         "group": "0ab4678ba1f9dae0",
         "page": "",
         "ui": "",
-        "name": "test range",
-        "order": 2,
-        "width": 0,
-        "height": 0,
-        "head": "",
-        "format": "<v-container class=\"pa-4\">\n  <h3 class=\"mb-4\">Vuetify Range Slider (Auto-Send, Compatible)</h3>\n\n  <v-range-slider\n    v-model=\"range\"\n    :min=\"0\"\n    :max=\"100\"\n    :step=\"1\"\n    thumb-label=\"always\"\n    color=\"primary\"\n  ></v-range-slider>\n\n  <div class=\"mt-2\">Selected range: {{ range[0] }} – {{ range[1] }}</div>\n</v-container>\n\n<script>\n(() => {\n  // Define reactive data for the template\n  const range = [20, 80];\n\n  // Make range reactive using Vue's reactivity (provided by Dashboard 2)\n  const vue = window.vueApp ?? window.Vue ?? null;\n  if (!vue) {\n    console.error(\"Vue instance not found in Dashboard context.\");\n    return;\n  }\n\n  const { ref, watch } = vue;\n  const rangeRef = ref(range);\n\n  // Auto-send when slider moves\n  watch(rangeRef, (newVal) => {\n    if (typeof send === \"function\") {\n      send({ payload: { range: newVal } });\n    } else if (window.send) {\n      window.send({ payload: { range: newVal } });\n    }\n  });\n\n  // Handle incoming messages\n  const receiveFn = typeof receive === \"function\" ? receive : window.receive;\n  if (receiveFn) {\n    receiveFn((msg) => {\n      if (msg?.payload?.range && Array.isArray(msg.payload.range)) {\n        rangeRef.value = msg.payload.range;\n      }\n    });\n  }\n\n  // Expose to template\n  return { range: rangeRef };\n})();\n</script>\n\n<style scoped>\nh3 {\n  font-weight: 500;\n}\n</style>\n",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 160,
-        "y": 3020,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "c60061332293cb39",
-        "type": "ui-template",
-        "z": "3187bd06ef664359",
-        "d": true,
-        "group": "0ab4678ba1f9dae0",
-        "page": "",
-        "ui": "",
-        "name": "test range2",
-        "order": 3,
-        "width": "0",
-        "height": "0",
-        "head": "",
-        "format": "<template>\n    <div>\n        <h2>Counter</h2>\n        <p>Current Count: </p>\n        <p class=\"my-class\">Formatted Count: </p>\n        <v-btn @click=\"increase()\">Increment</v-btn>\n    </div>\n</template>\n\n<script>\n    export default {\n        data() {\n            // define variables available component-wide\n            // (in <template> and component functions)\n            return {\n                count: 0\n            }\n        },\n        watch: {\n            // watch for any changes of \"count\"\n            count: function () {\n                if (this.count % 5 === 0) {\n                    this.send({payload: 'Multiple of 5'})\n                }\n            }\n        },\n        computed: {\n            // automatically compute this variable\n            // whenever VueJS deems appropriate\n            formattedCount: function () {\n                return this.count + 'Apples'\n            }\n        },\n        methods: {\n            // expose a method to our <template> and Vue Application\n            increase: function () {\n                this.count++\n            }\n        },\n        mounted() {\n            // code here when the component is first loaded\n        },\n        unmounted() {\n            // code here when the component is removed from the Dashboard\n            // i.e. when the user navigates away from the page\n        }\n    }\n</script>\n<style>\n    /* define any styles here - supports raw CSS */\n    .my-class {\n        color: red;\n    }\n</style>",
-        "storeOutMessages": true,
-        "passthru": true,
-        "resendOnRefresh": true,
-        "templateScope": "local",
-        "className": "",
-        "x": 170,
-        "y": 3080,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "94aac4c5e81fde15",
-        "type": "ui-template",
-        "z": "3187bd06ef664359",
-        "d": true,
-        "group": "0ab4678ba1f9dae0",
-        "page": "",
-        "ui": "",
-        "name": "test template",
+        "name": "hrNoneFull",
         "order": 1,
         "width": 0,
         "height": 0,
         "head": "",
-        "format": "<template>\n    <div>\n        <h2>Counter</h2>\n        <!-- Conditional Styling using Attribute Binding (\":\") -->\n        <!-- and rendering content inside <tags></tags> with {{ }} -->\n        <p :style=\"{'color' : (count > 5 ? 'red' : 'green' )}\">Current Count: {{ count }}</p>\n        <!-- Computed Rendering using Vue Computed Variables -->\n        <p class=\"my-class\">Formatted Count: {{ formattedCount }}</p>\n        <!-- Conditional Rendering with \"v-if\" -->\n        <b v-if=\"count > 5\">Too many!</b>\n        <v-btn @click=\"increase()\">Increment</v-btn>\n    </div>\n</template>\n\n<script>\n    export default {\n        data() {\n            // define variables available component-wide\n            // (in <template> and component functions)\n            return {\n                count: 0\n            }\n        },\n        watch: {\n            // watch for any changes of \"count\"\n            count: function () {\n                if (this.count % 5 === 0) {\n                    this.send({payload: 'Multiple of 5'})\n                }\n            }\n        },\n        computed: {\n            // automatically compute this variable\n            // whenever VueJS deems appropriate\n            formattedCount: function () {\n                return this.count + ' Apples'\n            }\n        },\n        methods: {\n            // expose a method to our <template> and Vue Application\n            increase: function () {\n                this.count++\n            }\n        },\n        mounted() {\n            // code here when the component is first loaded\n        },\n        unmounted() {\n            // code here when the component is removed from the Dashboard\n            // i.e. when the user navigates away from the page\n        }\n    }\n</script>\n<style>\n    /* define any styles here - supports raw CSS */\n    .my-class {\n        color: red;\n    }\n</style>",
+        "format": "<template>\n  <v-card class=\"pa-4\">\n    <v-card-title>Range Slider</v-card-title>\n    <v-card-text>\n      <v-range-slider\n        v-model=\"sliderRange\"\n        :min=\"min\"\n        :max=\"max\"\n        :step=\"step\"\n        label=\"Select Range\"\n        thumb-label=\"always\"\n        @update:model-value=\"onRangeChange\"\n      ></v-range-slider>\n    </v-card-text>\n  </v-card>\n</template>\n\n<script>\nexport default {\n  // Use the built-in Vue component structure for the ui-template\n  data() {\n    return {\n      // The range value is an array of [min, max]\n      // Initialize with default values\n      sliderRange: [20, 60],\n      // Define properties for min, max, and step\n      min: 0,\n      max: 100,\n      step: 1\n    };\n  },\n  methods: {\n    // This method is called whenever the slider value changes\n    onRangeChange(newRange) {\n      // Send the new range array back to the Node-RED flow\n      // The payload will be: { payload: [min_value, max_value] }\n      this.send({ payload: newRange });\n    }\n  },\n  watch: {\n    // Watch for incoming messages on 'msg' and update the slider value\n    msg(newMsg) {\n      // Check if the incoming message has a payload that is an array of two numbers\n      if (Array.isArray(newMsg.payload) && newMsg.payload.length === 2) {\n        // Update the reactive data property\n        this.sliderRange = newMsg.payload;\n      }\n      \n      // Optionally, you can also allow setting min/max/step dynamically:\n      if (newMsg.min !== undefined) {\n        this.min = newMsg.min;\n      }\n      if (newMsg.max !== undefined) {\n        this.max = newMsg.max;\n      }\n      if (newMsg.step !== undefined) {\n        this.step = newMsg.step;\n      }\n    }\n  },\n  // Lifecycle hook for initial setup if needed\n  mounted() {\n    // Send an initial message on component load (optional)\n    this.send({ payload: this.sliderRange, topic: \"initial_load\" });\n  }\n};\n</script>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 170,
-        "y": 3160,
+        "x": 410,
+        "y": 900,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "736d5b1b88975cb4",
+        "type": "debug",
+        "z": "3187bd06ef664359",
+        "name": "debug 59",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 830,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "0e195b8c9e93c4b3",
+        "type": "ui-switch",
+        "z": "3187bd06ef664359",
+        "name": "Alarm",
+        "label": "waiting for update...",
+        "group": "d3987b783abbd512",
+        "order": 2,
+        "width": "",
+        "height": "",
+        "passthru": false,
+        "decouple": false,
+        "topic": "",
+        "topicType": "str",
+        "style": "",
+        "className": "",
+        "layout": "row-left-swapped",
+        "clickableArea": "none",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "alarm",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "alarm-off",
+        "offcolor": "",
+        "x": 550,
+        "y": 1340,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "892e382aebc86371",
+        "type": "debug",
+        "z": "3187bd06ef664359",
+        "name": "debug 60",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 2320,
+        "wires": []
     },
     {
         "id": "036e2046bfd2657c",
@@ -8022,7 +8118,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 710,
-        "y": 540,
+        "y": 500,
         "wires": []
     },
     {
@@ -8086,7 +8182,7 @@
         "type": "function",
         "z": "78ad727ff3800ccd",
         "name": "number conversions",
-        "func": "//\n// note that the load CSV node must be configured to NOT parse numbers \n// because default values like 40.0 must be preserved as this is used\n// to determine decimal points\n\nconst utils  = global.get(\"utils\")\n\nconst m = /\\.[\\d]+$/.test(msg.modbusRow['Default value'])\nconst numberOfDecimals = m ? 1 : 0;\n\nRED.util.cloneMessage(msg);\n\nif (isFinite(msg.payload)) \n{\n  msg.payload *= Math.pow(10, -numberOfDecimals);\n  msg.payload = utils.oneDecPoint(msg.payload) \n}\n\nmsg.units = msg.modbusRow['Unit/Value']\n\n// red : digest, yellow : update, green : writeThrough    \n\nlet colour = msg.digest ? 'red': (msg.writeThrough ? 'green' : 'yellow') ;\n\nconst defaultValue = msg.modbusRow['Default value']\nconst defaultValueText = defaultValue === undefined ? \"\" : 'default ' + defaultValue\nnode.status({\n    fill: colour, shape: \"dot\", \n    text: `${utils.getTimeNow()} ${msg.topic}:${msg.payload} ${defaultValueText}`\n});\nreturn msg  ;",
+        "func": "\n//\n// note that the load CSV node must be configured to NOT parse numbers \n// because default values like 40.0 must be preserved as this is used\n// to determine decimal points\n\n\nfunction toShort(number) {\n  const int16 = new Int16Array(1)\n  int16[0] = number\n  return int16[0]\n}\n\nconst utils  = global.get(\"utils\")\n\nconst m = /\\.[\\d]+$/.test(msg.modbusRow['Default value'])\nconst numberOfDecimals = m ? 1 : 0;\n\nRED.util.cloneMessage(msg);\n\nif (isFinite(msg.payload)) \n{\n  msg.payload = toShort(msg.payload)\n  msg.payload *= Math.pow(10, -numberOfDecimals);\n  msg.payload = utils.oneDecPoint(msg.payload) \n}\n\nmsg.units = msg.modbusRow['Unit/Value']\n\n// red : digest, yellow : update, green : writeThrough    \n\nlet colour = msg.digest ? 'red': (msg.writeThrough ? 'green' : 'yellow') ;\n\nconst defaultValue = msg.modbusRow['Default value']\nconst defaultValueText = defaultValue === undefined ? \"\" : 'default ' + defaultValue\nnode.status({\n    fill: colour, shape: \"dot\", \n    text: `${utils.getTimeNow()} ${msg.topic}:${msg.payload} ${defaultValueText}`\n});\nreturn msg  ;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -8342,7 +8438,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 720,
+        "x": 700,
         "y": 720,
         "wires": []
     },
@@ -8355,8 +8451,8 @@
         "y": 660,
         "wires": [
             [
-                "76500cf3375b0621",
-                "f3dd344c36740256"
+                "f3dd344c36740256",
+                "76500cf3375b0621"
             ],
             [],
             []
