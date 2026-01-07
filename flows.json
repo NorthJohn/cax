@@ -64,6 +64,14 @@
         "env": []
     },
     {
+        "id": "aec6945d4d03ae69",
+        "type": "tab",
+        "label": "sockets",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
         "id": "86219b48706129b6",
         "type": "tab",
         "label": "playspace",
@@ -939,7 +947,7 @@
                 "cols": "12"
             }
         ],
-        "order": 5,
+        "order": 6,
         "className": "",
         "visible": true,
         "disabled": false
@@ -1031,7 +1039,7 @@
                 "cols": "12"
             }
         ],
-        "order": 6,
+        "order": 7,
         "className": "",
         "visible": true,
         "disabled": false
@@ -1135,6 +1143,56 @@
         "page": "f269bfbfdc438ab8",
         "width": "8",
         "height": "4",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "5b6de6d47d6fb4c5",
+        "type": "ui-page",
+        "name": "Sockets",
+        "ui": "e41c774eeb2b3037",
+        "path": "/sockets",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "c35227ba6f0c2fc2",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 5,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "85581f135f4bd40d",
+        "type": "ui-group",
+        "name": "Power Socket 2",
+        "page": "5b6de6d47d6fb4c5",
+        "width": "3",
+        "height": "1",
         "order": 1,
         "showTitle": true,
         "className": "",
@@ -1470,7 +1528,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "MQTT out",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1705,7 +1763,7 @@
         "retentionPolicyV18Flux": "",
         "org": "PUNL-30d",
         "bucket": "caxton30d",
-        "x": 610,
+        "x": 750,
         "y": 680,
         "wires": []
     },
@@ -1751,7 +1809,8 @@
         "name": "MQTT local",
         "links": [
             "0a9719bd77581975",
-            "577231c552842134"
+            "577231c552842134",
+            "d2a9b1421e60c228"
         ],
         "x": 185,
         "y": 100,
@@ -1801,7 +1860,7 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "unpack",
-        "func": "/**\n * handle incoming traffic from sensors\n * serialize all the properties into single msgs\n */\n\n\nconst source = msg.topic; // e.g. s3\n\n// look up sensor location, it's edited by user on zigbee2mqtt\n\nconst config = global.get(\"site-config\", 'file');\n\nconst location = config.sensorMap.hasOwnProperty(source) \n               ? config.sensorMap[source] : source;  // e.g. s3\n\nconst stream = [] \n\nconst params = {\n    temperature:   { writeThrough : true },\n    battery:       { windowPeriodSecs : 60 * 60 * 24, reportOnDiff: 5000  },\n    voltage:       { windowPeriodSecs : 60 * 60 * 24, reportOnDiff: 5000  },\n    humidity:      { windowPeriodSecs : 60 * 60 * 1 , reportOnDiff: 5  },\n    linkquality:   { windowPeriodSecs : 60 * 60 * 1 , reportOnDiff: 30 },\n\n    windSpeed:     { windowPeriodSecs : 60 * 60 * 1   },\n    windDirection: { windowPeriodSecs : 60 * 60 * 1   },\n}\n\nconst m = {}   // Object.assign({}, msg);\n\n// create a template message \n\n// m.originalTopic = msg.originalTopic   no needed.\nm.source = source \nm.location = location\nm.prefix = msg.prefix // prevents influx recording copies\n\n//m.writeThrough = true ; //   msg.writeThrough ?? true;\n//m.digest = msg.digest ?? false;\n\n//m.timestamp = msg.timestamp ?? Date.now()\n//if (msg.payload.last_seen)\n  //  m.last_seen = msg.payload.last_seen\n\nm.timestamp = msg.timestamp ?? msg.last_seen ?? Date.now() ;\n\n// now create the variations\n// push out new message for every property in \n// the paramList.\n\n//const utils = global.get('utils')\n\nfor (const property in msg.payload) {\n    // looks like rubbish \n    // n.payload = Object.assign({}, m.payload);\n    if (params.hasOwnProperty(property))\n    {\n        const m1 = RED.util.cloneMessage(m);\n        const n = Object.assign(m1, params[property]);\n        n.topic = source + '/' + property ;\n        n.param = property ;\n        n.payload = msg.payload[property]\n        // round everything apart from temperature\n        n.precision = property == 'temperature' ? 2 : 0 ;\n        stream.push(n)\n    }\n}\nreturn [stream]",
+        "func": "/**\n * handle incoming traffic from sensors\n * serialize all the properties into single msgs\n */\n\n\nconst source = msg.topic; // e.g. s3\n\n// look up sensor location, it's edited by user on zigbee2mqtt\n\nconst config = global.get(\"site-config\", 'file');\n\nconst location = config.sensorMap.hasOwnProperty(source) \n               ? config.sensorMap[source] : source;  // e.g. s3\n\nconst stream = [] \n\nconst params = {\n    temperature:   { writeThrough : true },\n    battery:       { windowPeriodSecs : 60 * 60 * 4, reportOnDiff: 5000  },\n    //voltage:       { windowPeriodSecs : 60 * 60 * 24, reportOnDiff: 5000  },\n    humidity:      { windowPeriodSecs : 60 * 60 * 1 , reportOnDiff: 5  },\n    linkquality:   { windowPeriodSecs : 60 * 60 * 1 , reportOnDiff: 30 },\n\n    // power and  power/energy sockets\n    state: { writeThrough : true },\n    voltage:{ windowPeriodSecs: 60 * 60 * 1, reportOnDiff: 10 },\n    current:{ windowPeriodSecs: 60 * 60 * 1, reportOnDiff: 0.1 }, \n    power:  { windowPeriodSecs: 60 * 60 * 1, reportOnDiff: 50 },\n    energy: { windowPeriodSecs: 60 * 60 * 1, reportOnDiff: 1 }, \n\n    // weather \n    windSpeed:     { windowPeriodSecs : 60 * 60 * 1   },\n    windDirection: { windowPeriodSecs : 60 * 60 * 1   },\n}\n\nconst m = {}   // Object.assign({}, msg);\n\n// create a template message \n\n// m.originalTopic = msg.originalTopic   no needed.\nm.source = source \nm.location = location\nm.prefix = msg.prefix // prevents influx recording copies\n\n//m.writeThrough = true ; //   msg.writeThrough ?? true;\n//m.digest = msg.digest ?? false;\n\n//m.timestamp = msg.timestamp ?? Date.now()\n//if (msg.payload.last_seen)\n  //  m.last_seen = msg.payload.last_seen\n\nm.timestamp = msg.timestamp ?? msg.last_seen ?? Date.now() ;\n\n// now create the variations\n// push out new message for every property in \n// the paramList.\n\n//const utils = global.get('utils')\n\nfor (const property in msg.payload) {\n    // looks like rubbish \n    // n.payload = Object.assign({}, m.payload);\n    if (params.hasOwnProperty(property))\n    {\n        const m1 = RED.util.cloneMessage(m);\n        const n = Object.assign(m1, params[property]);\n        n.topic = source + '/' + property ;\n        n.param = property ;\n        n.payload = msg.payload[property]\n        // round everything apart from temperature\n        n.precision = property == 'temperature' ? 2 : 0 ;\n        stream.push(n)\n    }\n}\nreturn [stream]",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -2057,7 +2116,8 @@
         "z": "fce55c80ba409b3d",
         "name": "router",
         "links": [
-            "de9a8c2bce218be1"
+            "de9a8c2bce218be1",
+            "dd35310cf15bf88c"
         ],
         "x": 115,
         "y": 420,
@@ -2743,7 +2803,8 @@
         "name": "sensors clocked",
         "mode": "link",
         "links": [
-            "f2e5754610a2a6d1"
+            "f2e5754610a2a6d1",
+            "de34051b3a323941"
         ],
         "x": 595,
         "y": 580,
@@ -6101,6 +6162,7 @@
         "id": "5bfabbc178cd919f",
         "type": "ui-gauge-classic",
         "z": "3187bd06ef664359",
+        "d": true,
         "name": "m2",
         "group": "318d4c5818f432d1",
         "order": 4,
@@ -6123,7 +6185,9 @@
                 "lengthPercent": "100"
             }
         ],
+        "hubcolor": "black",
         "sweep_angle": "250",
+        "keepwidth": true,
         "myclass": "",
         "x": 710,
         "y": 2780,
@@ -6261,6 +6325,7 @@
         "id": "dcd454138c70c4e9",
         "type": "ui-gauge-classic",
         "z": "3187bd06ef664359",
+        "d": true,
         "name": "m7",
         "group": "318d4c5818f432d1",
         "order": 9,
@@ -6283,7 +6348,9 @@
                 "lengthPercent": "100"
             }
         ],
+        "hubcolor": "black",
         "sweep_angle": "250",
+        "keepwidth": true,
         "myclass": "",
         "x": 710,
         "y": 2980,
@@ -6357,6 +6424,7 @@
         "id": "a685643a59b90cc0",
         "type": "ui-gauge-classic",
         "z": "3187bd06ef664359",
+        "d": true,
         "name": "m10",
         "group": "318d4c5818f432d1",
         "order": 12,
@@ -6379,7 +6447,9 @@
                 "lengthPercent": "100"
             }
         ],
+        "hubcolor": "black",
         "sweep_angle": "250",
+        "keepwidth": true,
         "myclass": "",
         "x": 710,
         "y": 3100,
@@ -7249,7 +7319,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "returned",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -7420,7 +7490,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "sensor data prep",
-        "func": "\nif (msg.source === undefined) // all sensors expected to have source set e.g. 't2'\n  return null ;\n\nconst sensorRegex = /^[bsdgmt][\\d]{1,2}$/\n\nif (!msg.source.match(sensorRegex))\n  return null ;\n\nconst utils = global.get('utils') ?? null ;\n\n// ja \n// source is m1, m2, m3  (desired rows)\n// measurement is temperature, humidity  (desired cols)\n\nconst columns =  // define the initial column order\n{\n  time : 0,\n  source : '?',\n  location : '?',\n  temperature : 0\n}\nconst frame = context.get('frame') ?? { }\n\nconst row = frame[msg.source] ?? columns ;\n// \n\nrow['time'] =  utils.getTimeOrDate(msg.timestamp);\n\nrow['source'] = msg.source ;\nrow['location'] = msg.location ;\nrow['state'] = msg.state ;\nrow[msg.param] = msg.payload ;\nframe[msg.source] = row ;\ncontext.set('frame', frame)\n\nconst ar = Object.values(frame);\nconst arsort = (a, b) => a.source.localeCompare(b.source);\nar.sort(arsort);\n\nconst statText = `${msg.topic} - ${row['time']}`\nnode.status({ fill: \"green\", shape: \"dot\", text : statText })\n\nreturn { topic : 'frame',  payload :  ar};",
+        "func": "\nif (msg.source === undefined) // all sensors expected to have source set e.g. 't2'\n  return null ;\n\nconst sensorRegex = /^[bsdgmtp][\\d]{1,2}$/\n\nif (!msg.source.match(sensorRegex))\n  return null ;\n\nconst utils = global.get('utils') ?? null ;\n\n// ja \n// source is m1, m2, m3  (desired rows)\n// measurement is temperature, humidity  (desired cols)\n\nconst columns =  // define the initial column order\n{\n  time : 0,\n  source : '?',\n  location : '?',\n  temperature : 0\n}\nconst frame = context.get('frame') ?? { }\n\nconst row = frame[msg.source] ?? columns ;\n// \n\nrow['time'] =  utils.getTimeOrDate(msg.timestamp);\n\nrow['source'] = msg.source ;\nrow['location'] = msg.location ;\nrow['state'] = msg.state ;\nrow[msg.param] = msg.payload ;\nframe[msg.source] = row ;\ncontext.set('frame', frame)\n\nconst ar = Object.values(frame);\nconst arsort = (a, b) => a.source.localeCompare(b.source);\nar.sort(arsort);\n\nconst statText = `${msg.topic} - ${row['time']}`\nnode.status({ fill: \"green\", shape: \"dot\", text : statText })\n\nreturn { topic : 'frame',  payload :  ar};",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -9164,6 +9234,289 @@
         "info": "",
         "x": 190,
         "y": 20,
+        "wires": []
+    },
+    {
+        "id": "947aa5c71c0312dc",
+        "type": "ui-switch",
+        "z": "aec6945d4d03ae69",
+        "name": "offOn",
+        "label": "switch",
+        "group": "85581f135f4bd40d",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "decouple": false,
+        "topic": "p2/set/state",
+        "topicType": "str",
+        "style": "",
+        "className": "",
+        "layout": "row-left",
+        "clickableArea": "switch",
+        "onvalue": "ON",
+        "onvalueType": "str",
+        "onicon": "",
+        "oncolor": "red",
+        "offvalue": "OFF",
+        "offvalueType": "str",
+        "officon": "",
+        "offcolor": "grey",
+        "x": 430,
+        "y": 400,
+        "wires": [
+            [
+                "d2a9b1421e60c228"
+            ]
+        ]
+    },
+    {
+        "id": "c28262c839aaccfc",
+        "type": "ui-text",
+        "z": "aec6945d4d03ae69",
+        "group": "85581f135f4bd40d",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "name": "Power",
+        "label": "text",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "20",
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 430,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "3da335cfd9dd5f00",
+        "type": "ui-text",
+        "z": "aec6945d4d03ae69",
+        "group": "85581f135f4bd40d",
+        "order": 5,
+        "width": "0",
+        "height": "0",
+        "name": "Energy",
+        "label": "text",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "20",
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 440,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "6dedbd17bc35687f",
+        "type": "switch",
+        "z": "aec6945d4d03ae69",
+        "name": "power2",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "voltage",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "current",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "power",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "energy",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "state",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 5,
+        "x": 200,
+        "y": 300,
+        "wires": [
+            [
+                "ee0d4100a5d375a3"
+            ],
+            [
+                "e9ba9ab527065872"
+            ],
+            [
+                "c28262c839aaccfc"
+            ],
+            [
+                "3da335cfd9dd5f00"
+            ],
+            [
+                "947aa5c71c0312dc"
+            ]
+        ]
+    },
+    {
+        "id": "675ae5e80dd5a88e",
+        "type": "function",
+        "z": "aec6945d4d03ae69",
+        "name": "ui update sockets",
+        "func": "// set source, location and topic \n// should this be done by common routine\n\nlet tokens = msg.topic.split('/') \nconst source = tokens[0]\nconst subtopic = tokens[1]\n\nif (source != 'p2')\n  return null \n\nif (msg.track)\n  node.status({ fill: 'green', shape: \"dot\", text:`source:${source} subtopic:${subtopic}`})\n\nconst labels = {  \n  voltage : 'volts', \n  current : 'amps',\n  power   : 'watts',\n  energy  : 'kWh'\n}\n\nswitch (subtopic)\n{\n  case 'state' :\n    msg.state = msg.payload  \n    msg.payload = (msg.payload != 'OFF')\n    const statusColour = {'OFF': 'grey', 'ON': 'red' }\n    msg.ui_update = {\n      label :   'Socket ' + msg.state,\n      oncolor  : statusColour[msg.state],\n      offcolor : statusColour[msg.state]\n    }\n    break ;\n\n  case 'voltage': \n  case 'current': \n  case 'power':    \n  case 'energy':  \n    msg.ui_update = {\n      label : labels[subtopic],\n      fontSize : 20\n    }\n    break \n    \n  default :\n      msg.ui_update = {\n      label : 'unmapped ' + subtopic,\n      fontSize : 20\n    }\n\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 140,
+        "wires": [
+            [
+                "6dedbd17bc35687f",
+                "7d006673fa83ed9f"
+            ]
+        ]
+    },
+    {
+        "id": "de34051b3a323941",
+        "type": "link in",
+        "z": "aec6945d4d03ae69",
+        "name": "instrument  data in",
+        "links": [
+            "4155f40899b57319"
+        ],
+        "x": 205,
+        "y": 140,
+        "wires": [
+            [
+                "675ae5e80dd5a88e"
+            ]
+        ]
+    },
+    {
+        "id": "d2a9b1421e60c228",
+        "type": "link out",
+        "z": "aec6945d4d03ae69",
+        "name": "mosquitto",
+        "mode": "link",
+        "links": [
+            "b059487bc1ff0a2b"
+        ],
+        "x": 585,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "ee0d4100a5d375a3",
+        "type": "ui-text",
+        "z": "aec6945d4d03ae69",
+        "group": "85581f135f4bd40d",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "name": "Voltage",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "20",
+        "color": "#707070",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 440,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "e9ba9ab527065872",
+        "type": "ui-text",
+        "z": "aec6945d4d03ae69",
+        "group": "85581f135f4bd40d",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Current",
+        "label": "text",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "20",
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 440,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "7d006673fa83ed9f",
+        "type": "debug",
+        "z": "aec6945d4d03ae69",
+        "name": "debug 62",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "f155a87eab9e1402",
+        "type": "ui-text",
+        "z": "aec6945d4d03ae69",
+        "group": "85581f135f4bd40d",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "Location",
+        "label": "CU front office",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": true,
+        "font": "Arial,Arial,Helvetica,sans-serif",
+        "fontSize": "20",
+        "color": "#707070",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 440,
+        "y": 200,
         "wires": []
     },
     {
