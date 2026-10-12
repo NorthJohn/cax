@@ -26,7 +26,7 @@
     {
         "id": "e7fcf1f501be8b60",
         "type": "tab",
-        "label": "clock0",
+        "label": "scheduler",
         "disabled": false,
         "info": "",
         "env": []
@@ -775,7 +775,7 @@
         "page": "b43082bff9046c6f",
         "width": "6",
         "height": "1",
-        "order": 8,
+        "order": 7,
         "showTitle": true,
         "className": "",
         "visible": "true",
@@ -969,7 +969,7 @@
     {
         "id": "d3987b783abbd512",
         "type": "ui-group",
-        "name": "ASHP",
+        "name": "Heat Pump",
         "page": "b43082bff9046c6f",
         "width": "6",
         "height": "1",
@@ -985,9 +985,9 @@
         "type": "ui-group",
         "name": "Log",
         "page": "b43082bff9046c6f",
-        "width": "6",
-        "height": "1",
-        "order": 9,
+        "width": "12",
+        "height": "2",
+        "order": 8,
         "showTitle": true,
         "className": "",
         "visible": "true",
@@ -1047,7 +1047,7 @@
     {
         "id": "9ee3507d7e391438",
         "type": "ui-group",
-        "name": "work area",
+        "name": "work area2",
         "page": "f269bfbfdc438ab8",
         "width": "12",
         "height": "8",
@@ -1203,14 +1203,14 @@
     {
         "id": "fe54fec54df01fd1",
         "type": "ui-group",
-        "name": "ASHP alarms",
+        "name": "Heat Pump alarms",
         "page": "b43082bff9046c6f",
-        "width": "6",
-        "height": "1",
-        "order": 7,
+        "width": "12",
+        "height": "6",
+        "order": 9,
         "showTitle": true,
         "className": "",
-        "visible": true,
+        "visible": "true",
         "disabled": "false",
         "groupType": "default"
     },
@@ -1542,7 +1542,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "MQTT out",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1777,7 +1777,7 @@
         "retentionPolicyV18Flux": "",
         "org": "PUNL-30d",
         "bucket": "caxton30d",
-        "x": 750,
+        "x": 610,
         "y": 680,
         "wires": []
     },
@@ -2010,7 +2010,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "tracked",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2392,7 +2392,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "debug 54",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2425,7 +2425,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "debug 57",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2441,14 +2441,14 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "debug 61",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 860,
+        "x": 760,
         "y": 500,
         "wires": []
     },
@@ -2801,11 +2801,11 @@
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/**\n * Formats a timestamp in milliseconds.\n * Returns the time (hhmm) if the date is today, or the date (DD/MM/YYYY) if it's not today.\n *\n * @param {number} timestampMs - The datetime in milliseconds.\n * @returns {string} The formatted time or date string.\n */\nconst formatTimeOrDate = (timestampMs) => {\n    // 1. Create Date objects for the given timestamp and the current time\n    const inputDate = new Date(timestampMs);\n    const today = new Date();\n\n    // 2. Helper function to check if a date is today\n    // We compare the year, month, and day of the month.\n    const isToday = (date) => {\n        return date.getFullYear() === today.getFullYear() &&\n            date.getMonth() === today.getMonth() &&\n            date.getDate() === today.getDate();\n    };\n\n    // 3. Format components with leading zeros\n    const pad = (num) => String(num).padStart(2, '0');\n\n    if (isToday(inputDate)) {\n        // Return time in hhmm format (e.g., 1435)\n        const hours = pad(inputDate.getHours());\n        const minutes = pad(inputDate.getMinutes());\n        return `${hours}:${minutes}`; // \n\n    } else {\n        // Return date in DD/MM/YYYY format (e.g., 25/11/2025)\n        const day = pad(inputDate.getDate());\n        const monthName = inputDate.toLocaleString('default', { month: 'short' });\n        return `${monthName} ${day}`; // \n    }\n};\n\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    oneDecPoint : (n) => (Math.round(n * 10) / 10),\n    twoDecPoint : (n) => (Math.round(n * 100) / 100),\n    //toFix : (num, precision) => (Math.trunc(num * (10 ** precision))) / (10 ** precision),\n    toFix: (num, precision) => (Math.round(num * (10 ** precision))) / (10 ** precision),\n\n    getHHMM: (millis) => new Date(millis).toTimeString().substring(0, 5),\n    getHHMMSS: (millis) => new Date(millis).toTimeString().substring(0, 8),\n\n    getHHMMNow: () => utils.getHHMM(Date.now()),\n    getHHMMSSNow: () => utils.getHHMMSS(Date.now()),\n    \n    getTimeNow: () => utils.getHHMM(Date.now()),\n\n    getTimeOrDate: (millis) => formatTimeOrDate(millis),\n\n    sensorStatus: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + 1000 * 60 * minutes < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const neverSeen = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut2 = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const online = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: online, timedOut: timedOut, timedOut2: timedOut2,  neverSeen: neverSeen }\n    }\n\n}\nglobal.set(\"utils\", utils)",
+        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/**\n * Formats a timestamp in milliseconds.\n * Returns the time (hhmm) if the date is today, or the date (DD/MM/YYYY) if it's not today.\n *\n * @param {number} timestampMs - The datetime in milliseconds.\n * @returns {string} The formatted time or date string.\n */\nconst formatTimeOrDate = (timestampMs) => {\n    // 1. Create Date objects for the given timestamp and the current time\n    const inputDate = new Date(timestampMs);\n    const today = new Date();\n\n    // 2. Helper function to check if a date is today\n    // We compare the year, month, and day of the month.\n    const isToday = (date) => {\n        return date.getFullYear() === today.getFullYear() &&\n            date.getMonth() === today.getMonth() &&\n            date.getDate() === today.getDate();\n    };\n\n    // 3. Format components with leading zeros\n    const pad = (num) => String(num).padStart(2, '0');\n\n    if (isToday(inputDate)) {\n        // Return time in hhmm format (e.g., 1435)\n        const hours = pad(inputDate.getHours());\n        const minutes = pad(inputDate.getMinutes());\n        return `${hours}:${minutes}`; // \n\n    } else {\n        // Return date in DD/MM/YYYY format (e.g., 25/11/2025)\n        const day = pad(inputDate.getDate());\n        const monthName = inputDate.toLocaleString('default', { month: 'short' });\n        return `${monthName} ${day}`; // \n    }\n};\n\n\nconst utils =\n{\n    square:((a) =>  a * a),\n\n    oneDecPoint : (n) => (Math.round(n * 10) / 10),\n    twoDecPoint : (n) => (Math.round(n * 100) / 100),\n    //toFix : (num, precision) => (Math.trunc(num * (10 ** precision))) / (10 ** precision),\n    toFix: (num, precision) => (Math.round(num * (10 ** precision))) / (10 ** precision),\n\n    getHHMM: (millis) => new Date(millis).toTimeString().substring(0, 5),\n    getHHMMSS: (millis) => new Date(millis).toTimeString().substring(0, 8),\n\n    getHHMMNow: () => utils.getHHMM(Date.now()),\n    getHHMMSSNow: () => utils.getHHMMSS(Date.now()),\n    \n    getTimeNow: () => utils.getHHMM(Date.now()),\n\n    getTimeOrDate: (millis) => formatTimeOrDate(millis),\n    getTimeOrDateNow: () => formatTimeOrDate(Date.now()),\n\n    sensorStatus: (sensorsKnown, instruments, minutes, timeNow) => \n    {\n        const isTimedOut = ((name) => instruments[name + '/temperature'].timestamp\n            + 1000 * 60 * minutes < timeNow)\n\n        const sensorsActive = Object.keys(instruments)\n            .filter((s) => s.split('/')[1] == 'temperature')\n            .map((s) => s.split('/')[0])\n\n        const neverSeen = sensorsKnown\n            .filter((name) => !sensorsActive.includes(name))\n\n        const timedOut2 = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n\n        const timedOut = sensorsActive\n            .filter((name) => sensorsActive.includes(name))\n            .filter((name) => isTimedOut(name))\n            .map((name) => name + ':'\n                + utils.getHHMM(instruments[name + '/temperature'].timestamp ?? 0))\n\n        const online = sensorsActive\n            .filter((name) => (!isTimedOut(name)))\n\n        return { online: online, timedOut: timedOut, timedOut2: timedOut2,  neverSeen: neverSeen }\n    }\n\n}\nglobal.set(\"utils\", utils)",
         "finalize": "",
         "libs": [],
-        "x": 120,
-        "y": 760,
+        "x": 730,
+        "y": 1100,
         "wires": [
             []
         ]
@@ -3054,7 +3054,7 @@
         "finalize": "",
         "libs": [],
         "x": 110,
-        "y": 1180,
+        "y": 1100,
         "wires": [
             [],
             [],
@@ -3250,7 +3250,7 @@
         "payload": "",
         "payloadType": "date",
         "x": 120,
-        "y": 1040,
+        "y": 960,
         "wires": [
             [
                 "c62b3b84d897e3c1"
@@ -3271,7 +3271,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 620,
-        "y": 1040,
+        "y": 960,
         "wires": []
     },
     {
@@ -3287,12 +3287,22 @@
         "finalize": "",
         "libs": [],
         "x": 390,
-        "y": 1040,
+        "y": 960,
         "wires": [
             [
                 "8c5f3662d97c6763"
             ]
         ]
+    },
+    {
+        "id": "3ad0d702710db896",
+        "type": "comment",
+        "z": "a39c97029f2c005f",
+        "name": "Global functions including time",
+        "info": "",
+        "x": 660,
+        "y": 1060,
+        "wires": []
     },
     {
         "id": "57a65d7e6a100b88",
@@ -3769,7 +3779,7 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "scheduler 2",
-        "func": "const defaultSchedule = \n{\n  start : '23:40',\n  stop  : '23:45',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\", \"file\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'all': \n        recall = true ;   \n    case 'tick': \n        break ;\n    \n    case 'advance' :\n        advance = true ;   \n        break ;\n\n        \n    // from the webform and MQTT\n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'start': 'stop' \n\nconst texxt = `${timeNow}: ${offOnText} 🕐${schedule.start}↦${schedule.stop}`\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/set/schedule', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/schedule/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/schedule/start`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  if (recall) \n    node.error('recall pressed');\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { topic : 'schedule', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
+        "func": "const defaultSchedule = \n{\n  start : '23:40',\n  stop  : '23:45',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\", \"file\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'all': \n        recall = true ;   \n    case 'tick': \n        break ;\n    \n    case 'advance' :\n        advance = true ;   \n        break ;\n\n        \n    // from the webform and MQTT\n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'start': 'stop' \n\nconst texxt = `${timeNow}: ${offOnText} 🕐${schedule.start}↦${schedule.stop}`\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/set/schedule', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/schedule/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/schedule/stop`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  if (recall) \n    node.error('recall pressed');\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { topic : 'schedule', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3949,6 +3959,123 @@
         "x": 310,
         "y": 280,
         "wires": []
+    },
+    {
+        "id": "4b312ca3f9e40a03",
+        "type": "http request",
+        "z": "e7fcf1f501be8b60",
+        "name": "get weather forecast",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "http://api.openweathermap.org/data/2.5/forecast?cnt=8&q=London,uk&units=metric&APPID=02d6849de8880c4335b3a8b50c016843",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": true,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 320,
+        "y": 560,
+        "wires": [
+            [
+                "836f380346a840ec",
+                "da52901daadafaf3"
+            ]
+        ]
+    },
+    {
+        "id": "e099dfa15183f748",
+        "type": "inject",
+        "z": "e7fcf1f501be8b60",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 110,
+        "y": 560,
+        "wires": [
+            [
+                "4b312ca3f9e40a03"
+            ]
+        ]
+    },
+    {
+        "id": "836f380346a840ec",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "debug 66",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "dc3a432aafbb249d",
+        "type": "ui-table",
+        "z": "e7fcf1f501be8b60",
+        "group": "c8e0ab309895af11",
+        "name": "weather",
+        "label": "",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "maxrows": 0,
+        "passthru": false,
+        "autocols": true,
+        "showSearch": true,
+        "deselect": true,
+        "selectionType": "none",
+        "columns": [],
+        "mobileBreakpoint": "sm",
+        "mobileBreakpointType": "defaults",
+        "action": "replace",
+        "className": "",
+        "x": 620,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "da52901daadafaf3",
+        "type": "function",
+        "z": "e7fcf1f501be8b60",
+        "name": "curate weather",
+        "func": "let weather = []\n\nfor (const fcast of msg.payload.list)\n{\n  const snap = { \n    dt : fcast.dt,\n    dt_text : fcast.dt_txt,\n    temp : fcast.main.temp, \n    wind : fcast.wind.speed,\n    deg : fcast.wind.deg,    \n    datetime : fcast.dt_text\n  }\n  weather.push(snap)\n}\n\n\nmsg.payload = weather\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 180,
+        "y": 680,
+        "wires": [
+            [
+                "dc3a432aafbb249d"
+            ]
+        ]
     },
     {
         "id": "00c4ccd08c5fc11a",
@@ -4904,8 +5031,8 @@
         "links": [
             "4155f40899b57319"
         ],
-        "x": 165,
-        "y": 1800,
+        "x": 175,
+        "y": 1980,
         "wires": [
             [
                 "aa3572b743cf326b",
@@ -6537,7 +6664,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "ui update ASHP",
-        "func": "// set source, location and topic \n// should this be done by common routine\n\nlet tokens = msg.topic.split('/') \nconst source = tokens[0]\nconst subtopic = tokens[1]\n\nif (source != 'ashp0')\n  return null \n\nif (msg.track)\n  node.status({ fill: 'green', shape: \"dot\", text:`source:${source} subtopic:${subtopic}`})\n\nswitch (msg.topic)\n{\n  case 'ashp0/UNIT_STATUS' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off','Running','Stopping', 'Delay', 'Alarm','Ready','6 ish','Defrost' ]\n    const statusColour = ['grey','green', 'yellow',   'orange','red',  'blue','yellow','lightblue' ]\n    msg.ui_update = {\n      label :   'ASHP ' + statusText[msg.state],\n      oncolor : statusColour[msg.state],\n      offcolor : statusColour[msg.state]\n    }\n    break ;\n\n  /*\n    Alarm state:\n    Normal = No alarm\n    Partial = There is an alarm, but the unit continues to operate\n    Shutdown = Unit shuts down\n  */\n\n  case 'ashp0/UNIT_ALM':\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statText =   ['No alarm', 'Alarm - Partial shutdown', 'Alarm - Shutdown']\n    const statColour = ['grey',  'orange', 'red']\n    msg.ui_update = {\n      label :   'ASHP ' + statText[msg.state],\n      oncolor : statColour[msg.state],\n      offcolor : statColour[msg.state]\n    }\n    break ;  \n    \n  case 'ashp0/GENUNIT_CTRL_PNT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 25, \n      max : 52,\n      step : 1,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n\n  case 'ashp0/TEMP_LWT' :\n  case 'ashp0/TEMP_EWT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 0, \n      max : 52,\n      step : 5,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n  case 'ashp0/PUMPSTAT_CAPPOWER' :\n    msg.ui_update = {\n      //label : 'xxx', \n      measurement : 'Output power',\n      min : 0, \n      max : 50,\n      step : 5,\n      units : \"kw\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"grey\"}, \n        { \"start\": 20, \"color\": \"pink\"}, \n        { \"start\": 30, \"color\": \"green\"}, \n        { \"start\": 40, \"color\": \"red\"}, \n      ]\n    }\n    break \n\n  case 'ashp0/today/kWh' :\n    msg.ui_update = {\n      label : 'Output energy today kWh ', \n      fontSize : 20      \n    }\n    break \n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break   \n\n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break   \n\n  case 'ashp0/ALARMRST_alarm_1c' :\n  case 'ashp0/ALARMRST_alarm_2c' :\n  case 'ashp0/ALARMRST_alarm_3c' :\n  case 'ashp0/ALARMRST_alarm_4c' :\n  case 'ashp0/ALARMRST_alarm_5c' :\n  case 'ashp0/ALARMRST_alarm_1':\n  case 'ashp0/ALARMRST_alarm_2':\n  case 'ashp0/ALARMRST_alarm_3':\n  case 'ashp0/ALARMRST_alarm_4':\n  case 'ashp0/ALARMRST_alarm_5': \n      msg.ui_update = {\n        label : 'Alaarm ' + msg.subtopic, \n        fontSize : 20      \n      }\n    break ;\n\n  default :\n\n}\n\nreturn msg;",
+        "func": "// set source, location and topic \n// should this be done by common routine\n\nlet tokens = msg.topic.split('/') \nconst source = tokens[0]\nconst subtopic = tokens[1]\n\nif (source != 'ashp0')\n  return null \n\nif (msg.track)\n  node.status({ fill: 'green', shape: \"dot\", text:`source:${source} subtopic:${subtopic}`})\n\nswitch (msg.topic)\n{\n  case 'ashp0/UNIT_STATUS' :\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statusText =   ['Off','Running','Stopping', 'Delay', 'Alarm','Ready','6 ish','Defrost' ]\n    const statusColour = ['grey','green', 'yellow',   'orange','red',  'blue','yellow','lightblue' ]\n    msg.ui_update = {\n      label :   'ASHP ' + statusText[msg.state],\n      oncolor : statusColour[msg.state],\n      offcolor : statusColour[msg.state]\n    }\n    break ;\n\n  /*\n    Alarm state:\n    Normal = No alarm\n    Partial = There is an alarm, but the unit continues to operate\n    Shutdown = Unit shuts down\n  */\n\n  case 'ashp0/UNIT_ALM':\n    msg.state = msg.payload \n    msg.payload = (msg.payload != 0)\n    const statText =   ['No alarm', 'Alarm - Partial shutdown', 'Alarm - Shutdown']\n    const statColour = ['grey',  'orange', 'red']\n    msg.ui_update = {\n      label :   'ASHP ' + statText[msg.state],\n      oncolor : statColour[msg.state],\n      offcolor : statColour[msg.state]\n    }\n    break ;  \n    \n  case 'ashp0/GENUNIT_CTRL_PNT' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 25, \n      max : 52,\n      step : 1,\n      units : \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"darkblue\"}, \n        { \"start\": 5, \"color\":  \"lightblue\"}, \n        { \"start\": 18, \"color\": \"lightgreen\"}, \n        { \"start\": 42, \"color\": \"red\"}\n      ]\n    } \n    break \n\n  case 'ashp0/PRESSURE_DP_A' :\n  case 'ashp0/PRESSURE_SP_A' :\n    msg.ui_update = {\n      //label : 'xxx', \n      min : 500, \n      max : 2500,\n      step : 500,\n      units : \"kPa\",\n\n      sectors: [\n        { \"start\": 500, \"color\":  \"darkblue\"}, \n        { \"start\": 1000, \"color\": \"lightblue\"}, \n        { \"start\": 1500, \"color\": \"lightgreen\"}, \n        { \"start\": 2000, \"color\": \"red\"}\n      ]\n    } \n    break \n\n  case 'ashp0/TEMP_LWT':\n  case 'ashp0/TEMP_EWT':\n    msg.ui_update = {\n      //label : 'xxx', \n      min: 0,\n      max: 52,\n      step: 5,\n      units: \"°C\",\n\n      sectors: [\n        { \"start\": 0, \"color\": \"darkblue\" },\n        { \"start\": 5, \"color\": \"lightblue\" },\n        { \"start\": 18, \"color\": \"lightgreen\" },\n        { \"start\": 42, \"color\": \"red\" }\n      ]\n    }\n    break\n\n\n  case 'ashp0/PUMPSTAT_CAPPOWER' :\n    msg.ui_update = {\n      //label : 'xxx', \n      measurement : 'Output power',\n      min : 0, \n      max : 50,\n      step : 5,\n      units : \"kw\",\n\n      sectors: [\n        { \"start\": 0, \"color\":  \"grey\"}, \n        { \"start\": 20, \"color\": \"pink\"}, \n        { \"start\": 30, \"color\": \"green\"}, \n        { \"start\": 40, \"color\": \"red\"}, \n      ]\n    }\n    break \n\n  case 'ashp0/today/kWh' :\n    msg.ui_update = {\n      label : 'Output energy today kWh ', \n      fontSize : 20      \n    }\n    break \n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break   \n\n  case 'ashp0/yesterday/kWh' :    \n    msg.ui_update = {\n      label : 'Output energy yesterday kWh ', \n      fontSize : 20      \n    }\n    break   \n\n  case 'ashp0/ALARMRST_alarm_1c' :\n  case 'ashp0/ALARMRST_alarm_2c' :\n  case 'ashp0/ALARMRST_alarm_3c' :\n  case 'ashp0/ALARMRST_alarm_4c' :\n  case 'ashp0/ALARMRST_alarm_5c' :\n  case 'ashp0/ALARMRST_alarm_1':\n  case 'ashp0/ALARMRST_alarm_2':\n  case 'ashp0/ALARMRST_alarm_3':\n  case 'ashp0/ALARMRST_alarm_4':\n  case 'ashp0/ALARMRST_alarm_5': \n      //msg.topic = 'ashp0/alarm'\n      msg.ui_update = {\n        label : 'Alarm ' + msg.subtopic, \n        fontSize : 20      \n      }\n      //node.error( 'alarm basic ' + msg.topic)\n    break ;\n\n  default :\n\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -6559,7 +6686,7 @@
         "z": "3187bd06ef664359",
         "name": "Flow in/out",
         "group": "d3987b783abbd512",
-        "order": 5,
+        "order": 6,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -6584,10 +6711,12 @@
                 "lengthPercent": "100"
             }
         ],
+        "hubcolor": "black",
         "sweep_angle": 250,
+        "keepwidth": true,
         "myclass": "",
-        "x": 730,
-        "y": 1480,
+        "x": 710,
+        "y": 1420,
         "wires": []
     },
     {
@@ -6612,24 +6741,6 @@
             },
             {
                 "t": "regex",
-                "v": "ALARMRST_alarm_1c",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "ALARMRST_alarm_2c",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
-                "v": "ALARMRST_alarm_3c",
-                "vt": "str",
-                "case": false
-            },
-            {
-                "t": "regex",
                 "v": "GENUNIT_CTRL_PNT",
                 "vt": "str",
                 "case": false
@@ -6637,6 +6748,12 @@
             {
                 "t": "regex",
                 "v": "(TEMP_EWT|TEMP_LWT)",
+                "vt": "str",
+                "case": false
+            },
+            {
+                "t": "regex",
+                "v": "(PRESSURE_DP_A|PRESSURE_SP_A)",
                 "vt": "str",
                 "case": false
             },
@@ -6657,13 +6774,19 @@
                 "v": "today\\/kWh",
                 "vt": "str",
                 "case": false
+            },
+            {
+                "t": "regex",
+                "v": "ALARMRST",
+                "vt": "str",
+                "case": false
             }
         ],
         "checkall": "true",
         "repair": false,
-        "outputs": 10,
-        "x": 270,
-        "y": 1460,
+        "outputs": 9,
+        "x": 330,
+        "y": 1540,
         "wires": [
             [
                 "2fb23cde95534f2d"
@@ -6672,19 +6795,13 @@
                 "0e195b8c9e93c4b3"
             ],
             [
-                "2de82f5995878f8a"
-            ],
-            [
-                "4135465d9b75cf4c"
-            ],
-            [
-                "709b0c7274189ef7"
-            ],
-            [
                 "46840e3a9559d36d"
             ],
             [
                 "857f7ba98b9db309"
+            ],
+            [
+                "a8a9383d6a610831"
             ],
             [
                 "427f1f7861a9e8c6"
@@ -6694,6 +6811,10 @@
             ],
             [
                 "31f30a7c661ae413"
+            ],
+            [
+                "2cbebcf16873b7a2",
+                "29e88664bdf1c1e2"
             ]
         ]
     },
@@ -6849,7 +6970,7 @@
         "z": "3187bd06ef664359",
         "name": "Output power",
         "group": "d3987b783abbd512",
-        "order": 6,
+        "order": 5,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -6871,36 +6992,12 @@
         ],
         "sweep_angle": 250,
         "myclass": "",
-        "x": 740,
-        "y": 1520,
+        "x": 720,
+        "y": 1500,
         "wires": []
     },
     {
         "id": "31f30a7c661ae413",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "d3987b783abbd512",
-        "order": 7,
-        "width": "3",
-        "height": "1",
-        "name": "Output energy",
-        "label": "Output energy",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": false,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 740,
-        "y": 1620,
-        "wires": []
-    },
-    {
-        "id": "823b75b14cac43ad",
         "type": "ui-text",
         "z": "3187bd06ef664359",
         "group": "d3987b783abbd512",
@@ -6919,8 +7016,32 @@
         "className": "",
         "value": "payload",
         "valueType": "msg",
-        "x": 740,
+        "x": 720,
         "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "823b75b14cac43ad",
+        "type": "ui-text",
+        "z": "3187bd06ef664359",
+        "group": "d3987b783abbd512",
+        "order": 9,
+        "width": "3",
+        "height": "1",
+        "name": "Output energy",
+        "label": "Output energy",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 720,
+        "y": 1540,
         "wires": []
     },
     {
@@ -6949,10 +7070,12 @@
                 "lengthPercent": "100"
             }
         ],
+        "hubcolor": "black",
         "sweep_angle": 250,
+        "keepwidth": true,
         "myclass": "",
-        "x": 720,
-        "y": 1440,
+        "x": 700,
+        "y": 1380,
         "wires": []
     },
     {
@@ -6975,11 +7098,11 @@
         "clickableArea": "none",
         "onvalue": "true",
         "onvalueType": "bool",
-        "onicon": "heat-wave",
+        "onicon": "alarm",
         "oncolor": "",
         "offvalue": "false",
         "offvalueType": "bool",
-        "officon": "heat-wave",
+        "officon": "alarm-off",
         "offcolor": "",
         "x": 550,
         "y": 1300,
@@ -7408,7 +7531,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "downsampler in",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -7416,8 +7539,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 400,
-        "y": 1800,
+        "x": 380,
+        "y": 1980,
         "wires": []
     },
     {
@@ -7666,6 +7789,8 @@
         "color": "#717171",
         "wrapText": true,
         "className": "",
+        "value": "payload",
+        "valueType": "msg",
         "x": 150,
         "y": 560,
         "wires": []
@@ -7684,13 +7809,14 @@
         "passthru": false,
         "autocols": true,
         "showSearch": false,
+        "deselect": true,
         "selectionType": "none",
         "columns": [],
-        "mobileBreakpoint": "lg",
+        "mobileBreakpoint": "md",
         "mobileBreakpointType": "defaults",
         "action": "replace",
-        "x": 540,
-        "y": 1660,
+        "x": 750,
+        "y": 1880,
         "wires": [
             []
         ]
@@ -7707,8 +7833,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 350,
-        "y": 1660,
+        "x": 560,
+        "y": 1880,
         "wires": [
             [
                 "921885113d64bd0d",
@@ -7724,8 +7850,8 @@
         "links": [
             "90da587f91c535d6"
         ],
-        "x": 165,
-        "y": 1660,
+        "x": 185,
+        "y": 1860,
         "wires": [
             [
                 "a11d7964c3f91c50"
@@ -7753,8 +7879,8 @@
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 240,
-        "y": 1560,
+        "x": 180,
+        "y": 1780,
         "wires": [
             [
                 "a11d7964c3f91c50"
@@ -8015,8 +8141,8 @@
         "mobileBreakpoint": "lg",
         "mobileBreakpointType": "defaults",
         "action": "replace",
-        "x": 560,
-        "y": 1720,
+        "x": 770,
+        "y": 1940,
         "wires": [
             []
         ]
@@ -8110,78 +8236,6 @@
         "wires": []
     },
     {
-        "id": "2de82f5995878f8a",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "fe54fec54df01fd1",
-        "order": 1,
-        "width": "2",
-        "height": "1",
-        "name": "Alarm1",
-        "label": "",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": false,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 560,
-        "y": 1340,
-        "wires": []
-    },
-    {
-        "id": "4135465d9b75cf4c",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "fe54fec54df01fd1",
-        "order": 2,
-        "width": "2",
-        "height": "1",
-        "name": "Alarm2",
-        "label": "",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": false,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 700,
-        "y": 1340,
-        "wires": []
-    },
-    {
-        "id": "709b0c7274189ef7",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "fe54fec54df01fd1",
-        "order": 3,
-        "width": "2",
-        "height": "1",
-        "name": "Alarm3",
-        "label": "",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": false,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 840,
-        "y": 1340,
-        "wires": []
-    },
-    {
         "id": "ffd6f33c7f0bfca4",
         "type": "inject",
         "z": "3187bd06ef664359",
@@ -8193,6 +8247,11 @@
             },
             {
                 "p": "payload"
+            },
+            {
+                "p": "err",
+                "v": "{\"description\":\"Steam Thermistor Exchanger Failure Entering Fluid\",\"resetType\":\"Automatic\",\"action\":\"Unit shuts down\",\"possibleCause\":\"Defective thermistor or connection\"}",
+                "vt": "json"
             }
         ],
         "repeat": "",
@@ -8206,7 +8265,8 @@
         "y": 1140,
         "wires": [
             [
-                "0021c59646b5c822"
+                "0021c59646b5c822",
+                "568d342d68354d92"
             ]
         ]
     },
@@ -8214,7 +8274,7 @@
         "id": "49ae134112cca84a",
         "type": "ui-switch",
         "z": "3187bd06ef664359",
-        "name": "Filler",
+        "name": "Unused",
         "label": "",
         "group": "d3987b783abbd512",
         "order": 3,
@@ -8236,10 +8296,148 @@
         "offvalueType": "bool",
         "officon": "",
         "offcolor": "",
-        "x": 830,
+        "x": 840,
         "y": 1300,
         "wires": [
             []
+        ]
+    },
+    {
+        "id": "1c9617fb389c547a",
+        "type": "function",
+        "z": "3187bd06ef664359",
+        "name": "Alarm data prep",
+        "func": "\n//if (msg.topic != '')\n//  return null ;\n\nconst fakeResponse =   {\n      description: \"Water Thermistor Exchanger Failure Entering Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    };\n \nconst row = msg.err ? msg.err : fakeResponse \nmsg.err['code'] = msg.payload \n\nlet log = context.get('alarmLog') ?? []\n\n\nif (log.length >= 10) \n  log.pop()\n\nlog.unshift( row )\n\ncontext.set('alarmLog', log)\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload })\nreturn { topic : 'grgrgg',  payload :  log};",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 1820,
+        "wires": [
+            [
+                "9b1bdbb146f0eda0"
+            ]
+        ]
+    },
+    {
+        "id": "9b1bdbb146f0eda0",
+        "type": "ui-table",
+        "z": "3187bd06ef664359",
+        "group": "fe54fec54df01fd1",
+        "name": "Alarms table",
+        "label": "Current alarms",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "maxrows": "10",
+        "passthru": false,
+        "autocols": true,
+        "showSearch": false,
+        "deselect": true,
+        "selectionType": "none",
+        "columns": [],
+        "mobileBreakpoint": "md",
+        "mobileBreakpointType": "defaults",
+        "action": "replace",
+        "x": 750,
+        "y": 1820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2cbebcf16873b7a2",
+        "type": "debug",
+        "z": "3187bd06ef664359",
+        "name": "alarms",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 1620,
+        "wires": []
+    },
+    {
+        "id": "568d342d68354d92",
+        "type": "debug",
+        "z": "3187bd06ef664359",
+        "name": "debug 65",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "a8a9383d6a610831",
+        "type": "ui-gauge-classic",
+        "z": "3187bd06ef664359",
+        "name": "Pressure in/out",
+        "group": "d3987b783abbd512",
+        "order": 7,
+        "width": "2",
+        "height": "2",
+        "min": "0",
+        "max": "4000",
+        "sectors": [],
+        "major_division": "1000",
+        "minor_division": "200",
+        "value_decimal_places": 1,
+        "scale_decimal_places": 0,
+        "label": "",
+        "measurement": "Pressure",
+        "units": "kPa",
+        "needles": [
+            {
+                "topic": "ashp0/PRESSURE_DP_A",
+                "color": "green",
+                "lengthPercent": "1000"
+            },
+            {
+                "topic": "ashp0/PRESSURE_SP_A",
+                "color": "red",
+                "lengthPercent": "1000"
+            }
+        ],
+        "hubcolor": "black",
+        "sweep_angle": "250",
+        "keepwidth": true,
+        "myclass": "",
+        "x": 720,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "29e88664bdf1c1e2",
+        "type": "function",
+        "z": "3187bd06ef664359",
+        "name": "build alarm list ",
+        "func": "\n//if (msg.topic != '')\n//  return null ;\n\nlet idx = 0 ;\n\nconst keys =\n  ['ashp0/ALARMRST_alarm_1c','ashp0/ALARMRST_alarm_2c','ashp0/ALARMRST_alarm_3c',\n   'ashp0/ALARMRST_alarm_4c','ashp0/ALARMRST_alarm_5c',\n   'ashp0/ALARMRST_alarm_1','ashp0/ALARMRST_alarm_2','ashp0/ALARMRST_alarm_3',\n   'ashp0/ALARMRST_alarm_4','ashp0/ALARMRST_alarm_5'] ; \n  \nidx = keys.indexOf(msg.topic)  \nif (idx < 0 ){\n  node.error('no match for ' + msg.topic + \" [] \" + idx)\n  return null\n} \n\nconst fakeResponse =   {\n      time : '00:00',\n      code : '123456',\n      description: \"Water Thermistor Exchanger Failure Entering Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    };\n \nif (msg.err == null) \n  msg.err = fakeResponse \n\nlet alarmList = context.get('alarmList') ?? {}\n\nalarmList[idx] = msg.err\n\ncontext.set('alarmList', alarmList)\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload })\nreturn { topic : 'grgrgg',  payload : Object.values(alarmList)};\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 1760,
+        "wires": [
+            [
+                "9b1bdbb146f0eda0"
+            ]
         ]
     },
     {
@@ -8897,7 +9095,7 @@
         "type": "function",
         "z": "d6d8802f46b4aa03",
         "name": "poll modbus",
-        "func": "\n// specify explicit register using msg.topic else get them all\n\n\n// 01: Coils (FC=01)\n// 02: Discrete Inputs (FC=02)\nconst HR = 3 // Multiple Holding Registers (FC=03)\nconst IR = 4 // Input Registers (FC=04)\n// 05: Single Coil (FC=05)\n// 06: Single Holding Register (FC=06)\n// 0F: Multiple Coils (FC=15)\n// 10: Multiple Holding Registers (FC=16)\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = flow.get(\"modbusRegistersASHP\");\n    for (const row of registers) {\n        if (row.Parameter == subTopic)\n            return row;\n    }\n    node.error('unable to parse ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"SETPOINT_hsp1\" },\n        { name: \"SETPOINT_hsp2\" },\n\n        { name: \"RESETCFG_hr_deg\" },\n        { name: \"RESETCFG_oat_hrfu\" },\n        { name: \"RESETCFG_oat_hrno\" },\n\n        { name: \"PROTOCOL_DEM_LIM\" },\n        { name: \"PUMPCONF_w_dt_spt\" }\n    ];\n\nconst temperature =\n    [\n        { name: \"GENUNIT_SP\" },\n        { name: \"GENUNIT_CTRL_PNT\" },\n        { name: \"GENUNIT_CTRL_TYP\" },\n\n        { name: \"TEMP_EWT\", reportOnDiff: 1 },  // override the 0.25\n        { name: \"TEMP_LWT\", reportOnDiff: 1 },  // override the 0.25\n        { name: \"TEMP_OAT\" },\n    ];\n\nconst pressure =\n    [\n        { name: \"PRESSURE_PUMP_EWP\" },\n        { name: \"PRESSURE_PUMP_LWP\" },\n        { name: \"PUMPSTAT_WAT_FLOW\" }\n    ];\n\nconst state =\n    [\n        { name: \"UNIT_STATUS\" },\n        { name: \"PROTOCOL_CHIL_S_S\" },  //off on\n        { name: \"PROTOCOL_SP_SEL\" },\n        { name: \"PROTOCOL_SP_OCC\" },\n        { name: \"PROTOCOL_CHIL_OCC\" },\n\n        { name: \"PUMPSTAT_PUMP_1\" },\n        { name: \"PUMPSTAT_PUMP_2\" },\n    ];\n\nconst pump =\n    [\n        { name: \"PUMPSTAT_W_P_IN\", reportOnDiff: 10 }, \n        { name: \"PUMPSTAT_WP_MIN\", reportOnDiff: 10 }, \n\n        { name: \"GENUNIT_CAP_T\", reportOnDiff: 10 },   // 0% to 100%\n\n        { name: \"PUMPSTAT_VPMP_CMD\" },\n        { name: \"PUMPSTAT_CAPPOWER\", reportOnDiff: 2 },\n        { name: \"PUMPSTAT_WAT_FLOW\", reportOnDiff: 0.5 },\n    ];\n\nconst alarm =\n    [\n        { name: \"UNIT_ALM\" },\n        { name: \"ALARMRST_alarm_1c\" },\n        { name: \"ALARMRST_alarm_2c\" },\n        { name: \"ALARMRST_alarm_3c\" },\n        { name: \"ALARMRST_alarm_4c\" },\n        { name: \"ALARMRST_alarm_5c\" },\n    ];\n\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);\n\n\nlet regList = { input: input, temperature: temperature, pressure: pressure, state: state, pump: pump, alarm: alarm };\nlet reportOnDiff = { temperature: 1.0, pressure: 15, pump: 0.5 };\n\nlet sequences = [];\n\nconst fc = { HR: 3, IR: 4 }\n\nfor (const [measurement, group] of Object.entries(regList)) {\n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name) {\n            const row = lookupRegister(e.name);\n            if (row) {\n                const m = {};\n                m.prefix = 'local';\n                m.source = 'ashp0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address;\n                m.param = measurement;\n                m.fc = fc[row.Type];\n                m.quantity = row['Reg. N°'];\n                m.unitid = 1;\n\n\n                m.modbusRow = row;\n                m.writeThrough = msg.writeThrough;\n\n\n                //const groupReportOnDifference = reportOnDiff[measurement] ?? undefined ;\n\n                const diff = e.reportOnDiff ?? reportOnDiff[measurement] ?? false;\n                if (diff)\n                    m.reportOnDiff = diff ;\n                    \n                m.windowPeriodSecs = 120 * 60    // 2 hours\n\n                let colour = m.digest ? 'red' : (m.writeThrough ? 'green' : 'yellow');\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0) {\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null;\n}\nif (msg.sequences.length > 1) {\n    node.status({ fill: \"green\", shape: \"ring\", text: `${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
+        "func": "\n// specify explicit register using msg.topic else get them all\n\n\n// 01: Coils (FC=01)\n// 02: Discrete Inputs (FC=02)\nconst HR = 3 // Multiple Holding Registers (FC=03)\nconst IR = 4 // Input Registers (FC=04)\n// 05: Single Coil (FC=05)\n// 06: Single Holding Register (FC=06)\n// 0F: Multiple Coils (FC=15)\n// 10: Multiple Holding Registers (FC=16)\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = flow.get(\"modbusRegistersASHP\");\n    for (const row of registers) {\n        if (row.Parameter == subTopic)\n            return row;\n    }\n    node.error('unable to parse ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"SETPOINT_hsp1\" },\n        { name: \"SETPOINT_hsp2\" },\n\n        { name: \"SETPOINT_csp1\" },\n        { name: \"SETPOINT_csp2\" },\n\n        { name: \"RESETCFG_hr_deg\" },\n        { name: \"RESETCFG_oat_hrfu\" },\n        { name: \"RESETCFG_oat_hrno\" },\n\n        { name: \"PROTOCOL_DEM_LIM\" },\n        { name: \"PUMPCONF_w_dt_spt\" }\n    ];\n\nconst temperature =\n    [\n        { name: \"GENUNIT_SP\" },\n        { name: \"GENUNIT_CTRL_PNT\" },\n        { name: \"GENUNIT_CTRL_TYP\" },\n\n        { name: \"TEMP_EWT\", reportOnDiff: 1 },  // override the 0.25\n        { name: \"TEMP_LWT\", reportOnDiff: 1 },  // override the 0.25\n        { name: \"TEMP_OAT\" },\n    ];\n\nconst pressure =\n    [\n        { name: \"PRESSURE_DP_A\", reportOnDiff: 10  },\n        { name: \"PRESSURE_SP_A\", reportOnDiff: 10  },\n\n        { name: \"PRESSURE_PUMP_EWP\" },\n        { name: \"PRESSURE_PUMP_LWP\" },\n        { name: \"PUMPSTAT_WAT_FLOW\" }\n    ];\n\nconst state =\n    [\n        { name: \"UNIT_STATUS\" },\n        { name: \"PROTOCOL_CHIL_S_S\" },  //off on\n        { name: \"PROTOCOL_HC_SEL\" },    //heat cool select\n        { name: \"PROTOCOL_SP_SEL\" },\n        { name: \"PROTOCOL_SP_OCC\" },\n        { name: \"PROTOCOL_CHIL_OCC\" },\n\n        { name: \"PUMPSTAT_PUMP_1\" },\n        { name: \"PUMPSTAT_PUMP_2\" },\n    ];\n\nconst pump =\n    [\n        { name: \"PUMPSTAT_W_P_IN\", reportOnDiff: 10 }, \n        { name: \"PUMPSTAT_WP_MIN\", reportOnDiff: 10 }, \n\n        { name: \"GENUNIT_CAP_T\", reportOnDiff: 10 },   // 0% to 100%\n\n        { name: \"PUMPSTAT_VPMP_CMD\" },\n        { name: \"PUMPSTAT_CAPPOWER\", reportOnDiff: 2 },\n        { name: \"PUMPSTAT_WAT_FLOW\", reportOnDiff: 0.5 },\n    ];\n\nconst alarm =\n    [\n        { name: \"UNIT_ALM\" },\n        { name: \"ALARMRST_alarm_1\" },\n        { name: \"ALARMRST_alarm_2\" },\n        { name: \"ALARMRST_alarm_3\" },\n        { name: \"ALARMRST_alarm_4\" },\n        { name: \"ALARMRST_alarm_5\" },\n        { name: \"ALARMRST_alarm_1c\" },\n        { name: \"ALARMRST_alarm_2c\" },\n        { name: \"ALARMRST_alarm_3c\" },\n        { name: \"ALARMRST_alarm_4c\" },\n        { name: \"ALARMRST_alarm_5c\" },\n    ];\n\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);\n\n\nlet regList = { input: input, temperature: temperature, pressure: pressure, state: state, pump: pump, alarm: alarm };\nlet reportOnDiff = { temperature: 1.0, pressure: 15, pump: 0.5 };\n\nlet sequences = [];\n\nconst fc = { HR: 3, IR: 4 }\n\nfor (const [measurement, group] of Object.entries(regList)) {\n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name) {\n            const row = lookupRegister(e.name);\n            if (row) {\n                const m = {};\n                m.prefix = 'local';\n                m.source = 'ashp0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address;\n                m.param = measurement;\n                m.fc = fc[row.Type];\n                m.quantity = row['Reg. N°'];\n                m.unitid = 1;\n\n\n                m.modbusRow = row;\n                m.writeThrough = msg.writeThrough;\n\n\n                //const groupReportOnDifference = reportOnDiff[measurement] ?? undefined ;\n\n                const diff = e.reportOnDiff ?? reportOnDiff[measurement] ?? false;\n                if (diff)\n                    m.reportOnDiff = diff ;\n                    \n                m.windowPeriodSecs = 120 * 60    // 2 hours\n\n                let colour = m.digest ? 'red' : (m.writeThrough ? 'green' : 'yellow');\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0) {\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null;\n}\nif (msg.sequences.length > 1) {\n    node.status({ fill: \"green\", shape: \"ring\", text: `${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -8973,8 +9171,8 @@
         "links": [
             "3a0b7c61797ade28"
         ],
-        "x": 715,
-        "y": 660,
+        "x": 785,
+        "y": 700,
         "wires": []
     },
     {
@@ -8989,12 +9187,11 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 520,
+        "x": 220,
         "y": 660,
         "wires": [
             [
-                "bb16735a0cac5286",
-                "298f4d77b929e02a"
+                "39143d420e41074f"
             ]
         ]
     },
@@ -9225,7 +9422,7 @@
         "type": "debug",
         "z": "d6d8802f46b4aa03",
         "name": "updates",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -9270,7 +9467,7 @@
         "finalize": "",
         "libs": [],
         "x": 520,
-        "y": 740,
+        "y": 800,
         "wires": [
             [
                 "298f4d77b929e02a",
@@ -9287,7 +9484,7 @@
             "2384d6ea06ea6969"
         ],
         "x": 165,
-        "y": 760,
+        "y": 820,
         "wires": [
             [
                 "609c45f169b15f43"
@@ -9321,7 +9518,7 @@
         "payload": "5000",
         "payloadType": "num",
         "x": 120,
-        "y": 720,
+        "y": 780,
         "wires": [
             [
                 "609c45f169b15f43"
@@ -9350,7 +9547,7 @@
         "payload": "false",
         "payloadType": "bool",
         "x": 120,
-        "y": 680,
+        "y": 740,
         "wires": [
             [
                 "609c45f169b15f43"
@@ -9362,7 +9559,7 @@
         "type": "debug",
         "z": "d6d8802f46b4aa03",
         "name": "energy",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -9371,7 +9568,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 810,
-        "y": 740,
+        "y": 800,
         "wires": []
     },
     {
@@ -9411,55 +9608,30 @@
         "wires": []
     },
     {
-        "id": "457f278e6a49fee6",
-        "type": "inject",
+        "id": "39143d420e41074f",
+        "type": "function",
         "z": "d6d8802f46b4aa03",
-        "name": "initialize errors",
-        "props": [
+        "name": "alarm lookup",
+        "func": "const utils = global.get(\"utils\");\n\nswitch (msg.topic)\n{\n  case 'ashp0/ALARMRST_alarm_1c': \n  case 'ashp0/ALARMRST_alarm_2c':\n  case 'ashp0/ALARMRST_alarm_3c':\n  case 'ashp0/ALARMRST_alarm_4c':\n  case 'ashp0/ALARMRST_alarm_5c': \n    if (msg.payload) {\n      const alarmMap = getAlarmMap();\n      const err = alarmMap ? alarmMap[msg.payload] : null ;\n      msg.err = err ? err : { description : 'unmapped', reset_type : 'unknown', \n      action : 'unknown', possible_cause : 'unknown' } ;\n      const isoTime = new Date().toISOString();\n      const stampedError = { \n        //time : utils.getTimeOrDateNow(), \n        time : isoTime,\n        code : msg.err.payload, \n        description : msg.err.description,\n        resetType : msg.err.resetType,\n        action : msg.err.action,\n        possibleCause : msg.err.possibleCause\n      }\n      msg.writeThrough = true \n      msg.windowPeriodSecs = 10 * 60 ; // repeat alarms every 30 minutes \n      msg.err = stampedError ;\n      msg.track = true ;\n\n      node.status({ fill: 'red', shape: \"dot\", text:`${isoTime} ${msg.topic}:${msg.payload}:${msg.err.description}` });\n      \n    }\n} \nreturn (msg)\n\nfunction getAlarmMap() {\n  return {\n    \"15001\": {\n      description: \"Water Thermistor Exchanger Failure Entering Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15002\": {\n      description: \"Water Thermistor Exchanger Failure Leaving Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15003\": {\n      description: \"Circuit A Defrost Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Cooling: Unit continues to operate; Heating: Circuit A shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15004\": {\n      description: \"Circuit B Defrost Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Cooling: Unit continues to operate; Heating: Circuit B shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15010\": {\n      description: \"OAT Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15011\": {\n      description: \"Master/Slave Failure Common Fluid Thermistor\",\n      resetType: \"Automatic\",\n      action: \"Master/slave disabled; returns to stand-alone mode\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15053\": {\n      description: \"Water Tank Output Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Alert raised based on tnk_alrt setting\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15012\": {\n      description: \"Circuit A Suction Gas Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15013\": {\n      description: \"Circuit B Suction Gas Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15044\": {\n      description: \"Coil Suction Gas Thermistor Sensor 1 Failure\",\n      resetType: \"Automatic\",\n      action: \"Cooling: None; Heating: Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15045\": {\n      description: \"Coil Suction Gas Thermistor Sensor 2 Failure\",\n      resetType: \"Automatic\",\n      action: \"Cooling: None; Heating: Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"15015\": {\n      description: \"Circuit A Discharge Gas Thermistor Failure\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    },\n    \"12001\": {\n      description: \"Circuit A Discharge Pressure Transducer Failure\",\n      resetType: \"Automatic\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Defective transducer or connection\"\n    },\n    \"12002\": {\n      description: \"Circuit B Discharge Pressure Transducer Failure\",\n      resetType: \"Automatic\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Defective transducer or connection\"\n    },\n    \"12004\": {\n      description: \"Circuit A Suction Pressure Transducer Failure\",\n      resetType: \"Automatic/Manual\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Defective transducer or connection\"\n    },\n    \"12005\": {\n      description: \"Circuit B Suction Pressure Transducer Failure\",\n      resetType: \"Automatic/Manual\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Defective transducer or connection\"\n    },\n    \"4901\": {\n      description: \"Loss of communication with SIOB/CIOB Board Number A\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"4902\": {\n      description: \"Loss of communication with SIOB/CIOB Board Number B\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"4601\": {\n      description: \"Loss of communication with AUX1 Board\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"4701\": {\n      description: \"Loss of communication Drive 1 Circuit A with VFD Fan\",\n      resetType: \"Automatic\",\n      action: \"Circuit A shuts down (if both drives lost)\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"4702\": {\n      description: \"Loss of communication Drive 2 Circuit A with VFD Fan\",\n      resetType: \"Automatic\",\n      action: \"Circuit A shuts down (if both drives lost)\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"4703\": {\n      description: \"Loss of communication Drive 1 Circuit B with VFD Fan\",\n      resetType: \"Automatic\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"4705\": {\n      description: \"Loss of communication Drive Number 1 with VFD Pump\",\n      resetType: \"Automatic\",\n      action: \"Unit restarted with another pump or shuts down\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"5001\": {\n      description: \"Loss of communication detector A with Leak\",\n      resetType: \"Automatic\",\n      action: \"Fans start (regardless of leak_alm setting)\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"5002\": {\n      description: \"Loss of communication detector B with Leak\",\n      resetType: \"Automatic\",\n      action: \"Fans start (regardless of leak_alm setting)\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"10001\": {\n      description: \"Water Exchanger Freeze Protection\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down, pump continues to run\",\n      possibleCause: \"No water flow, defective thermistor\"\n    },\n    \"10005\": {\n      description: \"Circuit A Low Saturated Suction Temperature\",\n      resetType: \"Automatic/Manual\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Transducer defective, EXV blocked, or lack of refrigerant\"\n    },\n    \"10006\": {\n      description: \"Circuit B Low Saturated Suction Temperature\",\n      resetType: \"Automatic/Manual\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Transducer defective, EXV blocked, or lack of refrigerant\"\n    },\n    \"10008\": {\n      description: \"Circuit A High Superheat\",\n      resetType: \"Manual\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\n    },\n    \"10009\": {\n      description: \"Circuit B High Superheat\",\n      resetType: \"Manual\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\n    },\n    \"10011\": {\n      description: \"Circuit A Low Superheat\",\n      resetType: \"Manual\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\n    },\n    \"10012\": {\n      description: \"Circuit B Low Superheat\",\n      resetType: \"Manual\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\n    },\n    \"10014\": {\n      description: \"Cooler Interlock Failure\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Customer interlock input set on\"\n    },\n    \"10016\": {\n      description: \"Compressor A1 Not Started or Pressure Not Established\",\n      resetType: \"Manual\",\n      action: \"Compressor A1 shuts down\",\n      possibleCause: \"Compressor breaker or fuse fault, compressor switch open\"\n    },\n    \"10017\": {\n      description: \"Compressor A2 Not Started or Pressure Not Established\",\n      resetType: \"Manual\",\n      action: \"Compressor A2 shuts down\",\n      possibleCause: \"Compressor breaker or fuse fault, compressor switch open\"\n    },\n    \"10018\": {\n      description: \"Compressor A3 Not Started or Pressure Not Established\",\n      resetType: \"Manual\",\n      action: \"Compressor A3 shuts down\",\n      possibleCause: \"Compressor breaker or fuse fault, compressor switch open\"\n    },\n    \"10020\": {\n      description: \"Compressor B1 Not Started or Pressure Not Established\",\n      resetType: \"Manual\",\n      action: \"Compressor B1 shuts down\",\n      possibleCause: \"Compressor breaker or fuse fault, compressor switch open\"\n    },\n    \"10021\": {\n      description: \"Compressor B2 Not Started or Pressure Not Established\",\n      resetType: \"Manual\",\n      action: \"Compressor B2 shuts down\",\n      possibleCause: \"Compressor breaker or fuse fault, compressor switch open\"\n    },\n    \"10029\": {\n      description: \"Loss of communication with System Manager\",\n      resetType: \"Automatic\",\n      action: \"Unit returns to standalone mode\",\n      possibleCause: \"Communication error\"\n    },\n    \"10030\": {\n      description: \"Master/Slave Communication Failure\",\n      resetType: \"Automatic\",\n      action: \"Master/slave disabled; returns to standalone mode\",\n      possibleCause: \"Communication error\"\n    },\n    \"90nn\": {\n      description: \"Master Chiller Configuration Error\",\n      resetType: \"Automatic\",\n      action: \"Master/slave disabled; returns to standalone mode\",\n      possibleCause: \"Configuration failure\"\n    },\n    \"8000\": {\n      description: \"Initial factory configuration required\",\n      resetType: \"Automatic\",\n      action: \"Unit cannot be started\",\n      possibleCause: \"No factory configuration\"\n    },\n    \"700n\": {\n      description: \"Illegal configuration\",\n      resetType: \"Automatic\",\n      action: \"Unit cannot be started\",\n      possibleCause: \"7001: Undefined unit size, etc.\"\n    },\n    \"10031\": {\n      description: \"Unit is in Network Emergency Stop\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Network emergency stop command\"\n    },\n    \"10032\": {\n      description: \"Cooler Pump 1 Fault\",\n      resetType: \"Manual\",\n      action: \"Restart with another pump or shuts down\",\n      possibleCause: \"Evaporator flow switch or pump fault\"\n    },\n    \"10033\": {\n      description: \"Cooler Pump 2 Fault\",\n      resetType: \"Manual\",\n      action: \"Restart with another pump or shuts down\",\n      possibleCause: \"Evaporator flow switch or pump fault\"\n    },\n    \"10037\": {\n      description: \"Circuit A Repeated High Discharge Gas Overrides\",\n      resetType: \"Automatic/Manual\",\n      action: \"None\",\n      possibleCause: \"Repetitive capacity decreases\"\n    },\n    \"10038\": {\n      description: \"Circuit B Repeated High Discharge Gas Overrides\",\n      resetType: \"Automatic/Manual\",\n      action: \"None\",\n      possibleCause: \"Repetitive capacity decreases\"\n    },\n    \"10040\": {\n      description: \"Circuit A Repeated Low Suction Temp Overrides\",\n      resetType: \"Manual\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Repetitive capacity decreases\"\n    },\n    \"10041\": {\n      description: \"Circuit B Repeated Low Suction Temp Overrides\",\n      resetType: \"Manual\",\n      action: \"Circuit B shuts down\",\n      possibleCause: \"Repetitive capacity decreases\"\n    },\n    \"10043\": {\n      description: \"Low Heating Entering Water Temperature\",\n      resetType: \"Automatic\",\n      action: \"None\",\n      possibleCause: \"Low entering fluid temperature in Heating mode\"\n    },\n    \"10097\": {\n      description: \"Water Swapped Exchanger Temperature Sensors\",\n      resetType: \"Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Input and output temperature reversed\"\n    },\n    \"13nnn\": {\n      description: \"Service maintenance alert\",\n      resetType: \"Manual/Automatic\",\n      action: \"Depends on severity\",\n      possibleCause: \"Servicing action required\"\n    },\n    \"170nn\": {\n      description: \"Circuit A VFD Fan Drive 1 Failure\",\n      resetType: \"Automatic\",\n      action: \"None (alert)\",\n      possibleCause: \"Speed controller fault\"\n    },\n    \"180nn\": {\n      description: \"Circuit A VFD Fan Drive 2 Failure\",\n      resetType: \"Automatic\",\n      action: \"None (alert)\",\n      possibleCause: \"Speed controller fault\"\n    },\n    \"190nn\": {\n      description: \"Circuit B VFD Fan Drive 1 Failure\",\n      resetType: \"Automatic\",\n      action: \"None (alert)\",\n      possibleCause: \"Speed controller fault\"\n    },\n    \"21nnn\": {\n      description: \"VFD Pump 1 Drive Failure\",\n      resetType: \"Automatic\",\n      action: \"Restart with another pump or shuts down\",\n      possibleCause: \"Speed controller fault\"\n    },\n    \"57001\": {\n      description: \"Circuit A SIOB/CIOB Low Voltage Failure\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Unstable electrical supply\"\n    },\n    \"57002\": {\n      description: \"Circuit B SIOB/CIOB Low Voltage Failure\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Unstable electrical supply\"\n    },\n    \"12024\": {\n      description: \"Water Transducer Exchanger Failure Entering Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down, pressure calibration erased\",\n      possibleCause: \"Defective transducer or connection\"\n    },\n    \"12025\": {\n      description: \"Water Transducer Exchanger Failure Leaving Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down, pressure calibration erased\",\n      possibleCause: \"Defective transducer or connection\"\n    },\n    \"11202\": {\n      description: \"Cooler Error Water Loop : Delta Pressure\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Too low or high water pressure reading\"\n    },\n    \"11203\": {\n      description: \"Cooler Water Loop : Pressure Too Low\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Low pump inlet pressure below 60 kPa\"\n    },\n    \"11204\": {\n      description: \"Cooler Water Loop : Pump Not Started\",\n      resetType: \"Automatic\",\n      action: \"Pump is stopped\",\n      possibleCause: \"Too low or high water pressure reading\"\n    },\n    \"11205\": {\n      description: \"Cooler Water Loop : Pressure Error During Runtest\",\n      resetType: \"Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Too low or high water pressure reading\"\n    },\n    \"11206\": {\n      description: \"Cooler Water Loop : Pump Overload\",\n      resetType: \"Automatic\",\n      action: \"None (alert)\",\n      possibleCause: \"Water loop pressure drop too low\"\n    },\n    \"11207\": {\n      description: \"Cooler Water Loop : Flow Too Low\",\n      resetType: \"Automatic\",\n      action: \"None (alert)\",\n      possibleCause: \"Water loop pressure drop too high\"\n    },\n    \"11208\": {\n      description: \"Cooler Water Loop : Pressure Sensors Crossed\",\n      resetType: \"Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Pressure sensors crossed\"\n    },\n    \"11209\": {\n      description: \"Cooler Water Loop : Low Pressure Warning\",\n      resetType: \"Automatic\",\n      action: \"None\",\n      possibleCause: \"Evaporator water pressure below 100 kPa\"\n    },\n    \"10063\": {\n      description: \"Circuit A High Pressure Switch Failure\",\n      resetType: \"Manual\",\n      action: \"Circuit A shuts down\",\n      possibleCause: \"Switch fault\"\n    },\n    \"10064\": {\n      description: \"Circuit Failure A2/B High Pressure Switch\",\n      resetType: \"Manual\",\n      action: \"Circuit A2/B shuts down\",\n      possibleCause: \"Switch fault\"\n    },\n    \"10099\": {\n      description: \"Possible Refrigerant Leakage Failure\",\n      resetType: \"Automatic\",\n      action: \"None\",\n      possibleCause: \"Refrigerant leak or detector defective\"\n    },\n    \"10101\": {\n      description: \"Free Cooling Process Failure\",\n      resetType: \"Automatic\",\n      action: \"None\",\n      possibleCause: \"Fan fault, dirty beam\"\n    },\n    \"15046\": {\n      description: \"Free Failure Cooling Water Loop Thermistor\",\n      resetType: \"Automatic\",\n      action: \"Free cooling is disabled\",\n      possibleCause: \"Defective thermistor\"\n    },\n    \"15047\": {\n      description: \"Free Failure Cooling Leaving Water Thermistor\",\n      resetType: \"Automatic\",\n      action: \"Free cooling is disabled\",\n      possibleCause: \"Defective thermistor\"\n    },\n    \"15048\": {\n      description: \"Free Cooling OAT Sensor Failure\",\n      resetType: \"Automatic\",\n      action: \"Free cooling is disabled\",\n      possibleCause: \"Defective thermistor\"\n    },\n    \"4602\": {\n      description: \"Loss of communication with Free Cooling Board 1\",\n      resetType: \"Automatic\",\n      action: \"None\",\n      possibleCause: \"Bus installation fault, communication error\"\n    },\n    \"13005\": {\n      description: \"Fgas maintenance check needed\",\n      resetType: \"Automatic\",\n      action: \"None\",\n      possibleCause: \"Servicing action required\"\n    },\n    \"10109\": {\n      description: \"Tank EHS Low Efficiency Alert\",\n      resetType: \"Automatic\",\n      action: \"EHS shall be checked by a technician\",\n      possibleCause: \"Heat produced by water tank's EHS too low\"\n    },\n    \"10122\": {\n      description: \"Replacement mode: missing Software Activation Key\",\n      resetType: \"Automatic\",\n      action: \"Software options blocked after 7 days\",\n      possibleCause: \"Controller replaced, activation key not installed\"\n    },\n    \"10210\": {\n      description: \"Compressor cir A Running Outside MAP\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Compressor running outside its limits\"\n    },\n    \"10211\": {\n      description: \"Compressor cir B Running Outside MAP\",\n      resetType: \"Automatic/Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Compressor running outside its limits\"\n    },\n    \"8001\": {\n      description: \"Illegal Brand Identifier\",\n      resetType: \"Automatic\",\n      action: \"Unit not allowed to start\",\n      possibleCause: \"Incorrect unit configuration\"\n    },\n    \"56001\": {\n      description: \"Lenscan module Failure\",\n      resetType: \"Manual\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Software problem\"\n    },\n    \"13006\": {\n      description: \"Leakage detector maintenance check needed\",\n      resetType: \"Automatic\",\n      action: \"None (alert only)\",\n      possibleCause: \"Servicing action required\"\n    },\n    \"60nnn\": {\n      description: \"Leakage detector A Warning\",\n      resetType: \"Automatic\",\n      action: \"Fans start (regardless of leak_alm setting)\",\n      possibleCause: \"Leakage detector warning conditions\"\n    },\n    \"62nnn\": {\n      description: \"Leakage detector B Warning\",\n      resetType: \"Automatic\",\n      action: \"Fans start (regardless of leak_alm setting)\",\n      possibleCause: \"Leakage detector warning conditions\"\n    },\n    \"61nnn\": {\n      description: \"Leakage detector A Error\",\n      resetType: \"Automatic\",\n      action: \"Fans start (regardless of leak_alm setting)\",\n      possibleCause: \"Leakage detector error conditions\"\n    },\n    \"63nnn\": {\n      description: \"Leakage detector B Error\",\n      resetType: \"Automatic\",\n      action: \"Fans start (regardless of leak_alm setting)\",\n      possibleCause: \"Leakage detector error conditions\"\n    },\n    \"10227\": {\n      description: \"Leak detected cirA\",\n      resetType: \"Automatic\",\n      action: \"Circuit A shuts down (if leak_alm=yes); Fans start\",\n      possibleCause: \"Refrigerant leakage detected (above LFL threshold)\"\n    },\n    \"10228\": {\n      description: \"Leak detected cirB\",\n      resetType: \"Automatic\",\n      action: \"Circuit B shuts down (if leak_alm=yes); Fans start\",\n      possibleCause: \"Refrigerant leakage detected (above LFL threshold)\"\n    }\n  }\n}\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
             {
-                "p": "topic",
-                "vt": "str"
-            },
-            {
-                "p": "filename",
-                "v": "/mnt/dietpi_userdata/node-red/AQUACIAT-LD_ILD_150R-600R_errors.csv",
-                "vt": "str"
-            },
-            {
-                "p": "payload"
+                "var": "fs",
+                "module": "fs"
             }
         ],
-        "repeat": "",
-        "crontab": "",
-        "once": true,
-        "onceDelay": "0.1",
-        "topic": "modbusErrorsASHP",
-        "payload": "{\t   \"4601\":{\t       \"description\":\"Loss of communication with AUX1 Board\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4602\":{\t       \"description\":\"Loss of communication with Free Cooling Board 1\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4701\":{\t       \"description\":\"Loss of communication Drive 1 Circuit A with VFD Fan\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit A shuts down (if both drives lost)\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4702\":{\t       \"description\":\"Loss of communication Drive 2 Circuit A with VFD Fan\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit A shuts down (if both drives lost)\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4703\":{\t       \"description\":\"Loss of communication Drive 1 Circuit B with VFD Fan\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4705\":{\t       \"description\":\"Loss of communication Drive Number 1 with VFD Pump\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit restarted with another pump or shuts down\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4901\":{\t       \"description\":\"Loss of communication with SIOB/CIOB Board Number A\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"4902\":{\t       \"description\":\"Loss of communication with SIOB/CIOB Board Number B\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"5001\":{\t       \"description\":\"Loss of communication detector A with Leak\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Fans start (regardless of leak_alm setting)\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"5002\":{\t       \"description\":\"Loss of communication detector B with Leak\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Fans start (regardless of leak_alm setting)\",\t       \"possible_cause\":\"Bus installation fault, communication error\"\t   },\t   \"8000\":{\t       \"description\":\"Initial factory configuration required\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit cannot be started\",\t       \"possible_cause\":\"No factory configuration\"\t   },\t   \"8001\":{\t       \"description\":\"Illegal Brand Identifier\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit not allowed to start\",\t       \"possible_cause\":\"Incorrect unit configuration\"\t   },\t   \"10001\":{\t       \"description\":\"Water Exchanger Freeze Protection\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down, pump continues to run\",\t       \"possible_cause\":\"No water flow, defective thermistor\"\t   },\t   \"10005\":{\t       \"description\":\"Circuit A Low Saturated Suction Temperature\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Transducer defective, EXV blocked, or lack of refrigerant\"\t   },\t   \"10006\":{\t       \"description\":\"Circuit B Low Saturated Suction Temperature\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Transducer defective, EXV blocked, or lack of refrigerant\"\t   },\t   \"10008\":{\t       \"description\":\"Circuit A High Superheat\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\t   },\t   \"10009\":{\t       \"description\":\"Circuit B High Superheat\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Transducer/temp sensor defective, EXV blocked, or_lack of refrigerant\"\t   },\t   \"10011\":{\t       \"description\":\"Circuit A Low Superheat\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\t   },\t   \"10012\":{\t       \"description\":\"Circuit B Low Superheat\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Transducer/temp sensor defective, EXV blocked, or lack of refrigerant\"\t   },\t   \"10014\":{\t       \"description\":\"Cooler Interlock Failure\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Customer interlock input set on\"\t   },\t   \"10016\":{\t       \"description\":\"Compressor A1 Not Started or Pressure Not Established\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Compressor A1 shuts down\",\t       \"possible_cause\":\"Compressor breaker or fuse fault, compressor switch open\"\t   },\t   \"10017\":{\t       \"description\":\"Compressor A2 Not Started or Pressure Not Established\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Compressor A2 shuts down\",\t       \"possible_cause\":\"Compressor breaker or fuse fault, compressor switch open\"\t   },\t   \"10018\":{\t       \"description\":\"Compressor A3 Not Started or Pressure Not Established\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Compressor A3 shuts down\",\t       \"possible_cause\":\"Compressor breaker or fuse fault, compressor switch open\"\t   },\t   \"10020\":{\t       \"description\":\"Compressor B1 Not Started or Pressure Not Established\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Compressor B1 shuts down\",\t       \"possible_cause\":\"Compressor breaker or fuse fault, compressor switch open\"\t   },\t   \"10021\":{\t       \"description\":\"Compressor B2 Not Started or Pressure Not Established\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Compressor B2 shuts down\",\t       \"possible_cause\":\"Compressor breaker or fuse fault, compressor switch open\"\t   },\t   \"10029\":{\t       \"description\":\"Loss of communication with System Manager\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit returns to standalone mode\",\t       \"possible_cause\":\"Communication error\"\t   },\t   \"10030\":{\t       \"description\":\"Master/Slave Communication Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Master/slave disabled; returns to standalone mode\",\t       \"possible_cause\":\"Communication error\"\t   },\t   \"10031\":{\t       \"description\":\"Unit is in Network Emergency Stop\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Network emergency stop command\"\t   },\t   \"10032\":{\t       \"description\":\"Cooler Pump 1 Fault\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Restart with another pump or shuts down\",\t       \"possible_cause\":\"Evaporator flow switch or pump fault\"\t   },\t   \"10033\":{\t       \"description\":\"Cooler Pump 2 Fault\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Restart with another pump or shuts down\",\t       \"possible_cause\":\"Evaporator flow switch or pump fault\"\t   },\t   \"10037\":{\t       \"description\":\"Circuit A Repeated High Discharge Gas Overrides\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Repetitive capacity decreases\"\t   },\t   \"10038\":{\t       \"description\":\"Circuit B Repeated High Discharge Gas Overrides\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Repetitive capacity decreases\"\t   },\t   \"10040\":{\t       \"description\":\"Circuit A Repeated Low Suction Temp Overrides\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Repetitive capacity decreases\"\t   },\t   \"10041\":{\t       \"description\":\"Circuit B Repeated Low Suction Temp Overrides\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Repetitive capacity decreases\"\t   },\t   \"10043\":{\t       \"description\":\"Low Heating Entering Water Temperature\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Low entering fluid temperature in Heating mode\"\t   },\t   \"10063\":{\t       \"description\":\"Circuit A High Pressure Switch Failure\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Switch fault\"\t   },\t   \"10064\":{\t       \"description\":\"Circuit Failure A2/B High Pressure Switch\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Circuit A2/B shuts down\",\t       \"possible_cause\":\"Switch fault\"\t   },\t   \"10097\":{\t       \"description\":\"Water Swapped Exchanger Temperature Sensors\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Input and output temperature reversed\"\t   },\t   \"10099\":{\t       \"description\":\"Possible Refrigerant Leakage Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Refrigerant leak or detector defective\"\t   },\t   \"10101\":{\t       \"description\":\"Free Cooling Process Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Fan fault, dirty beam\"\t   },\t   \"10109\":{\t       \"description\":\"Tank EHS Low Efficiency Alert\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"EHS shall be checked by a technician\",\t       \"possible_cause\":\"Heat produced by water tank's EHS too low\"\t   },\t   \"10122\":{\t       \"description\":\"Replacement mode: missing Software Activation Key\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Software options blocked after 7 days\",\t       \"possible_cause\":\"Controller replaced, activation key not installed\"\t   },\t   \"10210\":{\t       \"description\":\"Compressor cir A Running Outside MAP\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Compressor running outside its limits\"\t   },\t   \"10211\":{\t       \"description\":\"Compressor cir B Running Outside MAP\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Compressor running outside its limits\"\t   },\t   \"10227\":{\t       \"description\":\"Leak detected cirA\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit A shuts down (if leak_alm=yes); Fans start\",\t       \"possible_cause\":\"Refrigerant leakage detected (above LFL threshold)\"\t   },\t   \"10228\":{\t       \"description\":\"Leak detected cirB\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit B shuts down (if leak_alm=yes); Fans start\",\t       \"possible_cause\":\"Refrigerant leakage detected (above LFL threshold)\"\t   },\t   \"11202\":{\t       \"description\":\"Cooler Error Water Loop : Delta Pressure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Too low or high water pressure reading\"\t   },\t   \"11203\":{\t       \"description\":\"Cooler Water Loop : Pressure Too Low\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Low pump inlet pressure below 60 kPa\"\t   },\t   \"11204\":{\t       \"description\":\"Cooler Water Loop : Pump Not Started\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Pump is stopped\",\t       \"possible_cause\":\"Too low or high water pressure reading\"\t   },\t   \"11205\":{\t       \"description\":\"Cooler Water Loop : Pressure Error During Runtest\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Too low or high water pressure reading\"\t   },\t   \"11206\":{\t       \"description\":\"Cooler Water Loop : Pump Overload\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None (alert)\",\t       \"possible_cause\":\"Water loop pressure drop too low\"\t   },\t   \"11207\":{\t       \"description\":\"Cooler Water Loop : Flow Too Low\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None (alert)\",\t       \"possible_cause\":\"Water loop pressure drop too high\"\t   },\t   \"11208\":{\t       \"description\":\"Cooler Water Loop : Pressure Sensors Crossed\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Pressure sensors crossed\"\t   },\t   \"11209\":{\t       \"description\":\"Cooler Water Loop : Low Pressure Warning\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Evaporator water pressure below 100 kPa\"\t   },\t   \"12001\":{\t       \"description\":\"Circuit A Discharge Pressure Transducer Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Defective transducer or connection\"\t   },\t   \"12002\":{\t       \"description\":\"Circuit B Discharge Pressure Transducer Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Defective transducer or connection\"\t   },\t   \"12004\":{\t       \"description\":\"Circuit A Suction Pressure Transducer Failure\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Defective transducer or connection\"\t   },\t   \"12005\":{\t       \"description\":\"Circuit B Suction Pressure Transducer Failure\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Defective transducer or connection\"\t   },\t   \"12024\":{\t       \"description\":\"Water Transducer Exchanger Failure Entering Fluid\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down, pressure calibration erased\",\t       \"possible_cause\":\"Defective transducer or connection\"\t   },\t   \"12025\":{\t       \"description\":\"Water Transducer Exchanger Failure Leaving Fluid\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down, pressure calibration erased\",\t       \"possible_cause\":\"Defective transducer or connection\"\t   },\t   \"13005\":{\t       \"description\":\"Fgas maintenance check needed\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None\",\t       \"possible_cause\":\"Servicing action required\"\t   },\t   \"13006\":{\t       \"description\":\"Leakage detector maintenance check needed\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None (alert only)\",\t       \"possible_cause\":\"Servicing action required\"\t   },\t   \"15001\":{\t       \"description\":\"Water Thermistor Exchanger Failure Entering Fluid\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15002\":{\t       \"description\":\"Water Thermistor Exchanger Failure Leaving Fluid\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15003\":{\t       \"description\":\"Circuit A Defrost Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Cooling: Unit continues to operate; Heating: Circuit A shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15004\":{\t       \"description\":\"Circuit B Defrost Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Cooling: Unit continues to operate; Heating: Circuit B shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15010\":{\t       \"description\":\"OAT Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15011\":{\t       \"description\":\"Master/Slave Failure Common Fluid Thermistor\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Master/slave disabled; returns to stand-alone mode\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15012\":{\t       \"description\":\"Circuit A Suction Gas Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit A shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15013\":{\t       \"description\":\"Circuit B Suction Gas Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Circuit B shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15015\":{\t       \"description\":\"Circuit A Discharge Gas Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15044\":{\t       \"description\":\"Coil Suction Gas Thermistor Sensor 1 Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Cooling: None; Heating: Unit shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15045\":{\t       \"description\":\"Coil Suction Gas Thermistor Sensor 2 Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Cooling: None; Heating: Unit shuts down\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"15046\":{\t       \"description\":\"Free Failure Cooling Water Loop Thermistor\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Free cooling is disabed\",\t       \"possible_cause\":\"Defective thermistor\"\t   },\t   \"15047\":{\t       \"description\":\"Free Failure Cooling Leaving Water Thermistor\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Free cooling is disabled\",\t       \"possible_cause\":\"Defective thermistor\"\t   },\t   \"15048\":{\t       \"description\":\"Free Cooling OAT Sensor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Free cooling is disabled\",\t       \"possible_cause\":\"Defective thermistor\"\t   },\t   \"15053\":{\t       \"description\":\"Water Tank Output Thermistor Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Alert raised based on tnk_alrt setting\",\t       \"possible_cause\":\"Defective thermistor or connection\"\t   },\t   \"56001\":{\t       \"description\":\"Lenscan module Failure\",\t       \"reset_type\":\"Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Software problem\"\t   },\t   \"57001\":{\t       \"description\":\"Circuit A SIOB/CIOB Low Voltage Failure\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Unstable electrical supply\"\t   },\t   \"57002\":{\t       \"description\":\"Circuit B SIOB/CIOB Low Voltage Failure\",\t       \"reset_type\":\"Automatic/Manual\",\t       \"action\":\"Unit shuts down\",\t       \"possible_cause\":\"Unstable electrical supply\"\t   },\t   \"90nn\":{\t       \"description\":\"Master Chiller Configuration Error\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Master/slave disabled; returns to standalone mode\",\t       \"possible_cause\":\"Configuration failure\"\t   },\t   \"700n\":{\t       \"description\":\"Illegal configuration\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Unit cannot be started\",\t       \"possible_cause\":\"7001: Undefined unit size, etc.\"\t   },\t   \"13nnn\":{\t       \"description\":\"Service maintenance alert\",\t       \"reset_type\":\"Manual/Automatic\",\t       \"action\":\"Depends on severity\",\t       \"possible_cause\":\"Servicing action required\"\t   },\t   \"170nn\":{\t       \"description\":\"Circuit A VFD Fan Drive 1 Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None (alert)\",\t       \"possible_cause\":\"Speed controller fault\"\t   },\t   \"180nn\":{\t       \"description\":\"Circuit A VFD Fan Drive 2 Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None (alert)\",\t       \"possible_cause\":\"Speed controller fault\"\t   },\t   \"190nn\":{\t       \"description\":\"Circuit B VFD Fan Drive 1 Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"None (alert)\",\t       \"possible_cause\":\"Speed controller fault\"\t   },\t   \"21nnn\":{\t       \"description\":\"VFD Pump 1 Drive Failure\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Restart with another pump or shuts down\",\t       \"possible_cause\":\"Speed controller fault\"\t   },\t   \"60nnn\":{\t       \"description\":\"Leakage detector A Warning\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Fans start (regardless of leak_alm setting)\",\t       \"possible_cause\":\"Leakage detector warning conditions\"\t   },\t   \"62nnn\":{\t       \"description\":\"Leakage detector B Warning\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Fans start (regardless of leak_alm setting)\",\t       \"possible_cause\":\"Leakage detector warning conditions\"\t   },\t   \"61nnn\":{\t       \"description\":\"Leakage detector A Error\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Fans start (regardless of leak_alm setting)\",\t       \"possible_cause\":\"Leakage detector error conditions\"\t   },\t   \"63nnn\":{\t       \"description\":\"Leakage detector B Error\",\t       \"reset_type\":\"Automatic\",\t       \"action\":\"Fans start (regardless of leak_alm setting)\",\t       \"possible_cause\":\"lLeakage detector error conditions\"\t   }\t}",
-        "payloadType": "jsonata",
-        "x": 140,
-        "y": 120,
+        "x": 490,
+        "y": 660,
         "wires": [
             [
-                "8cb103ab25ef6697"
+                "298f4d77b929e02a",
+                "bb16735a0cac5286"
             ]
         ]
-    },
-    {
-        "id": "8cb103ab25ef6697",
-        "type": "debug",
-        "z": "d6d8802f46b4aa03",
-        "name": "debug 63",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 870,
-        "y": 120,
-        "wires": []
     },
     {
         "id": "947aa5c71c0312dc",
