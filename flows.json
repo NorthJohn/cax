@@ -463,9 +463,7 @@
         "x": 520,
         "y": 2060,
         "wires": [
-            [
-                "911fc6b6c3ef646a"
-            ]
+            []
         ]
     },
     {
@@ -1213,6 +1211,28 @@
         "visible": "true",
         "disabled": "false",
         "groupType": "default"
+    },
+    {
+        "id": "cafaaf8334c76ec8",
+        "type": "ui-spacer",
+        "group": "d3987b783abbd512",
+        "name": "spacer",
+        "tooltip": "",
+        "order": 8,
+        "width": 1,
+        "height": 1,
+        "className": ""
+    },
+    {
+        "id": "3e496e0acc1e7347",
+        "type": "ui-spacer",
+        "group": "d3987b783abbd512",
+        "name": "spacer",
+        "tooltip": "",
+        "order": 5,
+        "width": 1,
+        "height": 1,
+        "className": ""
     },
     {
         "id": "3bf5edcf0ab1a992",
@@ -3976,11 +3996,10 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 320,
-        "y": 560,
+        "x": 180,
+        "y": 600,
         "wires": [
             [
-                "836f380346a840ec",
                 "da52901daadafaf3"
             ]
         ]
@@ -3992,25 +4011,30 @@
         "name": "",
         "props": [
             {
-                "p": "payload"
-            },
-            {
                 "p": "topic",
                 "vt": "str"
+            },
+            {
+                "p": "timestamp",
+                "v": "",
+                "vt": "date"
+            },
+            {
+                "p": "payload"
             }
         ],
         "repeat": "3600",
         "crontab": "",
-        "once": true,
+        "once": false,
         "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 110,
-        "y": 560,
+        "topic": "bump",
+        "payload": "{}",
+        "payloadType": "jsonata",
+        "x": 130,
+        "y": 520,
         "wires": [
             [
-                "4b312ca3f9e40a03"
+                "da52901daadafaf3"
             ]
         ]
     },
@@ -4036,7 +4060,7 @@
         "z": "e7fcf1f501be8b60",
         "group": "c8e0ab309895af11",
         "name": "weather",
-        "label": "",
+        "label": "Weather Forecast",
         "order": 2,
         "width": 0,
         "height": 0,
@@ -4052,7 +4076,7 @@
         "action": "replace",
         "className": "",
         "x": 620,
-        "y": 680,
+        "y": 620,
         "wires": [
             []
         ]
@@ -4062,18 +4086,179 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "curate weather",
-        "func": "let weather = []\n\nfor (const fcast of msg.payload.list)\n{\n  const snap = { \n    dt : fcast.dt,\n    dt_text : fcast.dt_txt,\n    temp : fcast.main.temp, \n    wind : fcast.wind.speed,\n    deg : fcast.wind.deg,    \n    datetime : fcast.dt_text\n  }\n  weather.push(snap)\n}\n\n\nmsg.payload = weather\nreturn msg;",
-        "outputs": 1,
+        "func": "\n// check if weather is cached \nswitch (msg.topic)\n{\n  case 'bump': \n    const openweather = context.get('openweather', 'file')\n\n    if (openweather != null)\n    {\n      const nowSecs = Math.floor(Date.now() / 1000);\n      const firstWeatherReport = openweather.list[0].dt\n      const oneHour = 60 * 60\n      const openweatherTooOld = nowSecs > oneHour + firstWeatherReport\n      if (!openweatherTooOld)\n      {\n        msg.payload = openweather\n        msg.topic = 'cachedWeather'\n        break;\n      }\n      msg.topic = 'liveWeather'\n      return [[msg], null]\n    }\n\n  case 'liveWeather': \n    context.set('openweather', msg.payload, 'file')\n    break \n\n  default:\n    node.error(\"Unknown topic \", msg.topic);\n}\n\n//node.error(\" hey \" + msg.topic + \" \" + msg.payload)\n\nlet snaps = []\n\nfor (const fcast of msg.payload.list)\n{\n  const snap = { \n    dt : fcast.dt,\n    dt_local : new Date(fcast.dt * 1000).toLocaleString(),\n    dt_txt_UTC : fcast.dt_txt,\n    temp : fcast.main.temp, \n    wind : fcast.wind.speed,\n    deg : fcast.wind.deg,    \n  }\n  snaps.push(snap)\n}\n\n// flip payloads around so that snaps can be dumped into a table\nmsg.openweather = msg.payload ;\nmsg.payload = snaps\nreturn [null, [msg]];",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 180,
+        "x": 160,
+        "y": 680,
+        "wires": [
+            [
+                "4b312ca3f9e40a03"
+            ],
+            [
+                "836f380346a840ec",
+                "f424705d952314af"
+            ]
+        ]
+    },
+    {
+        "id": "f424705d952314af",
+        "type": "function",
+        "z": "e7fcf1f501be8b60",
+        "name": "optimum start",
+        "func": "\n// all times are seconds from 1970  !!\n\n// Linear interpolation (like numpy.interp): clamps outside the range.\n// xs must be ascending.\nfunction interp(x, xs, ys) {\n  if (x <= xs[0]) return ys[0];\n  const n = xs.length;\n  if (x >= xs[n - 1]) return ys[n - 1];\n  let i = 1;\n  while (xs[i] < x) i++;\n  const f = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);\n  return ys[i - 1] + f * (ys[i] - ys[i - 1]);\n}\n\n/**\n * Optimum start time (hours, same clock as openT).\n * openT    building opening time (unix)\n * Tset     target indoor temp (°C)\n * Toff     indoor temp when heating switched off (°C)\n * offT     time heating switched off (unix)\n * C        thermal capacity (kWh/°C)\n * P        boiler output (kW)\n * Q20      heat loss at 20 °C difference (kW)\n * toutFn   function(t) -> outside temp (°C)\n * dt       step size in secs (360 = 6 min)\n */\n\nconst coolT = [];\nconst coolTemp = [];\n\nfunction startTime(openT, Tset, Toff, offT, C, P, Q20, toutFn, dt) {\n  const L = Q20 / 20;\n  const dtH = dt / 3600; // step in hours, since C, P, L are kWh/kW based\n\n  // Forward passive cooling curve from switch-off to opening\n\n  let t = offT;\n  let T = Toff;\n\n  let n = 1000  // stop node-red from crashing if there's an infinite loop \n  while (t < openT && n) {\n    coolT.push(t);\n    coolTemp.push(T);\n    T += (dtH / C) * (-L * (T - toutFn(t)));\n    const texxt = `${localeDate(t)} ${localeDate(openT)} T:${T}`\n    node.error(texxt)\n    node.status({fill:\"blue\",shape:\"ring\",text:texxt});\n    t += dt; \n    n -= 1 \n  }\n  // Backward heating curve from opening time\n  t = openT;\n  T = Tset;\n  while (t > offT && n) {\n    T -= (dtH / C) * (P - L * (T - toutFn(t)));\n    t -= dt;\n    const Tc = interp(t, coolT, coolTemp);\n    if (T <= Tc) return t; // curves meet: this is the start time\n    n -= 1 \n  }\n  return offT; // must start immediately / can't make it\n}\n\nconst localeDate = (ts) => new Date(ts * 1000).toLocaleString() \n\nfunction createWeather(snapshots)\n{\n  const times = snapshots.map((w) => w.dt);   // secs from 1970\n  const temps = snapshots.map((w) => w.temp);\n\n  const tOutside = (t) => interp(t, times, temps);\n  return tOutside\n}\n\nconst nowSecs = Math.floor(Date.now() / 1000);\nconst settings =\n{\n  openTime : getNextUtcTimestamp(8, 0),\n  setPoint : 21, \n  tempOff : 12, \n  offTime : nowSecs,\n  capacity: 200,    // kWh per °C\n  power : 20,       // kW\n  q20:  50          // heat loss in kW at 20 °C difference(kW)\n}\n\n\nfunction getNextUtcTimestamp(hours, mins = 0) {\n\n    const now =  new Date(nowSecs * 1000)\n    \n    // Create a Date object for 8:00 AM UTC today\n    const target = new Date(Date.UTC(\n        now.getUTCFullYear(),\n        now.getUTCMonth(),\n        now.getUTCDate(),\n        hours, mins, 0, 0\n    ));\n\n    // If 8:00 AM UTC has already passed today, move to tomorrow\n    if (now >= target) {\n        target.setUTCDate(target.getUTCDate() + 1);\n    }\n\n    // Convert milliseconds to seconds (Unix timestamp)\n  return Math.floor(target.getTime() / 1000);\n}\n\n\nfunction optimumStart(settings, tOutside,  msg)\n{\n  const oStart = startTime(\n    settings.openTime, \n    settings.setPoint, \n    settings.tempOff,   //  Toff, \n    settings.offTime,  \n    settings.capacity,  //  kWh per °C\n    settings.power,\n    settings.q20,\n    tOutside, \n    60 * 60)        // 10 mins\n\n\n\n  const offTime = localeDate(settings.offTime) \n  const optimumStart =  localeDate(oStart)\n  const  openTime =  localeDate(settings.openTime)\n  \n  const texxt = `${offTime}->${optimumStart}->${openTime}`\n\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${texxt}`});\n\n  const log = [] \n\n  const chart = {}\n  chart.topic = 'chart'\n  chart.payload = [\n  { \"time\": 1743608100000, \"temp\": 21.4, \"sensor\": \"Server Room\" },\n  { \"time\": 1743608160000, \"temp\": 21.8, \"sensor\": \"Server Room\" },\n  { \"time\": 1743608220000, \"temp\": 22.1, \"sensor\": \"Server Room\" },\n  { \"time\": 1743608280000, \"temp\": 22.5, \"sensor\": \"Server Room\" }\n  ]\n\n  return [[msg], [chart], log] ;\n}\n\n\nconst tOutside = createWeather(msg.payload)\n\n//msg.optimumStart = oStart\n\nreturn optimumStart(settings, tOutside, msg)",
+        "outputs": 3,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
         "y": 680,
         "wires": [
             [
                 "dc3a432aafbb249d"
+            ],
+            [
+                "6b225ea73afc1d2e",
+                "fe96dbebd7f202a3"
+            ],
+            [
+                "d6894441b5671df7"
+            ]
+        ]
+    },
+    {
+        "id": "d6894441b5671df7",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "log opt",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 610,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "6b225ea73afc1d2e",
+        "type": "ui-chart",
+        "z": "e7fcf1f501be8b60",
+        "group": "c8e0ab309895af11",
+        "name": "",
+        "label": "chart",
+        "order": 3,
+        "chartType": "line",
+        "category": "",
+        "categoryType": "none",
+        "xAxisLabel": "time",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "auto",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "temp",
+        "yAxisProperty": "chart",
+        "yAxisPropertyType": "msg",
+        "ymin": "",
+        "ymax": "",
+        "bins": 10,
+        "action": "replace",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": 1,
+        "removeOlderUnit": "86400",
+        "removeOlderPoints": "",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": 6,
+        "height": 8,
+        "className": "",
+        "interpolation": "linear",
+        "x": 610,
+        "y": 680,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fe96dbebd7f202a3",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "debug 67",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "58171f80756f2e85",
+        "type": "ui-slider",
+        "z": "e7fcf1f501be8b60",
+        "group": "c8e0ab309895af11",
+        "name": "",
+        "label": "slider",
+        "tooltip": "",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "outs": "all",
+        "topic": "topic",
+        "topicType": "msg",
+        "thumbLabel": "true",
+        "showTicks": "always",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 290,
+        "y": 800,
+        "wires": [
+            [
+                "6b225ea73afc1d2e"
             ]
         ]
     },
@@ -5941,9 +6126,7 @@
                 "4ebaa0361f52d24b"
             ],
             [],
-            [
-                "b442feb9dc937420"
-            ]
+            []
         ]
     },
     {
@@ -6807,10 +6990,12 @@
                 "427f1f7861a9e8c6"
             ],
             [
-                "823b75b14cac43ad"
+                "823b75b14cac43ad",
+                "f9bd4477754c7ec2"
             ],
             [
-                "31f30a7c661ae413"
+                "31f30a7c661ae413",
+                "a2a6e98fd893db46"
             ],
             [
                 "2cbebcf16873b7a2",
@@ -6970,7 +7155,7 @@
         "z": "3187bd06ef664359",
         "name": "Output power",
         "group": "d3987b783abbd512",
-        "order": 5,
+        "order": 4,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -7000,8 +7185,34 @@
         "id": "31f30a7c661ae413",
         "type": "ui-text",
         "z": "3187bd06ef664359",
+        "d": true,
         "group": "d3987b783abbd512",
-        "order": 8,
+        "order": 11,
+        "width": "3",
+        "height": "1",
+        "name": "Output energy",
+        "label": "Output energy",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 720,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "823b75b14cac43ad",
+        "type": "ui-text",
+        "z": "3187bd06ef664359",
+        "d": true,
+        "group": "d3987b783abbd512",
+        "order": 12,
         "width": "3",
         "height": "1",
         "name": "Output energy",
@@ -7021,36 +7232,12 @@
         "wires": []
     },
     {
-        "id": "823b75b14cac43ad",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "d3987b783abbd512",
-        "order": 9,
-        "width": "3",
-        "height": "1",
-        "name": "Output energy",
-        "label": "Output energy",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": false,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 720,
-        "y": 1540,
-        "wires": []
-    },
-    {
         "id": "46840e3a9559d36d",
         "type": "ui-gauge-classic",
         "z": "3187bd06ef664359",
         "name": "Control",
         "group": "d3987b783abbd512",
-        "order": 4,
+        "order": 3,
         "width": "2",
         "height": "2",
         "min": "0",
@@ -7515,7 +7702,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "debug 35",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -7772,30 +7959,6 @@
         ]
     },
     {
-        "id": "b442feb9dc937420",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "e506712cd9dc5c30",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "name": "log",
-        "label": "PID log",
-        "format": "{{msg.payload}}",
-        "layout": "row-spread",
-        "style": false,
-        "font": "",
-        "fontSize": 16,
-        "color": "#717171",
-        "wrapText": true,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 150,
-        "y": 560,
-        "wires": []
-    },
-    {
         "id": "921885113d64bd0d",
         "type": "ui-table",
         "z": "3187bd06ef664359",
@@ -7816,7 +7979,7 @@
         "mobileBreakpointType": "defaults",
         "action": "replace",
         "x": 750,
-        "y": 1880,
+        "y": 1940,
         "wires": [
             []
         ]
@@ -7826,19 +7989,22 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "PID0 data prep",
-        "func": "\nif (msg.topic != 'log/record/pid0')\n  return null ;\n\nconst log = context.get('logCalcs') ?? [{ }]\n\nif (log.length >= 10) \n  log.pop()\nlog.unshift(msg.payload)\ncontext.set('logCalcs', log)\n\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload.time })\nreturn { topic : msg.topic,  payload :  log};",
-        "outputs": 1,
+        "func": "const log = context.get('logCalcs') ?? [{ }]\n\nif (msg.topic == 'log/record/pid0')\n{\n  if (log.length >= 10) \n    log.pop()\n  log.unshift(msg.payload)\n  context.set('logCalcs', log)\n}\nelse\n  return(null)\n\n\nconst keyValueStrings = \n  Object.entries(log[0]).map(([key, value]) => `${key}: ${value}`)\n  \nconst logText = keyValueStrings.join(' ')\n\nnode.status({ fill: \"green\", shape: \"dot\", text: logText })\n\nreturn [[ { topic : 'log', payload : logText }], [{ topic : msg.topic,  payload : log} ]];",
+        "outputs": 2,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
         "x": 560,
-        "y": 1880,
+        "y": 1920,
         "wires": [
             [
-                "921885113d64bd0d",
-                "2bcceb12cb0e3621"
+                "dfe434e63ba1910d",
+                "bb5081ad4242dc9d"
+            ],
+            [
+                "921885113d64bd0d"
             ]
         ]
     },
@@ -8113,41 +8279,6 @@
         ]
     },
     {
-        "id": "2bcceb12cb0e3621",
-        "type": "ui-table",
-        "z": "3187bd06ef664359",
-        "group": "5e3b78a06771b8f3",
-        "name": "PID0 settings - 1 row",
-        "label": "Heat controller inputs and outputs",
-        "order": 1,
-        "width": 0,
-        "height": 0,
-        "maxrows": "1",
-        "passthru": false,
-        "autocols": true,
-        "showSearch": false,
-        "deselect": false,
-        "selectionType": "none",
-        "columns": [
-            {
-                "title": "",
-                "key": "",
-                "keyType": "key",
-                "type": "text",
-                "width": "",
-                "align": "start"
-            }
-        ],
-        "mobileBreakpoint": "lg",
-        "mobileBreakpointType": "defaults",
-        "action": "replace",
-        "x": 770,
-        "y": 1940,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "c46180bd2674fe18",
         "type": "ui-template",
         "z": "3187bd06ef664359",
@@ -8195,7 +8326,7 @@
         "label": "waiting for update...",
         "group": "d3987b783abbd512",
         "order": 2,
-        "width": "2",
+        "width": "4",
         "height": "1",
         "passthru": false,
         "decouple": false,
@@ -8271,38 +8402,6 @@
         ]
     },
     {
-        "id": "49ae134112cca84a",
-        "type": "ui-switch",
-        "z": "3187bd06ef664359",
-        "name": "Unused",
-        "label": "",
-        "group": "d3987b783abbd512",
-        "order": 3,
-        "width": "2",
-        "height": "1",
-        "passthru": false,
-        "decouple": false,
-        "topic": "",
-        "topicType": "str",
-        "style": "",
-        "className": "",
-        "layout": "row-left-swapped",
-        "clickableArea": "none",
-        "onvalue": "true",
-        "onvalueType": "bool",
-        "onicon": "",
-        "oncolor": "",
-        "offvalue": "false",
-        "offvalueType": "bool",
-        "officon": "",
-        "offcolor": "",
-        "x": 840,
-        "y": 1300,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "1c9617fb389c547a",
         "type": "function",
         "z": "3187bd06ef664359",
@@ -8362,7 +8461,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 690,
-        "y": 1620,
+        "y": 1700,
         "wires": []
     },
     {
@@ -8404,12 +8503,12 @@
             {
                 "topic": "ashp0/PRESSURE_DP_A",
                 "color": "green",
-                "lengthPercent": "1000"
+                "lengthPercent": "100"
             },
             {
                 "topic": "ashp0/PRESSURE_SP_A",
                 "color": "red",
-                "lengthPercent": "1000"
+                "lengthPercent": "100"
             }
         ],
         "hubcolor": "black",
@@ -8425,7 +8524,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "build alarm list ",
-        "func": "\n//if (msg.topic != '')\n//  return null ;\n\nlet idx = 0 ;\n\nconst keys =\n  ['ashp0/ALARMRST_alarm_1c','ashp0/ALARMRST_alarm_2c','ashp0/ALARMRST_alarm_3c',\n   'ashp0/ALARMRST_alarm_4c','ashp0/ALARMRST_alarm_5c',\n   'ashp0/ALARMRST_alarm_1','ashp0/ALARMRST_alarm_2','ashp0/ALARMRST_alarm_3',\n   'ashp0/ALARMRST_alarm_4','ashp0/ALARMRST_alarm_5'] ; \n  \nidx = keys.indexOf(msg.topic)  \nif (idx < 0 ){\n  node.error('no match for ' + msg.topic + \" [] \" + idx)\n  return null\n} \n\nconst fakeResponse =   {\n      time : '00:00',\n      code : '123456',\n      description: \"Water Thermistor Exchanger Failure Entering Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    };\n \nif (msg.err == null) \n  msg.err = fakeResponse \n\nlet alarmList = context.get('alarmList') ?? {}\n\nalarmList[idx] = msg.err\n\ncontext.set('alarmList', alarmList)\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload })\nreturn { topic : 'grgrgg',  payload : Object.values(alarmList)};\n\nreturn msg;",
+        "func": "\n//if (msg.topic != '')\n//  return null ;\n\nlet idx = 0 ;\n\nconst keys =\n  ['ashp0/ALARMRST_alarm_1c','ashp0/ALARMRST_alarm_2c','ashp0/ALARMRST_alarm_3c',\n   'ashp0/ALARMRST_alarm_4c','ashp0/ALARMRST_alarm_5c',\n   'ashp0/ALARMRST_alarm_1','ashp0/ALARMRST_alarm_2','ashp0/ALARMRST_alarm_3',\n   'ashp0/ALARMRST_alarm_4','ashp0/ALARMRST_alarm_5'] ; \n  \nidx = keys.indexOf(msg.topic)  \nif (idx < 0 ){\n  node.error('no match for ' + msg.topic + \" [] \" + idx)\n  return null\n} \n/*\nconst fakeResponse =   {\n      time : '00:00',\n      code : '123456',\n      description: \"Water Thermistor Exchanger Failure Entering Fluid\",\n      resetType: \"Automatic\",\n      action: \"Unit shuts down\",\n      possibleCause: \"Defective thermistor or connection\"\n    };\n \nif (msg.err == null) \n  msg.err = fakeResponse \n*/\nlet alarmList = context.get('alarmList') ?? {}\n\nalarmList[idx] = msg.err\n\ncontext.set('alarmList', alarmList)\n\nnode.status({ fill: \"green\", shape: \"dot\", text : msg.payload })\nreturn { topic : 'grgrgg',  payload : Object.values(alarmList)};\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -8439,6 +8538,154 @@
                 "9b1bdbb146f0eda0"
             ]
         ]
+    },
+    {
+        "id": "f9bd4477754c7ec2",
+        "type": "ui-gauge",
+        "z": "3187bd06ef664359",
+        "name": "",
+        "group": "d3987b783abbd512",
+        "order": 9,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "2",
+        "height": "1",
+        "gtype": "gauge-tile",
+        "gstyle": "needle",
+        "title": "Output energy yesterday",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#a1a1a1",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "4",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "7",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 10,
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 750,
+        "y": 1540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a2a6e98fd893db46",
+        "type": "ui-gauge",
+        "z": "3187bd06ef664359",
+        "name": "",
+        "group": "d3987b783abbd512",
+        "order": 10,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "2",
+        "height": "1",
+        "gtype": "gauge-tile",
+        "gstyle": "needle",
+        "title": "Output energy today",
+        "alwaysShowTitle": false,
+        "floatingTitlePosition": "top-left",
+        "units": "units",
+        "icon": "",
+        "prefix": "",
+        "suffix": "",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#a2a4a2",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "4",
+                "color": "#ffc800",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "7",
+                "color": "#ea5353",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": 10,
+        "sizeThickness": 16,
+        "sizeGap": 4,
+        "sizeKeyThickness": 8,
+        "styleRounded": true,
+        "styleGlow": false,
+        "className": "",
+        "x": 740,
+        "y": 1620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dfe434e63ba1910d",
+        "type": "ui-text",
+        "z": "3187bd06ef664359",
+        "group": "e506712cd9dc5c30",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "log",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#717171",
+        "wrapText": true,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 730,
+        "y": 1900,
+        "wires": []
+    },
+    {
+        "id": "bb5081ad4242dc9d",
+        "type": "debug",
+        "z": "3187bd06ef664359",
+        "name": "debug 68",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 740,
+        "y": 1860,
+        "wires": []
     },
     {
         "id": "036e2046bfd2657c",
