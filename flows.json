@@ -327,8 +327,8 @@
         "id": "ceef6f34e224aa7a",
         "type": "junction",
         "z": "81037ebb658aa24a",
-        "x": 620,
-        "y": 240,
+        "x": 600,
+        "y": 480,
         "wires": [
             [
                 "90da587f91c535d6",
@@ -460,8 +460,20 @@
         "id": "8b922c8e9c5bfc9a",
         "type": "junction",
         "z": "3187bd06ef664359",
-        "x": 520,
-        "y": 2060,
+        "x": 560,
+        "y": 2040,
+        "wires": [
+            [
+                "911fc6b6c3ef646a"
+            ]
+        ]
+    },
+    {
+        "id": "c0aeb7c4e5daa216",
+        "type": "junction",
+        "z": "3187bd06ef664359",
+        "x": 540,
+        "y": 1000,
         "wires": [
             []
         ]
@@ -711,7 +723,7 @@
     {
         "id": "7d2a07e2b30dad87",
         "type": "ui-group",
-        "name": "Overall Control  (disabled at moment)",
+        "name": "Heating Control  (disabled at moment)",
         "page": "b43082bff9046c6f",
         "width": "6",
         "height": "1",
@@ -769,7 +781,7 @@
     {
         "id": "5e46a3149640b893",
         "type": "ui-group",
-        "name": "Flow temperature",
+        "name": "Heat pump flow setpoint range",
         "page": "b43082bff9046c6f",
         "width": "6",
         "height": "1",
@@ -985,7 +997,7 @@
         "page": "b43082bff9046c6f",
         "width": "12",
         "height": "2",
-        "order": 8,
+        "order": 9,
         "showTitle": true,
         "className": "",
         "visible": "true",
@@ -1137,10 +1149,10 @@
     {
         "id": "0ab4678ba1f9dae0",
         "type": "ui-group",
-        "name": "template test",
+        "name": "Building temperature",
         "page": "f269bfbfdc438ab8",
-        "width": "8",
-        "height": "4",
+        "width": "6",
+        "height": "6",
         "order": 1,
         "showTitle": true,
         "className": "",
@@ -1205,7 +1217,7 @@
         "page": "b43082bff9046c6f",
         "width": "12",
         "height": "6",
-        "order": 9,
+        "order": 10,
         "showTitle": true,
         "className": "",
         "visible": "true",
@@ -1233,6 +1245,20 @@
         "width": 1,
         "height": 1,
         "className": ""
+    },
+    {
+        "id": "eaf3efbfd265a483",
+        "type": "ui-group",
+        "name": "Tonight's temperatures",
+        "page": "b43082bff9046c6f",
+        "width": "6",
+        "height": "1",
+        "order": 8,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
     },
     {
         "id": "3bf5edcf0ab1a992",
@@ -2030,7 +2056,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "tracked",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2243,7 +2269,7 @@
         "id": "a944110ef21c8c0c",
         "type": "inject",
         "z": "fce55c80ba409b3d",
-        "name": "initialize",
+        "name": "inject after 5 secs",
         "props": [
             {
                 "p": "topic",
@@ -2256,14 +2282,16 @@
         "repeat": "",
         "crontab": "",
         "once": true,
-        "onceDelay": "2",
+        "onceDelay": "5",
         "topic": "initialize",
-        "payload": "",
-        "payloadType": "date",
-        "x": 160,
+        "payload": "{}",
+        "payloadType": "jsonata",
+        "x": 190,
         "y": 900,
         "wires": [
-            []
+            [
+                "6d33c5ea5374761b"
+            ]
         ]
     },
     {
@@ -2271,14 +2299,14 @@
         "type": "function",
         "z": "fce55c80ba409b3d",
         "name": "recall",
-        "func": "",
+        "func": "/**\n * flush through all the holding registers / software settings so that \n * dashboard is intialized and all MQTT topics are updated even if \n * they are retained from previous setting\n */\n\n\nconst utils = global.get('utils')\nnode.status = { fill: \"yellow\", shape: \"dot\", text: `${utils.getHHMMSSNow()} recall` };\n\n// message must have {object name}/get/XXX to get past router\n// const objectNames = ['ashp0', 'lae0', 'pid0', 'clock0'] ;\n\nconst objectNames = ['pid0', 'clock0'];\nconst msgs = objectNames.map((name) => ({ topic: `${name}/get/all`, payload: 'recall' }))\nreturn [msgs];",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n/**\n * flush through all the settings \n * so that dashboard is intialized\n * and all MQTT topics are updated\n * even if they are retained from \n * previous settiing\n */\n\n\nconst utils = global.get('utils')\nnode.status = { fill: \"yellow\", shape: \"dot\", text: `${utils.getHHMMSSNow()} recall` };\n\nconst objectNames = ['ashp0', 'lae0', 'pid0', 'clock0'] ;\nconst msgs = objectNames.map((name) => ({ topic: `${name}/get/all`, payload: false }))\nreturn [msgs];",
+        "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 330,
+        "x": 370,
         "y": 900,
         "wires": [
             [
@@ -2401,7 +2429,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 530,
+        "x": 570,
         "y": 900,
         "wires": [
             []
@@ -2445,7 +2473,7 @@
         "type": "debug",
         "z": "fce55c80ba409b3d",
         "name": "debug 57",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -3094,7 +3122,7 @@
         "type": "function",
         "z": "a39c97029f2c005f",
         "name": "msg table",
-        "func": "\n\nconst utils = global.get('utils');\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst timeNow = Date.now();\nlet nodeStatus = null;\nconst updateMQTT = [];\nconst updateDashboard = [];\n\n/**\n * handle requests for sensor messsage recalls\n */\n\nfunction clearProperties(ob) {\n  for (let k in ob)\n    delete ob[k]\n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isSensorMessage(msg) {\n\n  if (typeof msg !== 'object') {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false;\n  }\n  // sensor pattern, 1 letter, 1 or 2 digits\n  //if (/^[adprsgmt][^\\d]*[\\d]{1,2}/.test(msg.topic) == false)\n    //return false;\n\n  if (msg.payload === undefined) {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` };\n    return false;\n  }\n  return true;\n}\n\n\nfunction handleMessage(msg, instrumentation) {\n  if (msg.topic === undefined)\n    node.error(msg)\n    \n  let tokens = msg.topic.split('/') ;\n  let subtopic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  const replyTopic = msg.topic.replace('sensor0/get', 'sensor0');  \n\n  switch (msg.topic) {\n    \n    case 'recall' :\n    case 'sensor0/get/all':\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items` };\n      // and replay the stream of messages\n      // return [] ;\n      updateMQTT.push(...ar)\n      updateDashboard.push(...ar)\n      break;\n\n    case 'sensor0/get/siteConfig' :\n      const mout = {\n        topic:  replyTopic,\n        payload: siteConfig\n      }\n      updateMQTT.push(mout);\n      break       \n      \n    case 'sensor0/get/online':\n    case 'sensor0/get/neverSeen':\n    case 'sensor0/get/timedOut':\n    \n      const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instrumentation, 29, timeNow)\n      const n = {\n        topic:  replyTopic,\n        payload: res[subtopic] ?? 'topic'\n      }\n      updateMQTT.push(n);\n      break\n      \n      \n    case 'clear':\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items` };\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break;\n      \n    case 'availability':\n      const m = instrumentation[msg.topic]\n      m.state = msg.payload;\n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break;\n    \n    default:\n      if (msg.topic.startsWith('sensor0'))   // suppress echo of sensor0 output!\n        break \n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` };\n      if (isSensorMessage(msg)) {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n          instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)\n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` }; \n      }\n      else\n        node.error('invalid message ' + JSON.stringify(msg), msg)\n        break;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg) \n{\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  \n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length;\n  const numTimedOut = sensorStatus.timedOut;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimedOut} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text: texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\n//sensorHousekeeping()\n\nif (nodeStatus) {\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n}\n\nconst mtable = { topic: 'sensorTable', payload: instrumentation }\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
+        "func": "\n\nconst utils = global.get('utils');\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst timeNow = Date.now();\nlet nodeStatus = null;\nconst updateMQTT = [];\nconst updateDashboard = [];\n\n/**\n * handle requests for sensor messsage recalls\n */\n\nfunction clearProperties(ob) {\n  for (let k in ob)\n    delete ob[k]\n}\n\n// const clearProperties2 = (ob) => ({ for (let k in ob) delete ob[k] })\n\n// don't store items that are not objects\n\nfunction isSensorMessage(msg) {\n\n  if (typeof msg !== 'object') {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, not an object` };\n    return false;\n  }\n  // sensor pattern, 1 letter, 1 or 2 digits\n  //if (/^[adprsgmt][^\\d]*[\\d]{1,2}/.test(msg.topic) == false)\n    //return false;\n\n  if (msg.payload === undefined) {\n    nodeStatus = { fill: \"red\", shape: \"triangle\", text: `rejecting ${msg.topic}, no payload` };\n    return false;\n  }\n  return true;\n}\n\n\nfunction handleMessage(msg, instrumentation) {\n  if (msg.topic === undefined)\n    node.error(msg)\n    \n  let tokens = msg.topic.split('/') ;\n  let subtopic =  tokens[tokens.length - 1]  ?? \"\"\n  let sensor = tokens[tokens.length - 2]  ?? \"\"\n\n  const replyTopic = msg.topic.replace('sensor0/get', 'sensor0');  \n\n  switch (msg.topic) {\n    \n    case 'sensor0/recall':\n      // strip out the keys\n      let ar = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `fetched ${ar.length} items` };\n      // and replay the stream of messages\n      // return [] ;\n      updateMQTT.push(...ar)\n      updateDashboard.push(...ar)\n      break;\n\n    case 'sensor0/get/siteConfig' :\n      const mout = {\n        topic:  replyTopic,\n        payload: siteConfig\n      }\n      updateMQTT.push(mout);\n      break       \n      \n    case 'sensor0/get/online':\n    case 'sensor0/get/neverSeen':\n    case 'sensor0/get/timedOut':\n    \n      const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n      const res = utils.sensorStatus(sensorsKnown, instrumentation, 29, timeNow)\n      const n = {\n        topic:  replyTopic,\n        payload: res[subtopic] ?? 'topic'\n      }\n      updateMQTT.push(n);\n      break\n      \n      \n    case 'clear':\n      let ar2 = Object.values(instrumentation)\n      nodeStatus = { fill: \"green\", shape: \"dot\", text: `cleared ${ar2.length} items` };\n      clearProperties(instrumentation);\n      flow.set(\"instrumentation\", instrumentation);\n      break;\n      \n    case 'availability':\n      const m = instrumentation[msg.topic]\n      m.state = msg.payload;\n      updateDashboard.push(m)\n      updateMQTT.push(m)\n      break;\n    \n    default:\n      if (msg.topic.startsWith('sensor0'))   // suppress echo of sensor0 output!\n        break \n      nodeStatus = { fill: \"red\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` };\n      if (isSensorMessage(msg)) {\n        if (msg.timestamp === undefined)\n          msg.timestamp = Date.now()\n          instrumentation[msg.topic] = msg;\n        updateDashboard.push(msg)\n        updateMQTT.push(msg)\n        flow.set('instrumentation', instrumentation)\n        nodeStatus = { fill: \"blue\", shape: \"dot\", text: `stored ${msg.topic} ${msg.payload}` }; \n      }\n      else\n        node.error('invalid message ' + JSON.stringify(msg), msg)\n        break;\n  }\n}\n\n\n/**\n *  now timeout some messages\n **/\n\nfunction sensorHousekeeping(msg) \n{\n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  \n  const sensorStatus = utils.sensorStatus(sensorsKnown, instrumentation, 30, Date.now())\n  //node.error(\"my error message 1 \" + JSON.stringify(sensorStatus), msg);\n  let numTimeouts = 0\n  //node.error(\"my error message 2 \" + JSON.stringify(sensorStatus.timedOut2), msg);\n  for (const name of sensorStatus.timedOut2) {\n    const topic = name + \"/temperature\";\n    numTimeouts += 1\n    if (instrumentation[topic] !== undefined) {\n      if (instrumentation[topic].hasTimedOut != true) {\n        instrumentation[topic].hasTimedOut = true;\n        //node.error('timeout 2d ' + JSON.stringify(instrumentation[topic]))\n        updateDashboard.push(instrumentation[topic])   // push message out to dashboard\n      }\n    }\n  }\n  \n  // save updated timeouts \n  context.set(\"instrumentation\", instrumentation); // large write... but to memory\n  \n  const numSensors = sensorsKnown.length;\n  const numTimedOut = sensorStatus.timedOut;\n  //node.error(\"my error message 3 \" + JSON.stringify(msg), msg);\n  const texxt = `${numTimedOut} sensors timed out, total ${numSensors}`;\n  if (nodeStatus == null)\n    nodeStatus = { fill: \"green\", shape: \"dot\", text: texxt }\n}\n\n// save and store message if validated\nconst instrumentation = flow.get(\"instrumentation\") ?? {}\nconst mqtt = handleMessage(msg, instrumentation)\n\n//sensorHousekeeping()\n\nif (nodeStatus) {\n  nodeStatus.text = `${utils.getHHMMSSNow()} ${nodeStatus.text}`;\n  node.status(nodeStatus);\n}\n\nconst mtable = { topic: 'sensorTable', payload: instrumentation }\n\nreturn [updateMQTT, updateDashboard, mtable];\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3680,7 +3708,7 @@
         "crontab": "",
         "once": true,
         "onceDelay": 0.1,
-        "topic": "tick",
+        "topic": "clock0/tick",
         "x": 130,
         "y": 140,
         "wires": [
@@ -3750,12 +3778,12 @@
         "id": "c98b6b30b5fddbb3",
         "type": "ui-form",
         "z": "e7fcf1f501be8b60",
-        "name": "scheduler0",
+        "name": "weekday",
         "group": "a08f5caa6b7f253a",
         "label": "",
         "order": 1,
-        "width": null,
-        "height": null,
+        "width": "",
+        "height": "",
         "options": [
             {
                 "label": "Weekday Start time",
@@ -3780,17 +3808,18 @@
         "submit": "submit",
         "cancel": "clear",
         "resetOnSubmit": true,
-        "topic": "set/schedule",
+        "topic": "clock0/set/weekday",
         "topicType": "str",
         "splitLayout": "",
         "className": "",
         "passthru": false,
         "dropdownOptions": [],
-        "x": 350,
+        "x": 340,
         "y": 40,
         "wires": [
             [
-                "514bcf2a52af1cf0"
+                "514bcf2a52af1cf0",
+                "271b7a950a8cd796"
             ]
         ]
     },
@@ -3799,7 +3828,7 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "scheduler 2",
-        "func": "const defaultSchedule = \n{\n  start : '23:40',\n  stop  : '23:45',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"schedule\", \"file\") ?? {})\n\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (command) {\n    // from MQTT\n    case 'start'  :\n        schedule.start = msg.payload.substring(0, 5) \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload.substring(0, 5)  \n        timeChange = true ; \n        break \n    case 'all': \n        recall = true ;   \n    case 'tick': \n        break ;\n    \n    case 'advance' :\n        advance = true ;   \n        break ;\n\n        \n    // from the webform and MQTT\n    case 'schedule' :    \n        schedule.start = msg.payload.start;\n        schedule.stop = msg.payload.stop;\n        timeChange = true ; \n        break ;\n    \n    default: \n        node.error('Not expecting ' + msg.topic)\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'start': 'stop' \n\nconst texxt = `${timeNow}: ${offOnText} 🕐${schedule.start}↦${schedule.stop}`\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/set/schedule', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/schedule/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/schedule/stop`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n\n  if (recall) \n    node.error('recall pressed');\n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    control = { topic : 'schedule', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"schedule\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
+        "func": "const defaultSchedule = \n{\n  start : '09:00',\n  stop  : '17:00',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"weekday\", \"file\") ?? {})\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (true) {\n\n  // from the webform and MQTT\n  case /clock0\\/set\\/weekday$/.test(msg.topic):\n      schedule.start = msg.payload.start;\n      schedule.stop = msg.payload.stop;\n      timeChange = true ; \n      break ;\n  \n  // from MQTT\n  case /clock0\\/set\\/weekday\\/start/.test(msg.topic) :\n      schedule.start = msg.payload.substring(0, 5) \n      timeChange = true ; \n      break \n  case /clock0\\/set\\/weekday\\/stop/.test(msg.topic): \n      schedule.stop = msg.payload.substring(0, 5)  \n      timeChange = true ; \n      break \n  case /clock0\\/get\\/all/.test(msg.topic): \n      recall = true ;\n      break    \n  case /clock0\\/tick/.test(msg.topic): \n      break ;\n    \n  case /clock0\\/set\\/advance/.test(msg.topic):\n      advance = true ;   \n      break ;\n      \n  default: \n      node.error(`Not expecting ${msg.topic}` )\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'heat-on': 'heat-off' \n\nconst texxt = `${timeNow}: 🕐${schedule.start}↦${schedule.stop} ${offOnText} `\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/set/weekday', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/weekday/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/weekday/stop`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n  \n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    // set topic so message could pass through router\n    control = { topic : 'pid0/set/demand', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"weekday\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3853,8 +3882,7 @@
         "y": 180,
         "wires": [
             [
-                "514bcf2a52af1cf0",
-                "271b7a950a8cd796"
+                "514bcf2a52af1cf0"
             ]
         ]
     },
@@ -3922,12 +3950,12 @@
         "id": "0a617bea90cec73f",
         "type": "ui-form",
         "z": "e7fcf1f501be8b60",
-        "name": "scheduler1",
+        "name": "weekend",
         "group": "3b9fea2ad4f5df3c",
         "label": "",
         "order": 1,
-        "width": null,
-        "height": null,
+        "width": "",
+        "height": "",
         "options": [
             {
                 "label": "Weekend Start time",
@@ -3958,7 +3986,7 @@
         "className": "",
         "passthru": false,
         "dropdownOptions": [],
-        "x": 550,
+        "x": 540,
         "y": 40,
         "wires": [
             []
@@ -3976,7 +4004,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 310,
+        "x": 140,
         "y": 280,
         "wires": []
     },
@@ -4008,7 +4036,7 @@
         "id": "e099dfa15183f748",
         "type": "inject",
         "z": "e7fcf1f501be8b60",
-        "name": "",
+        "name": "Every 15 mins",
         "props": [
             {
                 "p": "topic",
@@ -4023,14 +4051,14 @@
                 "p": "payload"
             }
         ],
-        "repeat": "3600",
+        "repeat": "900",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "bump",
         "payload": "{}",
         "payloadType": "jsonata",
-        "x": 130,
+        "x": 160,
         "y": 520,
         "wires": [
             [
@@ -4051,7 +4079,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 620,
-        "y": 560,
+        "y": 640,
         "wires": []
     },
     {
@@ -4076,7 +4104,7 @@
         "action": "replace",
         "className": "",
         "x": 620,
-        "y": 620,
+        "y": 600,
         "wires": [
             []
         ]
@@ -4100,8 +4128,8 @@
                 "4b312ca3f9e40a03"
             ],
             [
-                "836f380346a840ec",
-                "f424705d952314af"
+                "f424705d952314af",
+                "dc3a432aafbb249d"
             ]
         ]
     },
@@ -4110,22 +4138,22 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "optimum start",
-        "func": "\n// all times are seconds from 1970  !!\n\n// Linear interpolation (like numpy.interp): clamps outside the range.\n// xs must be ascending.\nfunction interp(x, xs, ys) {\n  if (x <= xs[0]) return ys[0];\n  const n = xs.length;\n  if (x >= xs[n - 1]) return ys[n - 1];\n  let i = 1;\n  while (xs[i] < x) i++;\n  const f = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);\n  return ys[i - 1] + f * (ys[i] - ys[i - 1]);\n}\n\n/**\n * Optimum start time (hours, same clock as openT).\n * openT    building opening time (unix)\n * Tset     target indoor temp (°C)\n * Toff     indoor temp when heating switched off (°C)\n * offT     time heating switched off (unix)\n * C        thermal capacity (kWh/°C)\n * P        boiler output (kW)\n * Q20      heat loss at 20 °C difference (kW)\n * toutFn   function(t) -> outside temp (°C)\n * dt       step size in secs (360 = 6 min)\n */\n\nconst coolT = [];\nconst coolTemp = [];\n\nfunction startTime(openT, Tset, Toff, offT, C, P, Q20, toutFn, dt) {\n  const L = Q20 / 20;\n  const dtH = dt / 3600; // step in hours, since C, P, L are kWh/kW based\n\n  // Forward passive cooling curve from switch-off to opening\n\n  let t = offT;\n  let T = Toff;\n\n  let n = 1000  // stop node-red from crashing if there's an infinite loop \n  while (t < openT && n) {\n    coolT.push(t);\n    coolTemp.push(T);\n    T += (dtH / C) * (-L * (T - toutFn(t)));\n    const texxt = `${localeDate(t)} ${localeDate(openT)} T:${T}`\n    node.error(texxt)\n    node.status({fill:\"blue\",shape:\"ring\",text:texxt});\n    t += dt; \n    n -= 1 \n  }\n  // Backward heating curve from opening time\n  t = openT;\n  T = Tset;\n  while (t > offT && n) {\n    T -= (dtH / C) * (P - L * (T - toutFn(t)));\n    t -= dt;\n    const Tc = interp(t, coolT, coolTemp);\n    if (T <= Tc) return t; // curves meet: this is the start time\n    n -= 1 \n  }\n  return offT; // must start immediately / can't make it\n}\n\nconst localeDate = (ts) => new Date(ts * 1000).toLocaleString() \n\nfunction createWeather(snapshots)\n{\n  const times = snapshots.map((w) => w.dt);   // secs from 1970\n  const temps = snapshots.map((w) => w.temp);\n\n  const tOutside = (t) => interp(t, times, temps);\n  return tOutside\n}\n\nconst nowSecs = Math.floor(Date.now() / 1000);\nconst settings =\n{\n  openTime : getNextUtcTimestamp(8, 0),\n  setPoint : 21, \n  tempOff : 12, \n  offTime : nowSecs,\n  capacity: 200,    // kWh per °C\n  power : 20,       // kW\n  q20:  50          // heat loss in kW at 20 °C difference(kW)\n}\n\n\nfunction getNextUtcTimestamp(hours, mins = 0) {\n\n    const now =  new Date(nowSecs * 1000)\n    \n    // Create a Date object for 8:00 AM UTC today\n    const target = new Date(Date.UTC(\n        now.getUTCFullYear(),\n        now.getUTCMonth(),\n        now.getUTCDate(),\n        hours, mins, 0, 0\n    ));\n\n    // If 8:00 AM UTC has already passed today, move to tomorrow\n    if (now >= target) {\n        target.setUTCDate(target.getUTCDate() + 1);\n    }\n\n    // Convert milliseconds to seconds (Unix timestamp)\n  return Math.floor(target.getTime() / 1000);\n}\n\n\nfunction optimumStart(settings, tOutside,  msg)\n{\n  const oStart = startTime(\n    settings.openTime, \n    settings.setPoint, \n    settings.tempOff,   //  Toff, \n    settings.offTime,  \n    settings.capacity,  //  kWh per °C\n    settings.power,\n    settings.q20,\n    tOutside, \n    60 * 60)        // 10 mins\n\n\n\n  const offTime = localeDate(settings.offTime) \n  const optimumStart =  localeDate(oStart)\n  const  openTime =  localeDate(settings.openTime)\n  \n  const texxt = `${offTime}->${optimumStart}->${openTime}`\n\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${texxt}`});\n\n  const log = [] \n\n  const chart = {}\n  chart.topic = 'chart'\n  chart.payload = [\n  { \"time\": 1743608100000, \"temp\": 21.4, \"sensor\": \"Server Room\" },\n  { \"time\": 1743608160000, \"temp\": 21.8, \"sensor\": \"Server Room\" },\n  { \"time\": 1743608220000, \"temp\": 22.1, \"sensor\": \"Server Room\" },\n  { \"time\": 1743608280000, \"temp\": 22.5, \"sensor\": \"Server Room\" }\n  ]\n\n  return [[msg], [chart], log] ;\n}\n\n\nconst tOutside = createWeather(msg.payload)\n\n//msg.optimumStart = oStart\n\nreturn optimumStart(settings, tOutside, msg)",
+        "func": "\n// all times are seconds (not ms) from 1970 !!\n// todo : convert to Locale time\n\nconst utils = global.get('utils')\n\nconst localeDate = (ts) => new Date(ts * 1000).toLocaleString()\n\nconst nowSecs = Math.floor(Date.now() / 1000);\n\nfunction oatCreateFn(snapshots) {\n  const times = snapshots.map((w) => w.dt);   // secs from 1970\n  const temps = snapshots.map((w) => w.temp);\n\n  return (t) => interp(t, times, temps);\n}\n\n/**\n * Oct 7 20:00 21.6   oat 11.2C\n * Oct 8 05:00 20.4   oat 7.84C\n * \n * over 9 hours, temp dropped 1.2C, OAT 9.5\n */\n\n\nconst capacity = []\n\nconst settings =\n{\n  dtOpen: getNextLocaleTimestamp(9, 0),\n  spt: 19,\n  hsp: 21,\n  capacity: 40,     // kWh \n  power: 37,        // kW\n  loss: 1.8         // heat loss in kW per per °C\n}\n\nfunction optimumStart(settings, weatherSnaps, dtStart) {\n  const chart = { topic: 'chart', payload: [] }\n  const oStart = startTime(\n    settings,\n    dtStart,\n    oatCreateFn(weatherSnaps),\n    chart.payload)\n\n  const offTime = localeDate(dtStart)\n  const optimumStart = localeDate(oStart)\n  const openTime = localeDate(settings.dtOpen)\n\n  const texxt = `${offTime}->${optimumStart}->${openTime}`\n\n  node.status({ fill: \"yellow\", shape: \"ring\", text: `${texxt}` });\n\n  const log = []\n\n  const msg = { topic: 'optStart', payload: oStart }  // sending secs\n\n  return [[msg], [chart], log];\n}\n\n\n/**\n * Initially generated by Claude\n * \n * Optimum start time (hours, same clock as dtOpen).\n * p.dtOpen   building opening time (unix)\n * p.hsp      heating set point temp (°C)\n * p.spt      indoor space temp when heating switched off (°C)\n * p.capacity thermal capacity (kWh/°C)\n * p.power    boiler output (kW)\n * p.loss     heat loss (kW) per °C\n * dtStart    time heating switched off (unix)\n * oatFn      function(t) -> outside temp (°C)\n * dtStep     step size in secs (360 = 6 min)\n */\n\n\nfunction startTime(prop, dtStart, oatFn, tChart, dtStep = 15 * 60) {\n  const dtH = dtStep / 3600; // step in hours, since C, P, L are kWh/kW based\n\n  // Forward passive cooling curve from switch-off to opening\n\n  let dt = dtStart;\n  let spt = prop.spt;\n  let n = 1000  // stop node-red from crashing if there's an infinite loop\n\n  const coolT = [];\n  const coolTemp = [];\n  while (dt < prop.dtOpen && n) {\n    const oat = oatFn(dt)\n    spt += (dtH / prop.capacity) * (-prop.loss * (spt - oat));\n    coolT.push(dt);\n    coolTemp.push(spt);\n    tChart.push({ time: dt*1000, temperature: utils.toFix(spt, 1), series: 'Building Cooling' })\n    tChart.push({ time: dt*1000, temperature: utils.toFix(oat, 1), series: 'Outside Air Temperature' })\n//    tChart.push({ time: dt, temperature: spt, series: 'Building Cooling' })\n//    tChart.push({ time: dt, temperature: oat, series: 'Outside Air Temperature' })\n    dt += dtStep;\n    n -= 1\n  }\n  // Backward heating curve from opening time\n  dt = prop.dtOpen;\n  spt = prop.hsp;    // should using live temperature\n  while (dt > dtStart && n) {\n    const oat = oatFn(dt)\n    spt -= (dtH / prop.capacity) * (prop.power - prop.loss * (spt - oat));\n    tChart.push({ time: dt*1000, temperature: utils.toFix(spt, 1), series: 'Building Warming' })\n    dt -= dtStep;\n    const sptCool = interp(dt, coolT, coolTemp);\n    if (spt <= sptCool) return dt; // curves meet: this is the start time\n    n -= 1\n  }\n  return dtStart; // must start immediately / can't make it\n}\n\n\nfunction getNextLocaleTimestamp(targetHour, targetMinute = 0) \n{\n  const now = new Date();\n  const targetDate = new Date();\n\n  // 1. Set the target time for TODAY first\n  targetDate.setHours(targetHour, targetMinute, 0, 0);\n\n  // 2. Conditional check: If that time has already passed today, move to tomorrow\n  if (now >= targetDate) {\n    targetDate.setDate(targetDate.getDate() + 1);\n  }\n  // 3. Convert milliseconds to Unix seconds and store in msg.payload\n  return Math.floor(targetDate.getTime() / 1000);\n}\n\n\nfunction getNextUtcTimestamp(hours, mins = 0) {\n\n  const now = new Date(nowSecs * 1000)\n  const target = new Date(Date.UTC(now.getUTCFullYear(),\n    now.getUTCMonth(),\n    now.getUTCDate(),\n    hours, mins, 0, 0\n  ));\n  // If hours:mins UTC has already passed today, move to tomorrow\n  if (now >= target) {\n    target.setUTCDate(target.getUTCDate() + 1);\n  }\n  // Convert milliseconds to seconds (Unix timestamp)\n  return Math.floor(target.getTime() / 1000);\n}\n\n\n\n// Linear interpolation (like numpy.interp): clamps outside the range.\n// xs must be ascending.\nfunction interp(x, xs, ys) {\n  if (x <= xs[0]) return ys[0];\n  const n = xs.length;\n  if (x >= xs[n - 1]) return ys[n - 1];\n  let i = 1;\n  while (xs[i] < x) i++;\n  const f = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);\n  return ys[i - 1] + f * (ys[i] - ys[i - 1]);\n}\n\nconst dtStart = getNextLocaleTimestamp(0, 0)\nreturn optimumStart(settings, msg.payload, dtStart)\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 400,
-        "y": 680,
+        "x": 380,
+        "y": 720,
         "wires": [
             [
-                "dc3a432aafbb249d"
+                "836f380346a840ec"
             ],
             [
-                "6b225ea73afc1d2e",
-                "fe96dbebd7f202a3"
+                "fe96dbebd7f202a3",
+                "6b225ea73afc1d2e"
             ],
             [
                 "d6894441b5671df7"
@@ -4153,24 +4181,24 @@
         "id": "6b225ea73afc1d2e",
         "type": "ui-chart",
         "z": "e7fcf1f501be8b60",
-        "group": "c8e0ab309895af11",
-        "name": "",
-        "label": "chart",
-        "order": 3,
+        "group": "eaf3efbfd265a483",
+        "name": "temp charts",
+        "label": "",
+        "order": 1,
         "chartType": "line",
-        "category": "",
-        "categoryType": "none",
+        "category": "series",
+        "categoryType": "property",
         "xAxisLabel": "time",
-        "xAxisProperty": "",
-        "xAxisPropertyType": "timestamp",
+        "xAxisProperty": "time",
+        "xAxisPropertyType": "property",
         "xAxisType": "time",
         "xAxisFormat": "",
-        "xAxisFormatType": "auto",
+        "xAxisFormatType": "{HH}:{mm}",
         "xmin": "",
         "xmax": "",
-        "yAxisLabel": "temp",
-        "yAxisProperty": "chart",
-        "yAxisPropertyType": "msg",
+        "yAxisLabel": "temperature",
+        "yAxisProperty": "temperature",
+        "yAxisPropertyType": "property",
         "ymin": "",
         "ymax": "",
         "bins": 10,
@@ -4179,7 +4207,7 @@
         "pointShape": "circle",
         "pointRadius": 4,
         "showLegend": true,
-        "removeOlder": 1,
+        "removeOlder": "3",
         "removeOlderUnit": "86400",
         "removeOlderPoints": "",
         "colors": [
@@ -4202,11 +4230,11 @@
         ],
         "gridColorDefault": true,
         "width": 6,
-        "height": 8,
+        "height": "7",
         "className": "",
         "interpolation": "linear",
         "x": 610,
-        "y": 680,
+        "y": 740,
         "wires": [
             []
         ]
@@ -4216,7 +4244,7 @@
         "type": "debug",
         "z": "e7fcf1f501be8b60",
         "name": "debug 67",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -4224,43 +4252,8 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 620,
-        "y": 740,
+        "y": 680,
         "wires": []
-    },
-    {
-        "id": "58171f80756f2e85",
-        "type": "ui-slider",
-        "z": "e7fcf1f501be8b60",
-        "group": "c8e0ab309895af11",
-        "name": "",
-        "label": "slider",
-        "tooltip": "",
-        "order": 0,
-        "width": 0,
-        "height": 0,
-        "passthru": false,
-        "outs": "all",
-        "topic": "topic",
-        "topicType": "msg",
-        "thumbLabel": "true",
-        "showTicks": "always",
-        "min": 0,
-        "max": 10,
-        "step": 1,
-        "className": "",
-        "iconPrepend": "",
-        "iconAppend": "",
-        "color": "",
-        "colorTrack": "",
-        "colorThumb": "",
-        "showTextField": false,
-        "x": 290,
-        "y": 800,
-        "wires": [
-            [
-                "6b225ea73afc1d2e"
-            ]
-        ]
     },
     {
         "id": "00c4ccd08c5fc11a",
@@ -4287,8 +4280,8 @@
         "links": [
             "f61b76784c425ebd"
         ],
-        "x": 675,
-        "y": 540,
+        "x": 655,
+        "y": 520,
         "wires": []
     },
     {
@@ -4303,8 +4296,8 @@
             "8b087c86912319a1",
             "8b799875a8ef011e"
         ],
-        "x": 675,
-        "y": 180,
+        "x": 655,
+        "y": 480,
         "wires": []
     },
     {
@@ -4312,7 +4305,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "flow control",
-        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1]  = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n  // to create Weather Compensation plus Trim\n\n  const wctTemp = utils.toFix(wcTemp + trim, 1);\n\n  let flowSetPoint = prop.hrEnabled ? wctTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin)\n  \n  let heatSource = 'off' \n  if (prop.schedule)      // scheduled to run\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, trim, wctTemp, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, trim, weatherPlusTrim, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'pid0/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.toFix(settings.pidOut,2),\n//    lcLow: settings.lcLow,  \n//    lcHigh: settings.lcHigh, \n    lc: loadComp,\n    trim: trim,   \n    wct: weatherPlusTrim,\n//    sch: settings.schedule,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'log/record/pid0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param:  'control',   // for influx\n    //source: 'pid0'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp} schedule:${settings.schedule}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${calcs.PID} lc:${loadComp}`,\n  `trim:${trim} wclc:${weatherPlusTrim}`,\n  `hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n\n  notices.push({\n    topic:      'log/text/pid0',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
+        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils  = global.get(\"utils\")\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y,1), utils.toFix(slope,1) ]\n}\n\n\nfunction calculateFlowTemperature(prop)\n{\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n                              , prop.hrFlowFull,prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n \n  const [lcTemp, lcSlope]  = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1]  = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n  // to create Weather Compensation plus Trim\n\n  const wctTemp = utils.toFix(wcTemp + trim, 1);\n\n  let flowSetPoint = prop.hrEnabled ? wctTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin)\n  \n  // any time there is any setting change, we still \n  // reconsider what heating mode we should be on\n  // Ignore heating mode as this comes into play later.\n\n  let heatSource = 'off' \n  if (prop.demand == 'heat-on')      // heat demanded\n    if (flowSetPoint > prop.flowMin)\n      heatSource = flowSetPoint > prop.flowGas ? 'gas' : 'ashp' ;\n\n  return [ wcTemp, lcTemp, trim, wctTemp, flowSetPoint, heatSource ]\n}\n\n\n\nfunction doCalculation(settings, ashpControl, switchControl, notices)\n{\n  const [ weatherComp, loadComp, trim, weatherPlusTrim, flowSetPoint, heatSource ] = calculateFlowTemperature(settings)\n\n  const auto = settings.heatingMode == 'auto'\n\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp1',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n  ashpControl.push({\n    topic:      'ashp0/SETPOINT_hsp2',\n    measurement:'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  switchControl.push({\n    topic:      'pid0/heatSource',\n    measurement:'state',\n    payload:     heatSource,\n    settings:    settings,          // need pump overrun time later\n    prefix:     'local',\n    track:       true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    b0: settings.bt,\n    sp: settings.setpoint,\n    PID: utils.toFix(settings.pidOut,2),\n//    lcLow: settings.lcLow,  \n//    lcHigh: settings.lcHigh, \n    lc: loadComp,\n    trim: trim,   \n    wct: weatherPlusTrim,\n    dem: settings.demand,\n    hs:  heatSource,\n    min: settings.flowMin, \n    gas: settings.flowGas, \n    max: settings.flowMax, \n    wat: flowSetPoint\n  }\n\n  notices.push({\n    topic: 'log/record/pid0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param:  'control',   // for influx\n    //source: 'pid0'\n  })\n\n  const logText = [\n  `hm:${settings.heatingMode}`,\n  `oat:${settings.oat} wc:${weatherComp}`,\n  `b0:${settings.bt} sp:${settings.setpoint} PID:${calcs.PID} lc:${loadComp}`,\n  `trim:${trim} wclc:${weatherPlusTrim}`,\n  `demand:${settings.demand} hs:${heatSource}`,\n  `min:${settings.flowMin} gas:${settings.flowGas} max:${settings.flowMax} wat:${flowSetPoint}`\n  ].join(' ')\n\n\n\n  notices.push({\n    topic:      'log/text/pid0',\n    measurement: null,\n    payload:     `${utils.getTimeNow()} v2 ${logText}`,\n    prefix:     'local'\n  })\n\n  \n  notices.push({\n    topic:      'pid0/flowSetpoint',\n    param:      'temperature',\n    payload:     flowSetPoint,\n    prefix:     'local'\n  })\n\n  node.status({\n    fill: \"yellow\", \n    shape: auto ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'bt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'bt' topic from heat settings\", msg);\n  return null\n}  \n\nif (msg.settingsPassingThrough === undefined)\n{\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, notices)\n\n// only emit control messages if we're in auto heatingMode\nconst auto = settings.heatingMode == 'auto'\nreturn [auto ? ashpControl : null, auto ? switchControl : null, notices]\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -4348,8 +4341,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 710,
-        "y": 240,
+        "x": 690,
+        "y": 420,
         "wires": []
     },
     {
@@ -4446,8 +4439,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 710,
-        "y": 380,
+        "x": 690,
+        "y": 280,
         "wires": []
     },
     {
@@ -4613,7 +4606,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 720,
-        "y": 580,
+        "y": 640,
         "wires": []
     },
     {
@@ -4684,7 +4677,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "heat settings",
-        "func": "/*\n\nthe primary function of this node is to store every \nsetting change and present the complete set control \nof control values to the heat 'controller' node so it can \ncalculate a new flow temperature\n\n*/\nconst utils = global.get(\"utils\");\n\nconst noticeOf = (settings, subTopic) => ({\n  topic:      'pid0/' + subTopic,\n  param:      'temperature',\n  payload:     settings[subTopic],\n  prefix:     'local'\n})\n\nconst initSettings =  {\n\n  // weather compensation.\n  // As outside temperature drops from OatFull 15C to OatNone 5C,\n  //            weatherComp rises from flowFull 25C to flowNone 40C\n\n  hrEnabled : false,\n  hrOatFull : 20,\n  hrOatNone : 3,\n  hrFlowFull : 25,\n  hrFlowNone : 45,\n\n  prop_band :    2.0,     // working inside 2 degree band\n  t_integral :   100000,  // not desired if using weather comp\n  t_derivative : 0, \n\n  lcLow : 32,\n  lcHigh: 50,  // must be  than min and gas or ashp not switched off huh?\n  lcTrim: 4,\n\n  flowMin : 28,\n  flowGas : 45,\n  flowMax : 48,\n\n  oat: 10,\n  bt : 19.8, \n  setpoint : 20.5,\n\n  schedule    :  false,\n  heatingMode : 'auto',\n  pumpOverrun :   1      // overrun time in minutes\n}\n\nconst heatingHelpers =   // this should be in the heat controller !\n{\n  manual : 'Heating unmanaged.\\n\\\n  Use the virtual White Box and ASHP panels left and below \\\n  to control the heating.\\n\\\n  Alternatively use the physical white box in the plant \\\n  and the touch panel on the front of the ASHP. ',\n\n  auto :   'Heating managed. ASHP/Gas is switched on/off as needed and flow\\\n  temperature is adjusted to maintain the desired building temperature during\\\n  the period that the building is occupied.',\n\n  off  :   'Override. ASHP and gas boiler off.',\n  ashp :   'Override. ASHP stays on.',\n  gas  :   'Override. Gas boiler stays on. The switch on the gas boiler must be switched on \\\n  in the plant room.'\n}\n\n/*\n *    every time we process an incoming message\n *    just push out notices indicating what's going on\n */\n\nfunction handleIncomingMessage(msg, contextName, settings, notices)\n{\n  const tokens = msg.topic.split(/[\\/]/)\n  let subTopic = tokens.at(-1)\n  let logText = null \n  let updateSetting = false \n\n  switch (msg.topic) {\n\n    case 'pid0/set/reset':\n      settings = initSettings;\n      updateSetting = true ;\n      context.set(contextName, settings);\n      logText = `${utils.getTimeNow()} reset settings`\n      /// this is very inelegant\n      return null ;\n\n    case 'pid0/get/all':\n    case 'recall':\n      for (const key in initSettings)\n        notices.push(noticeOf(settings, key))\n      logText = `${utils.getTimeNow()} recall`\n      break\n\n    case 'pid0/set/heatingMode' :\n      const help = heatingHelpers[msg.payload] ?? 'Missing help'\n      // create a properties object with one property of heatingModeHelp\n      notices.push(noticeOf({ heatingModeHelp : help }, 'heatingModeHelp'))\n      updateSetting = true \n      break\n\n    case 'schedule' :  // 0 or 1 \n      updateSetting = true\n      break ;       \n\n    case 'b0/temperature' :\n      subTopic = 'bt'    \n      // this is building temperature\n      // intentional dropthrough \n\n    default : \n      updateSetting = true \n      break   \n\n  }\n  if (updateSetting)\n  {\n    if (subTopic in initSettings)\n    {\n      if (typeof msg.payload === \"number\") \n        settings[subTopic] = utils.twoDecPoint(parseFloat(msg.payload));\n      else \n        settings[subTopic] = msg.payload;\n\n      // drag flow min/max around so no control conflict\n      switch(subTopic) {\n        case 'flowMin' :\n          if (settings.flowMax < settings.flowMin) \n          {\n            settings.flowMax = settings.flowMin ; \n            notices.push(noticeOf(settings, 'flowMax'))            \n          }\n          break \n        case 'flowMax':\n          if (settings.flowMin > settings.flowMax) \n          {\n            settings.flowMin = settings.flowMax ; \n            notices.push(noticeOf(settings, 'flowMin'))            \n          }\n          break \n      }\n\n      context.set(contextName, settings, 'file');\n      notices.push(noticeOf(settings, subTopic))\n      logText = `${utils.getTimeNow()} ${subTopic}:${settings[subTopic]}`\n    }\n    else {\n      logText = `${utils.getTimeNow()} No handler for topic:${msg.topic} and not a known setting`\n      node.error(logText)          \n    }\n  }\n  if (logText)\n  {\n    notices.push({\n      topic:      'log/text/pid0',\n      payload:     logText,\n      prefix:     'local'\n    })\n\n    node.status({\n      fill: \"blue\", shape: \"dot\",\n      text:  logText\n    })\n  }\n}\n\n\n\nconst contextName = 'pidv2'\nconst settings = Object.assign(initSettings, context.get(contextName, 'file') ?? {})\n\nconst notices = []\n\nhandleIncomingMessage(msg, contextName, settings, notices)\n\nconst msgPID = \n{ \n  topic : 'bt', \n  payload : settings.bt,    // PV - process value\n  setpoint : settings.setpoint, \n  prop_band : settings.prop_band,\n  t_integral : settings.t_integral,  \n  t_derivative : settings.t_derivative,   \n  settingsPassingThrough : settings\n}\nreturn [msgPID, notices]\n\n\n/*\nAvailable PID params:\n  process_value\n  setpoint\n  prop_band\n  t_integral\n  t_derivative\n  max_interval\n  smooth_factor\n*/",
+        "func": "/*\n\nthe primary function of this node is to store every \nsetting change and present the complete set control \nof control values to the heat 'controller' node so it can \ncalculate a new flow temperature\n\n*/\nconst utils = global.get(\"utils\");\n\nconst noticeOf = (settings, subTopic) => ({\n  topic:      'pid0/' + subTopic,\n  param:      'temperature',\n  payload:     settings[subTopic],\n  prefix:     'local'\n})\n\nconst initSettings =  {\n\n  // weather compensation.\n  // As outside temperature drops from OatFull 15C to OatNone 5C,\n  //            weatherComp rises from flowFull 25C to flowNone 40C\n\n  hrEnabled : false,\n  hrOatFull : 20,\n  hrOatNone : 3,\n  hrFlowFull : 25,\n  hrFlowNone : 45,\n\n  prop_band :    2.0,     // working inside 2 degree band\n  t_integral :   100000,  // not desired if using weather comp\n  t_derivative : 0, \n\n  lcLow : 32,\n  lcHigh: 50,  // must be  than min and gas or ashp not switched off huh?\n  lcTrim: 4,\n\n  flowMin : 28,\n  flowGas : 45,\n  flowMax : 48,\n\n  oat: 10,\n  bt : 19.8, \n  setpoint : 20.5,\n\n  demand      : 'heat-off',\n  heatingMode : 'auto',\n  pumpOverrun :   1      // overrun time in minutes\n}\n\nconst heatingHelpers =   // this should be in the heat controller !\n{\n  manual : 'Heating unmanaged.\\n\\\n  Use the virtual White Box and ASHP panels left and below \\\n  to control the heating.\\n\\\n  Alternatively use the physical white box in the plant \\\n  and the touch panel on the front of the ASHP. ',\n\n  auto :   'Heating managed. ASHP/Gas is switched on/off as needed and flow\\\n  temperature is adjusted to maintain the desired building temperature during\\\n  the period that the building is occupied.',\n\n  off  :   'Override. ASHP and gas boiler off.',\n  ashp :   'Override. ASHP stays on.',\n  gas  :   'Override. Gas boiler stays on. The switch on the gas boiler must be switched on \\\n  in the plant room.'\n}\n\n/*\n *    every time we process an incoming message\n *    just push out notices indicating what's going on\n */\n\nfunction handleIncomingMessage(msg, contextName, settings, notices)\n{\n  const tokens = msg.topic.split(/[\\/]/)\n  let subTopic = tokens.at(-1)\n  let logText = null \n  let updateSetting = false \n\n  switch (msg.topic) {\n\n    case 'pid0/set/reset':\n      settings = initSettings;\n      updateSetting = true ;\n      context.set(contextName, settings);\n      logText = `${utils.getTimeNow()} reset settings`\n      /// this is very inelegant\n      return null ;\n\n    case 'pid0/get/all':\n      for (const key in initSettings)\n        notices.push(noticeOf(settings, key))\n      logText = `${utils.getTimeNow()} recall`\n      break\n\n    case 'pid0/set/heatingMode' :\n      const help = heatingHelpers[msg.payload] ?? 'Missing help'\n      // create a properties object with one property of heatingModeHelp\n      notices.push(noticeOf({ heatingModeHelp : help }, 'heatingModeHelp'))\n      updateSetting = true \n      break  \n\n    case 'b0/temperature' :\n      subTopic = 'bt'    \n      // this is building temperature\n      // intentional dropthrough \n\n      // new settings don't need case labels\n      // just add to the initSettings above\n\n    default : \n      updateSetting = true \n      break   \n\n  }\n  if (updateSetting)\n  {\n    if (subTopic in initSettings)\n    {\n      if (typeof msg.payload === \"number\") \n        settings[subTopic] = utils.twoDecPoint(parseFloat(msg.payload));\n      else \n        settings[subTopic] = msg.payload;\n\n      // drag flow min/max around so no control conflict\n      switch(subTopic) {\n        case 'flowMin' :\n          if (settings.flowMax < settings.flowMin) \n          {\n            settings.flowMax = settings.flowMin ; \n            notices.push(noticeOf(settings, 'flowMax'))            \n          }\n          break \n        case 'flowMax':\n          if (settings.flowMin > settings.flowMax) \n          {\n            settings.flowMin = settings.flowMax ; \n            notices.push(noticeOf(settings, 'flowMin'))            \n          }\n          break \n      }\n\n      context.set(contextName, settings, 'file');\n      notices.push(noticeOf(settings, subTopic))\n      logText = `${utils.getTimeNow()} ${subTopic}:${settings[subTopic]}`\n    }\n    else {\n      logText = `${utils.getTimeNow()} No handler for topic:${msg.topic} and not a known setting`\n      node.error(logText)          \n    }\n  }\n  if (logText)\n  {\n    notices.push({\n      topic:      'log/text/pid0',\n      payload:     logText,\n      prefix:     'local'\n    })\n\n    node.status({\n      fill: \"blue\", shape: \"dot\",\n      text:  logText\n    })\n  }\n}\n\n\n\nconst contextName = 'pidv2'\nconst settings = Object.assign(initSettings, context.get(contextName, 'file') ?? {})\n\nconst notices = []\n\nhandleIncomingMessage(msg, contextName, settings, notices)\n\nconst msgPID = \n{ \n  topic : 'bt', \n  payload : settings.bt,    // PV - process value\n  setpoint : settings.setpoint, \n  prop_band : settings.prop_band,\n  t_integral : settings.t_integral,  \n  t_derivative : settings.t_derivative,   \n  settingsPassingThrough : settings\n}\nreturn [msgPID, notices]\n\n\n/*\nAvailable PID params:\n  process_value\n  setpoint\n  prop_band\n  t_integral\n  t_derivative\n  max_interval\n  smooth_factor\n*/",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -4716,8 +4709,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 720,
-        "y": 300,
+        "x": 700,
+        "y": 200,
         "wires": []
     },
     {
@@ -4772,8 +4765,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 710,
-        "y": 460,
+        "x": 690,
+        "y": 360,
         "wires": []
     },
     {
@@ -4900,8 +4893,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 710,
-        "y": 420,
+        "x": 690,
+        "y": 320,
         "wires": []
     },
     {
@@ -4909,7 +4902,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "heatSource",
-        "func": "\n\nconst utils = global.get(\"utils\");\n\nconst controlOf = (target, payload, delay = 1) => ({\n  topic:       target,\n  param:      'state',\n  payload:     payload,\n  delay:       delay\n})\n\nlet ashpControl = []\nlet switchControl = []\nlet notices = []\n\nfunction changeHeatSource(currentHeatSource, heatSource, ashpControl, switchControl,  notices) \n{\n  // override the preset LAE0 temperatures to force \n  // the controller into the required heating mode \n\n  let pumpOverrun = false \n\n  switch(heatSource) {\n    case 'off' :   // heating off, low band \n      if (currentHeatSource == 'off')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0)) \n      pumpOverrun =  (currentHeatSource == 'ashp');\n      const delay = (pumpOverrun ? 60 : 1) * 1000  ;\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n        delay: delay\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 1.5,\n        delay: delay\n      })\n      break ;\n\n    case 'ashp':   // ASHP on, wide band \n      if (currentHeatSource == 'ashp')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 1)) \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      }) \n      break  \n\n    case 'gas' :   // gas on, high band \n      if (currentHeatSource == 'gas')\n        break\n        \n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0))   \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 17.5,\n      }) \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      })        \n      break  \n\n\n    default : \n      node.error(\"Unrecognised heat source\", heatSource);\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 5,\n      })\n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18,\n      })\n      return null ;\n  }\n\n  const heatSourceColour = { off: 'yellow', ashp: 'green', gas: 'red'}\n  const logText  = `${currentHeatSource}->${heatSource} pumpOverrun:${pumpOverrun}`\n  node.status({\n    fill: heatSourceColour[heatSource], shape: \"dot\",\n    text: `${utils.getTimeNow()} ${logText}`\n  })\n\n  notices.push({\n    topic:      'app/response/pid/log',\n    payload:     `${utils.getTimeNow()} ${logText}`, \n    prefix:      'local'\n  })\n}\n\nif (msg.topic != 'pid0/heatSource')\n{\n  node.error(`Received ${msg.topic}, expect only switch/heatSource`, msg);\n  return null ;\n}\n\nconst currentHeatSource = context.get('heatSource') ?? 'off' \nconst futureHeatSource = msg.payload ;\nconst pumpOverrun = changeHeatSource(currentHeatSource, futureHeatSource, ashpControl, switchControl,  notices)\ncontext.set('heatSource', futureHeatSource)\n\nreturn [ashpControl, switchControl,  notices]\n\n\n",
+        "func": "/**\n * message.topic must be heat source \n * message.payload specifies required heat source\n * \n * changes SP1 and SP2 on the white box \n * to switch between off, ashp and gas  \n */\n\nconst utils = global.get(\"utils\");\n\nconst controlOf = (target, payload, delay = 1) => ({\n  topic:       target,\n  param:      'state',\n  payload:     payload,\n  delay:       delay\n})\n\nlet ashpControl = []\nlet switchControl = []\nlet notices = []\n\nfunction changeHeatSource(currentHeatSource, heatSource, ashpControl, switchControl,  notices) \n{\n  // override the preset LAE0 temperatures to force \n  // the controller into the required heating mode \n\n  let pumpOverrun = false \n\n  switch(heatSource) {\n    case 'off' :   // heating off, low band \n      if (currentHeatSource == 'off')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0)) \n      pumpOverrun =  (currentHeatSource == 'ashp');\n      const delay = (pumpOverrun ? 60 : 1) * 1000  ;\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n        delay: delay\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 1.5,\n        delay: delay\n      })\n      break ;\n\n    case 'ashp':   // ASHP on, wide band \n      if (currentHeatSource == 'ashp')\n        break \n\n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 1)) \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 0.5,\n      })  \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      }) \n      break  \n\n    case 'gas' :   // gas on, high band \n      if (currentHeatSource == 'gas')\n        break\n        \n      ashpControl.push(controlOf('PROTOCOL_CHIL_S_S', 0))   \n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 17.5,\n      }) \n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18.5,\n      })        \n      break  \n\n\n    default : \n      node.error(\"Unrecognised heat source\", heatSource);\n      switchControl.push({\n        topic: 'lae0/1SP',\n        payload: 5,\n      })\n      switchControl.push({\n        topic: 'lae0/2SP',\n        payload: 18,\n      })\n      return null ;\n  }\n\n  const heatSourceColour = { off: 'yellow', ashp: 'green', gas: 'red'}\n  const logText  = `${currentHeatSource}->${heatSource} pumpOverrun:${pumpOverrun}`\n  node.status({\n    fill: heatSourceColour[heatSource], shape: \"dot\",\n    text: `${utils.getTimeNow()} ${logText}`\n  })\n\n  notices.push({\n    topic:      'app/response/pid/log',\n    payload:     `${utils.getTimeNow()} ${logText}`, \n    prefix:      'local'\n  })\n}\n\nif (msg.topic != 'pid0/heatSource')\n{\n  node.error(`Received ${msg.topic}, expect only switch/heatSource`, msg);\n  return null ;\n}\n\nconst currentHeatSource = context.get('heatSource') ?? 'off' \nconst futureHeatSource = msg.payload ;\nconst pumpOverrun = changeHeatSource(currentHeatSource, futureHeatSource, ashpControl, switchControl,  notices)\ncontext.set('heatSource', futureHeatSource)\n\nreturn [ashpControl, switchControl,  notices]\n\n\n",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -5007,8 +5000,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 730,
-        "y": 340,
+        "x": 710,
+        "y": 240,
         "wires": []
     },
     {
@@ -5020,8 +5013,8 @@
         "links": [
             "067d0e710c60a2bf"
         ],
-        "x": 675,
-        "y": 640,
+        "x": 655,
+        "y": 560,
         "wires": []
     },
     {
@@ -5101,7 +5094,7 @@
         "id": "5b3cfcf45023a7d1",
         "type": "delay-topic-message",
         "z": "81037ebb658aa24a",
-        "delay": "3",
+        "delay": "1",
         "x": 380,
         "y": 160,
         "wires": [
@@ -5537,7 +5530,7 @@
         "type": "function",
         "z": "3187bd06ef664359",
         "name": "ui update PID",
-        "func": "\nconst tokens = msg.topic.split('/')\nconst label = tokens[tokens.length - 1]\n\n//node.error(\"label: \"  + label, msg);\n\nconst defaultGauge = {\n  style : 'Rounded',\n  class : label, \n  label : label,  // the subtopic\n  min : 25, \n  step : 1,\n  max : 50,\n  units : \"°C\",\n  color : 'red',\n  colorTrack : 'grey',\n  \n  oncolor : 'red',\n  showTicks : 'always',\n  thumbLabel : 'always'\n}\n\nconst outsideWeatherGauge = {\n  min : 0,\n  max : 20,\n  step : 1,\n  color : 'lightblue',\n  colorTrack : 'grey',\n}\n\nmsg.ui_update = defaultGauge ;\n\n//node.error(\"my error message \" + msg.payload, msg);\n\nswitch(msg.topic)\n{\n  case 'pid0/heatingMode' :\n    context.set('heatingMode', msg.payload)\n  case 'pid0/heatingModeHelp' :\n    msg.ui_update.label = ''\n    break ; \n\n  case 'pid0/flowMin' :\n    msg.ui_update.label = 'Min'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/flowMax' :\n    msg.ui_update.label = 'Max'\n    msg.ui_update.color = 'red'\n    break ;\n    \n  case 'pid0/flowGas' :\n    msg.ui_update.label = 'Crossover to Gas above'\n    msg.ui_update.color = 'purple'\n    msg.ui_update.min = 42\n    msg.ui_update.max = 50\n    msg.ui_update.step = 1     \n    break ;\n\n  case 'pid0/lcLow' :\n    msg.ui_update.label = 'Low'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/lcHigh' :\n    msg.ui_update.label = 'High'\n    msg.ui_update.color = 'red'\n    break ;\n\n  case 'pid0/lcTrim' :\n    msg.ui_update.min = 0\n    msg.ui_update.max = 10\n    break ;\n\n  case 'pid0/setpoint' :\n    msg.ui_update.min = 20\n    msg.ui_update.max = 22\n    msg.ui_update.step = 0.1\n    msg.ui_update.label = 'Desired building temperature'\n    break ;\n\n  case 'pid0/flowSetpoint' :\n    msg.ui_update.min = 25\n    msg.ui_update.max = 52\n    msg.ui_update.step = 1\n    msg.ui_update.label = 'Flow setpoint'\n    const mode = context.get('heatingMode')\n    const color = mode == 'auto' ?  'red' : 'grey' \n    msg.ui_update.color = color \n    break ;\n\n  case 'pid0/hrOatNone' :\n  case 'pid0/hrOatFull' :\n    msg.ui_update = Object.assign(defaultGauge, outsideWeatherGauge) \n    node.send( { topic : 'pid0/hrNoneFull', payload : [33,45] })\n    break \n\n  case 'pid0/hrEnabled' :\n    msg.ui_update.label = 'Enabled'\n    break   \n\n  case 'pid0/prop_band' :\n    msg.ui_update.label = 'Proportional band' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 4 ;\n    msg.ui_update.step = 0.2 ;\n    break ;\n\n  case 'pid0/t_integral' :\n    msg.ui_update.label = 'Integral' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 100000 ;\n    msg.ui_update.step = 10000 ;\n    break ;\n\n  case 'pid0/t_derivative' :\n    msg.ui_update.label = 'Derivative'; \n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1 ;\n    msg.ui_update.step = 0.1 ;\n    break ;\n\n\n}\nreturn msg;\n\n",
+        "func": "\nconst tokens = msg.topic.split('/')\nconst label = tokens[tokens.length - 1]\n\n//node.error(\"label: \"  + label, msg);\n\nconst defaultGauge = {\n  style : 'Rounded',\n  class : label, \n  label : label,  // the subtopic\n  min : 25, \n  step : 1,\n  max : 50,\n  units : \"°C\",\n  color : 'red',\n  colorTrack : 'grey',\n  \n  oncolor : 'red',\n  showTicks : 'always',\n  thumbLabel : 'always'\n}\n\nconst outsideWeatherGauge = {\n  min : 0,\n  max : 20,\n  step : 1,\n  color : 'lightblue',\n  colorTrack : 'grey',\n}\n\nmsg.ui_update = defaultGauge ;\n\n//node.error(\"my error message \" + msg.payload, msg);\n\nswitch(msg.topic)\n{\n  case 'pid0/heatingMode' :\n    context.set('heatingMode', msg.payload)\n  case 'pid0/heatingModeHelp' :\n    msg.ui_update.label = ''\n    break ; \n\n  case 'pid0/flowMin' :\n    msg.ui_update.label = 'Min'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/flowMax' :\n    msg.ui_update.label = 'Max'\n    msg.ui_update.color = 'red'\n    break ;\n    \n  case 'pid0/flowGas' :\n    msg.ui_update.label = 'Crossover to Gas above'\n    msg.ui_update.color = 'purple'\n    msg.ui_update.min = 42\n    msg.ui_update.max = 50\n    msg.ui_update.step = 1     \n    break ;\n\n  case 'pid0/lcLow' :\n    msg.ui_update.label = 'Low'\n    msg.ui_update.color = 'lightblue'\n    break ;\n\n  case 'pid0/lcHigh' :\n    msg.ui_update.label = 'High'\n    msg.ui_update.color = 'red'\n    break ;\n\n  case 'pid0/lcTrim' :\n    msg.ui_update.min = 0\n    msg.ui_update.max = 10\n    break ;\n\n  case 'pid0/setpoint' :\n    msg.ui_update.min = 20\n    msg.ui_update.max = 22\n    msg.ui_update.step = 0.1\n    msg.ui_update.label = 'Heating setpoint'\n    break ;\n\n  case 'pid0/flowSetpoint' :\n    msg.ui_update.min = 25\n    msg.ui_update.max = 52\n    msg.ui_update.step = 1\n    msg.ui_update.label = 'Flow setpoint'\n    const mode = context.get('heatingMode')\n    const color = mode == 'auto' ?  'red' : 'grey' \n    msg.ui_update.color = color \n    break ;\n\n  case 'pid0/hrOatNone' :\n  case 'pid0/hrOatFull' :\n    msg.ui_update = Object.assign(defaultGauge, outsideWeatherGauge) \n    node.send( { topic : 'pid0/hrNoneFull', payload : [33,45] })\n    break \n\n  case 'pid0/hrEnabled' :\n    msg.ui_update.label = 'Enabled'\n    break   \n\n  case 'pid0/prop_band' :\n    msg.ui_update.label = 'Proportional band' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 4 ;\n    msg.ui_update.step = 0.2 ;\n    break ;\n\n  case 'pid0/t_integral' :\n    msg.ui_update.label = 'Integral' ;\n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 100000 ;\n    msg.ui_update.step = 10000 ;\n    break ;\n\n  case 'pid0/t_derivative' :\n    msg.ui_update.label = 'Derivative'; \n    msg.ui_update.min = 0 ;\n    msg.ui_update.max = 1 ;\n    msg.ui_update.step = 0.1 ;\n    break ;\n\n\n}\nreturn msg;\n\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -5714,7 +5707,6 @@
         "id": "3b95b6c9a9191042",
         "type": "ui-slider",
         "z": "3187bd06ef664359",
-        "d": true,
         "group": "5e46a3149640b893",
         "name": "flowGas",
         "label": "not initialised",
@@ -7072,8 +7064,8 @@
         "colorTrack": "grey",
         "colorThumb": "",
         "showTextField": false,
-        "x": 350,
-        "y": 2040,
+        "x": 570,
+        "y": 2180,
         "wires": [
             [
                 "8b922c8e9c5bfc9a"
@@ -7107,8 +7099,8 @@
         "colorTrack": "grey",
         "colorThumb": "",
         "showTextField": false,
-        "x": 350,
-        "y": 2100,
+        "x": 570,
+        "y": 2240,
         "wires": [
             [
                 "8b922c8e9c5bfc9a"
@@ -8108,8 +8100,8 @@
         "offvalueType": "bool",
         "officon": "radiator-off",
         "offcolor": "",
-        "x": 370,
-        "y": 2160,
+        "x": 590,
+        "y": 2300,
         "wires": [
             []
         ]
@@ -8282,7 +8274,7 @@
         "id": "c46180bd2674fe18",
         "type": "ui-template",
         "z": "3187bd06ef664359",
-        "group": "0ab4678ba1f9dae0",
+        "group": "9ee3507d7e391438",
         "page": "",
         "ui": "",
         "name": "hrNoneFull",
@@ -8362,8 +8354,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 540,
-        "y": 2320,
+        "x": 580,
+        "y": 2360,
         "wires": []
     },
     {
@@ -8676,7 +8668,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "debug 68",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -8704,8 +8696,8 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 510,
-        "y": 420,
+        "x": 490,
+        "y": 400,
         "wires": [
             [
                 "e664cefd2982f764"
@@ -8846,7 +8838,7 @@
         "type": "function",
         "z": "78ad727ff3800ccd",
         "name": "poll modbus",
-        "func": "\n// this code is largely duplicated from ashp poll\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = flow.get(\"modbusRegistersLAE0\");\n    for (const row of registers) {\n        if (row[\"Mnem.\"] == subTopic)\n            return row;\n    }\n    node.error('Unable to find register in map ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst input =\n    [\n        { name: \"1SP\" },\n        { name: \"2SP\" },       \n        { name: \"ALA\" },    // low temp alarm, used for testing       \n        { name: \"AHA\" },    // low temp alarm, used for testing               \n    ];\n\nconst temperature =\n    [\n        { \n            name: \"PRO\", \n            reportOnDiff: 0.3,            // override the 0.25 \n            windowPeriodSecs : 60 * 60    // 60 minutes\n        }  \n    ];\n\nconst state =  \n    [\n        { name: \"OUT\" }\n    ];\n\nconst alarm =\n    [\n        { name: \"AL0\" },\n        { name: \"AL1\" }\n    ];\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);  \n\nlet regList         = { input: input, temperature: temperature, state: state, alarm: alarm};\nlet reportOnDiff    = { temperature: 1.0 };\nlet windowPeriodSecs = 120 * 60    // 2 hours\nlet sequences = [] ;\n\nconst fc = { HR : 3}\n\nfor (const [measurement, group] of Object.entries(regList)) {    \n    for (const e of group) {\n        if (subTopic == 'pollAll' || subTopic == e.name)\n        {\n            const row = lookupRegister(e.name);\n            if (row)\n            {\n                const m = {} ;\n                m.prefix = 'local';\n                m.source = 'lae0';\n                m.location = e.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address ;\n                m.param = measurement;\n                m.fc = fc['HR'] ;\n                m.quantity = 1 ;\n                m.unitid = 1;\n\n\n                m.modbusRow = row ;\n                m.writeThrough = msg.writeThrough ;  // set upstream\n\n                const diff = e.reportOnDiff ?? reportOnDiff[measurement] ?? false;\n                if (diff)\n                    m.reportOnDiff = diff ;\n\n                m.windowPeriodSecs = e.windowPeriodSecs ?? windowPeriodSecs ; \n\n                //const digest = (m.reportOnDiff != 0) && !(msg.writeThrough ?? false)\n\n                const doDeliver = msg.writeThrough || (msg.reportOnDiff === undefined) \n                //node.error(e)\n                // red : digest, yellow : update, green : writeThrough   \n\n\n                let colour = doDeliver ? m.writeThrough ? 'green' : 'yellow' : 'red' ;\n                node.status({ fill: colour, shape: \"dot\", text: `name:${e.name}` });\n                sequences.push(m);\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0)\n{\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null ;\n}\nif (msg.sequences.length > 1)\n{\n    node.status({ fill: \"green\", shape: \"ring\", text: `${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
+        "func": "\n// this code is largely duplicated from ashp poll\n\n\n// ver 1.0\nfunction lookupRegister(subTopic) {\n    const registers = flow.get(\"modbusRegistersLAE0\");\n    for (const row of registers) {\n        if (row[\"Mnem.\"] == subTopic)\n            return row;\n    }\n    node.error('Unable to find register in map ' + subTopic)\n    return null;\n}\n\n//msg.topic = 'sequence1';\n//flow.set('writeThrough', msg.writeThrough);  // but what's being saved? A: whether we want to flush\n//msg.payload = null;\n\n\nconst hr =\n    [\n        { name: \"1SP\" },\n        { name: \"2SP\" },       \n        { name: \"ALA\" },    // low temp alarm, used for testing       \n        { name: \"AHA\" },    // low temp alarm, used for testing               \n    ];\n\nconst temperature =\n    [\n        { \n            name: \"PRO\", \n            reportOnDiff: 0.3,            // override the 0.25 \n            windowPeriodSecs : 60 * 60    // 60 minutes\n        }  \n    ];\n\nconst state =  \n    [\n        { name: \"OUT\" }\n    ];\n\nconst alarm =\n    [\n        { name: \"AL0\" },\n        { name: \"AL1\" }\n    ];\n\n\nconst tokens = msg.topic.split(/[\\/]/);\nconst subTopic = tokens === undefined ? msg.topic : tokens.at(-1);  \n\nlet regList         = { input:hr, temperature:temperature, state:state, alarm:alarm};\nlet reportOnDiff    = { temperature: 1.0 };\nlet windowPeriodSecs = 120 * 60    // 2 hours\nlet sequences = [] ;\n\nconst fc = { HR : 3}\n\nfor (const [measurement, group] of Object.entries(regList)) {    \n    for (const grp of group) {\n        if (subTopic == 'pollAll' || subTopic == grp.name)\n        {\n            const row = lookupRegister(grp.name);\n            if (row)\n            {\n                const m = {} ;\n                m.prefix = 'local';\n                m.source = 'lae0';\n                m.location = grp.name;\n                m.topic = m.source + '/' + m.location;\n\n                // essential modbus characteristics\n                m.address = row.Address ;\n                m.param = measurement;\n                m.fc = fc['HR'] ;\n                m.quantity = 1 ;\n                m.unitid = 1;\n\n\n                m.modbusRow = row ;\n                m.writeThrough = msg.writeThrough ;  // set upstream\n                \n\n                m.modbusRow = row;\n                m.writeThrough = msg.writeThrough;\n\n\n                //const groupReportOnDifference = reportOnDiff[measurement] ?? undefined ;\n\n                const diff = grp.reportOnDiff ?? reportOnDiff[measurement] ?? false;\n                if (diff)\n                    m.reportOnDiff = diff;\n\n                m.windowPeriodSecs = grp.windowPeriodSecs ?? windowPeriodSecs \n                //m.windowPeriodSecs = 120 * 60    // 2 hours\n\n                let colour = m.digest ? 'red' : (m.writeThrough ? 'green' : 'yellow');\n                node.status({ fill: colour, shape: \"dot\", text: `name:${grp.name}` });\n                sequences.push(m);\n\n/*\n                const diff = grp.reportOnDiff ?? reportOnDiff[measurement] ?? false;\n                if (diff)\n                    m.reportOnDiff = diff ;\n\n                m.windowPeriodSecs = grp.windowPeriodSecs ?? windowPeriodSecs ; \n\n                //const digest = (m.reportOnDiff != 0) && !(msg.writeThrough ?? false)\n\n                const doDeliver = msg.writeThrough || (msg.reportOnDiff === undefined) \n                //node.error(e)\n                //red : digest, yellow : update, green : writeThrough   \n\n\n                let colour = doDeliver ? m.writeThrough ? 'green' : 'yellow' : 'red' ;\n                node.status({ fill: colour, shape: \"dot\", text: `name:${grp.name}` });\n                sequences.push(m);\n*/\n            }\n        }\n    }\n}\n\n//msg.sequences = Array.prototype.concat(temperatures, pressures)\n\nmsg.sequences = sequences;\nif (msg.sequences.length == 0)\n{\n    node.status({ fill: \"red\", shape: \"ring\", text: `Nothing sent ${msg.topic}` });\n    return null ;\n}\nif (msg.sequences.length > 1)\n{\n    node.status({ fill: \"green\", shape: \"ring\", text: `${msg.sequences.length} registers requested` });\n}\nreturn msg;\n\n",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
@@ -8877,7 +8869,6 @@
         "y": 620,
         "wires": [
             [
-                "5d488e53c97b07ab",
                 "a2d462fa509649cf"
             ]
         ]
@@ -8928,7 +8919,7 @@
         "type": "debug",
         "z": "78ad727ff3800ccd",
         "name": "lae-modbus",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -9065,8 +9056,8 @@
         "links": [
             "818e2038058a0e91"
         ],
-        "x": 715,
-        "y": 620,
+        "x": 685,
+        "y": 560,
         "wires": []
     },
     {
@@ -9082,7 +9073,8 @@
         "y": 320,
         "wires": [
             [
-                "c438c8cab5ded2a4"
+                "c438c8cab5ded2a4",
+                "2d9d77c7eb84ac59"
             ]
         ]
     },
@@ -9095,8 +9087,8 @@
         "links": [
             "e731444c07535ac3"
         ],
-        "x": 715,
-        "y": 660,
+        "x": 685,
+        "y": 600,
         "wires": []
     },
     {
@@ -9122,8 +9114,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 700,
-        "y": 720,
+        "x": 670,
+        "y": 660,
         "wires": []
     },
     {
@@ -9136,11 +9128,28 @@
         "wires": [
             [
                 "f3dd344c36740256",
-                "76500cf3375b0621"
+                "76500cf3375b0621",
+                "5d488e53c97b07ab"
             ],
             [],
             []
         ]
+    },
+    {
+        "id": "2d9d77c7eb84ac59",
+        "type": "debug",
+        "z": "78ad727ff3800ccd",
+        "name": "debug 69",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 770,
+        "y": 260,
+        "wires": []
     },
     {
         "id": "dcad49ce97d38715",
@@ -9879,6 +9888,16 @@
                 "bb16735a0cac5286"
             ]
         ]
+    },
+    {
+        "id": "e1e56568e40e987b",
+        "type": "comment",
+        "z": "d6d8802f46b4aa03",
+        "name": "asphp/kWh cannot be used like this. it's a local hr",
+        "info": "",
+        "x": 460,
+        "y": 860,
+        "wires": []
     },
     {
         "id": "947aa5c71c0312dc",
@@ -11385,8 +11404,7 @@
         "y": 800,
         "wires": [
             [
-                "1503c29336ccab3b",
-                "11ac0d580ca4dfb5"
+                "1503c29336ccab3b"
             ],
             [],
             []
@@ -11602,68 +11620,6 @@
         ]
     },
     {
-        "id": "11ac0d580ca4dfb5",
-        "type": "ui-chart",
-        "z": "983d8c26bcee7442",
-        "group": "9ee3507d7e391438",
-        "name": "",
-        "label": "chart",
-        "order": 1,
-        "chartType": "line",
-        "category": "topic",
-        "categoryType": "msg",
-        "xAxisLabel": "degrees",
-        "xAxisProperty": "degrees",
-        "xAxisPropertyType": "msg",
-        "xAxisType": "linear",
-        "xAxisFormat": "",
-        "xAxisFormatType": "auto",
-        "xmin": "",
-        "xmax": "",
-        "yAxisLabel": "sin",
-        "yAxisProperty": "payload",
-        "yAxisPropertyType": "msg",
-        "ymin": "",
-        "ymax": "",
-        "bins": 10,
-        "action": "append",
-        "stackSeries": false,
-        "pointShape": "circle",
-        "pointRadius": 4,
-        "showLegend": true,
-        "removeOlder": "10",
-        "removeOlderUnit": "60",
-        "removeOlderPoints": "100",
-        "colors": [
-            "#0095ff",
-            "#ff0000",
-            "#ff7f0e",
-            "#2ca02c",
-            "#a347e1",
-            "#d62728",
-            "#ff9896",
-            "#9467bd",
-            "#c5b0d5"
-        ],
-        "textColor": [
-            "#666666"
-        ],
-        "textColorDefault": true,
-        "gridColor": [
-            "#e5e5e5"
-        ],
-        "gridColorDefault": true,
-        "width": "12",
-        "height": "8",
-        "className": "",
-        "interpolation": "linear",
-        "x": 730,
-        "y": 1040,
-        "wires": [
-            []
-        ]
-    },
-    {
         "id": "e8cf998e289eb1ec",
         "type": "function",
         "z": "983d8c26bcee7442",
@@ -11678,9 +11634,7 @@
         "x": 530,
         "y": 1040,
         "wires": [
-            [
-                "11ac0d580ca4dfb5"
-            ]
+            []
         ]
     },
     {
@@ -11728,8 +11682,7 @@
         "y": 420,
         "wires": [
             [
-                "8e63039e93edd284",
-                "11ac0d580ca4dfb5"
+                "8e63039e93edd284"
             ]
         ]
     },
