@@ -1225,7 +1225,7 @@
         "width": "12",
         "height": "1",
         "order": 1,
-        "showTitle": true,
+        "showTitle": false,
         "className": "",
         "visible": "true",
         "disabled": "false",
@@ -3782,63 +3782,6 @@
         ]
     },
     {
-        "id": "bacb43412f50be7f",
-        "type": "function",
-        "z": "e7fcf1f501be8b60",
-        "name": "scheduler v1",
-        "func": "\nfunction addZero(i) {\n  if (i < 10) {i = \"0\" + i}\n  return i;\n}\n\nfunction getTimeNow()\n{\n  const d = new Date()\n  return d.toTimeString().substring(0, 5)\n}\n\nconst timeNow = getTimeNow()\nconst tokens = msg.topic.split(\"/\")\nconst command = tokens[tokens.length - 1]\n\nlet schedule = flow.get(\"schedule\") || { start: '12:00', stop: '12:00', unit: { status : null} }\n\n//node.error(`schedule ${schedule.start} ${schedule.stop} ${schedule.unit.status}`)\n\nlet timeChange = false ; \nlet response = null ; \nswitch (command) {\n    case 'start'  :\n        schedule.start = msg.payload \n        timeChange = true ; \n        break \n    case 'stop':\n        schedule.stop = msg.payload \n        timeChange = true ; \n        break \n    case 'refresh':    \n        timeChange = true ; \n        break ;\n} \n\n\n// Note that if start and stop time are the same, that means 24 operation\n// text string comparison\n\nlet unitShouldBeOn = schedule.start <= timeNow && timeNow <= schedule.stop; \n\nif (timeChange)\n{\n  const mstart = {}\n  mstart.topic = `app/response/schedule/start`\n  mstart.payload = schedule.start ?? 'hh:mm' \n\n  const mstop = {}\n  mstop.topic = `app/response/schedule/stop`\n  mstop.payload = schedule.stop ?? 'hh:mm' \n\n  //const h = {}   // hours not used\n  //h.topic = `app/response/schedule/${command}/hour`\n  //h.payload = schedule[command].substring(0,2)\n\n  const s = {} \n  s.topic = 'app/response/schedule'\n  s.payload = `${timeNow}:  ${schedule.start} -> ${schedule.stop} unitShouldBeOn: ${unitShouldBeOn}`\n\n  response = [mstart,mstop,s]\n  node.status({fill:\"yellow\",shape:\"ring\",text:`${command} ${msg.payload}`});\n\n  node.error(s.payload);\n}\n\n\n\nlet control = null\nif (schedule && schedule.unit.status !== undefined &&  unitShouldBeOn == schedule.unit.status) {\n  // unit status is unchanged\n  control = null ;\n}\nelse {\n  control = {} \n  control.topic = 'PROTOCOL_CHIL_OCC'  // modbus register\n  control.payload = unitShouldBeOn ? 1 : 0;\n  control.writeThrough = true ;\n  schedule.unit = { status : unitShouldBeOn };\n  node.status({ fill: \"red\", shape: \"ring\", text: `${timeNow}: unitOn:${unitShouldBeOn}` });\n}\nif (response || control)\n  flow.set(\"schedule\", schedule)\n\nreturn [response ?? null, control ?? null];\n",
-        "outputs": 2,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "// Code added here will be run once\n// whenever the node is started.\n\n//flow.set(\"schedule\", { start: '06:00', stop: '16:30', unit: {} })",
-        "finalize": "",
-        "libs": [],
-        "x": 350,
-        "y": 800,
-        "wires": [
-            [
-                "b8d9de514450140a"
-            ],
-            [
-                "207bd26d97d91d04"
-            ]
-        ]
-    },
-    {
-        "id": "b8d9de514450140a",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "response",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 640,
-        "y": 760,
-        "wires": []
-    },
-    {
-        "id": "207bd26d97d91d04",
-        "type": "debug",
-        "z": "e7fcf1f501be8b60",
-        "name": "control",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 630,
-        "y": 840,
-        "wires": []
-    },
-    {
         "id": "c98b6b30b5fddbb3",
         "type": "ui-form",
         "z": "e7fcf1f501be8b60",
@@ -3870,8 +3813,8 @@
         },
         "payload": "",
         "submit": "submit",
-        "cancel": "clear",
-        "resetOnSubmit": true,
+        "cancel": "cancel",
+        "resetOnSubmit": false,
         "topic": "clock0/set/weekday",
         "topicType": "str",
         "splitLayout": "",
@@ -3892,7 +3835,7 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "scheduler 2",
-        "func": "const defaultSchedule = \n{\n  start : '09:00',\n  stop  : '17:00',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"weekday\", \"file\") ?? {})\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (true) {\n\n  // from the webform and MQTT\n  case /clock0\\/set\\/weekday$/.test(msg.topic):\n      schedule.start = msg.payload.start;\n      schedule.stop = msg.payload.stop;\n      timeChange = true ; \n      break ;\n  \n  // from MQTT\n  case /clock0\\/set\\/weekday\\/start/.test(msg.topic) :\n      schedule.start = msg.payload.substring(0, 5) \n      timeChange = true ; \n      break \n  case /clock0\\/set\\/weekday\\/stop/.test(msg.topic): \n      schedule.stop = msg.payload.substring(0, 5)  \n      timeChange = true ; \n      break \n  case /clock0\\/get\\/all/.test(msg.topic): \n      recall = true ;\n      break    \n  case /clock0\\/tick/.test(msg.topic): \n      break ;\n    \n  case /clock0\\/set\\/advance/.test(msg.topic):\n      advance = true ;   \n      break ;\n      \n  default: \n      node.error(`Not expecting ${msg.topic}` )\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'heat-on': 'heat-off' \n\nconst texxt = `${timeNow}: 🕐${schedule.start}↦${schedule.stop} ${offOnText} `\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/set/weekday', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/weekday/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/weekday/stop`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n  \n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    // set topic so message could pass through router\n    control = { topic : 'pid0/set/demand', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"weekday\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
+        "func": "const defaultSchedule = \n{\n  start : '09:00',\n  stop  : '17:00',\n  offOn : false\n}\n\nconst utils = global.get(\"utils\")\n\nconst schedule = Object.assign(defaultSchedule, context.get(\"weekday\", \"file\") ?? {})\n\nlet timeChange = false ;\nlet recall = false ; \nlet advance = false ; \nlet responses = null ; \nlet formResponse = null ;\n\nswitch (true) {\n\n  // from the webform and MQTT\n  case /clock0\\/set\\/weekday$/.test(msg.topic):\n      schedule.start = msg.payload.start;\n      schedule.stop = msg.payload.stop;\n      timeChange = true ; \n      break ;\n  \n  // from MQTT\n  case /clock0\\/set\\/weekday\\/start/.test(msg.topic) :\n      schedule.start = msg.payload.substring(0, 5) \n      timeChange = true ; \n      break \n  case /clock0\\/set\\/weekday\\/stop/.test(msg.topic): \n      schedule.stop = msg.payload.substring(0, 5)  \n      timeChange = true ; \n      break \n  case /clock0\\/get\\/all/.test(msg.topic): \n      recall = true ;\n      break    \n  case /clock0\\/tick/.test(msg.topic): \n      break ;\n    \n  case /clock0\\/set\\/advance/.test(msg.topic):\n      advance = true ;   \n      break ;\n      \n  default: \n      node.error(`Not expecting ${msg.topic}` )\n}        \n\nconst timeNow = utils.getTimeNow();\n\nlet offOn = schedule.start != schedule.stop \n    ? schedule.start <= timeNow && timeNow <= schedule.stop \n    : true ;\n\nif (advance)\n    offOn = !schedule.offOn ;\n\nconst offOnText = offOn ? 'heat-on': 'heat-off' \n\nconst tRecall = recall ? 'recall' : ''\n\nconst texxt = `${timeNow}: 🕐${schedule.start}↦${schedule.stop} ${offOnText} ${tRecall}`\n\nif (timeChange || recall)\n{\n  formResponse = { \n    topic : 'clock0/weekday', \n    payload : schedule\n  }\n\n  const mstart = {\n    topic : `clock0/weekday/start`,\n    payload : schedule.start ?? 'hh:mm' \n  }\n  const mstop = {\n    topic : `clock0/weekday/stop`,\n    payload : schedule.stop ?? 'hh:mm' \n  }\n\n/*\n  const s = {} \n  s.topic = 'clock0/get/all'\n  s.payload = texxt ;\n*/\n  responses = [mstart,mstop]\n  node.status({fill:\"yellow\", shape:\"dot\", text:texxt});\n  \n}\nlet control = null ;\nif (schedule.offOn != offOn )\n{\n    schedule.offOn = offOn ;\n    // set topic so message could pass through router\n    control = { topic : 'pid0/set/demand', payload : offOnText }\n    node.status({fill:offOn ? \"green\":\"grey\", shape:\"dot\", text:texxt});\n}\nif (timeChange || control)\n  context.set(\"weekday\", schedule, \"file\")\n\nreturn [[formResponse], responses, [control]];",
         "outputs": 3,
         "timeout": 0,
         "noerr": 0,
@@ -3914,6 +3857,11 @@
                 "38c8f9bc814df53b",
                 "e70ba65277e5fe4f"
             ]
+        ],
+        "outputLabels": [
+            "form response",
+            "mqtt response",
+            "joule0"
         ]
     },
     {
@@ -3930,7 +3878,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 660,
-        "y": 480,
+        "y": 460,
         "wires": []
     },
     {
@@ -3963,7 +3911,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 660,
-        "y": 580,
+        "y": 560,
         "wires": []
     },
     {
@@ -3976,7 +3924,7 @@
             "ae83978daa30c005"
         ],
         "x": 595,
-        "y": 540,
+        "y": 520,
         "wires": []
     },
     {
@@ -3993,7 +3941,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 630,
-        "y": 680,
+        "y": 660,
         "wires": []
     },
     {
@@ -4006,7 +3954,7 @@
             "52fa1182d5cd2dff"
         ],
         "x": 595,
-        "y": 640,
+        "y": 620,
         "wires": []
     },
     {
@@ -4049,8 +3997,8 @@
         "className": "",
         "passthru": false,
         "dropdownOptions": [],
-        "x": 540,
-        "y": 400,
+        "x": 160,
+        "y": 420,
         "wires": [
             []
         ]
@@ -4068,7 +4016,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 640,
-        "y": 440,
+        "y": 420,
         "wires": []
     },
     {
@@ -4297,7 +4245,7 @@
         "height": "7",
         "className": "",
         "interpolation": "linear",
-        "x": 630,
+        "x": 650,
         "y": 260,
         "wires": [
             []
@@ -4392,6 +4340,106 @@
         "statusType": "auto",
         "x": 780,
         "y": 120,
+        "wires": []
+    },
+    {
+        "id": "bfdd258564a1ce5f",
+        "type": "ui-control",
+        "z": "e7fcf1f501be8b60",
+        "name": "on connect",
+        "ui": "e41c774eeb2b3037",
+        "events": "change",
+        "x": 110,
+        "y": 700,
+        "wires": [
+            [
+                "764136b3b7233e85",
+                "d5535721b38f1a1b"
+            ]
+        ]
+    },
+    {
+        "id": "764136b3b7233e85",
+        "type": "function",
+        "z": "e7fcf1f501be8b60",
+        "name": "recall (easily broken)",
+        "func": "/**\n * Input message is a page/tab navigation notification\n * \n * This is very dodgey and easily broken. \n * You have to initialise when that particular \n * tab is on display as only then will the \n * form field be reinitialised. \n * \n * Note that when you restart edited nodes,\n * the webpage has to be reloaded in order to \n * restart notifications tab/page notifications\n */\n\n\nif (msg.name.toLowerCase().startsWith('heat') == false)\n  return null\n\nmsg.topic = 'clock0/get/all'\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 640,
+        "wires": [
+            [
+                "514bcf2a52af1cf0",
+                "fa405fd18aff44fd"
+            ]
+        ]
+    },
+    {
+        "id": "a6df65dc58484570",
+        "type": "inject",
+        "z": "e7fcf1f501be8b60",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 620,
+        "wires": [
+            [
+                "764136b3b7233e85"
+            ]
+        ]
+    },
+    {
+        "id": "fa405fd18aff44fd",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "post filter",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "d5535721b38f1a1b",
+        "type": "debug",
+        "z": "e7fcf1f501be8b60",
+        "name": "tab changes",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 370,
+        "y": 760,
         "wires": []
     },
     {
@@ -8349,7 +8397,7 @@
         "page": "",
         "ui": "",
         "name": "rangeSlider",
-        "order": 4,
+        "order": 6,
         "width": 0,
         "height": 0,
         "head": "",
@@ -9447,7 +9495,7 @@
         "type": "debug",
         "z": "78ad727ff3800ccd",
         "name": "debug 76",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -10380,7 +10428,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 280,
+        "x": 250,
         "y": 240,
         "wires": [
             [
@@ -10398,12 +10446,12 @@
         "links": [
             "4155f40899b57319"
         ],
-        "x": 125,
-        "y": 240,
+        "x": 135,
+        "y": 160,
         "wires": [
             [
                 "675ae5e80dd5a88e",
-                "fd2648b61dcfcbe7"
+                "a34c85f308f92988"
             ]
         ]
     },
@@ -10481,7 +10529,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 660,
+        "x": 640,
         "y": 240,
         "wires": []
     },
@@ -10510,54 +10558,11 @@
         "wires": []
     },
     {
-        "id": "52b5f567821cb74e",
-        "type": "link in",
-        "z": "aec6945d4d03ae69",
-        "name": "link in 2",
-        "links": [
-            "793d3c8a7f820435"
-        ],
-        "x": 125,
-        "y": 600,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "10046f17d5651c6b",
-        "type": "inject",
-        "z": "aec6945d4d03ae69",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 180,
-        "y": 60,
-        "wires": [
-            [
-                "cc21049a7c2c050a"
-            ]
-        ]
-    },
-    {
         "id": "cc21049a7c2c050a",
         "type": "function",
         "z": "aec6945d4d03ae69",
         "name": "build socket table",
-        "func": "// set source, location and topic \n// should this be done by common routine \n\nlet tokens = msg.topic.split('/')\nconst source = tokens[0]\nconst subtopic = tokens[1]\nconst utils = global.get(\"utils\");\n\n\nif (source != 'p2' && source != 'p3')\n  return null \n\nnode.status({ fill: 'green', shape: \"dot\", text:`source:${source} subtopic:${subtopic}`})\n\nfunction cache(device, location, timestamp, key, value)\n{\n  let records = context.get('socketCache') ?? {}\n\n  let rec = records[device] ?? \n  { \n    socket : device,\n    location : location,\n    dt : utils.getTimeOrDate(timestamp)\n  }\n  rec[key] = value\n  records[device] = rec \n\n  context.set('socketCache', records)\n  return Object.values(records) \n}\n/*\nfunction cacheOld(timestamp, key, value)\n{\n  let records = context.get('socketCache') ?? {}\n  //records[12334] = { abc : 344,  ryrt : 6456 }\n  //node.error(records);\n\n  let rec = records[timestamp] ?? { timestamp : timestamp, dt : utils.getHHMM(timestamp) }\n  rec[key] = value\n  records[timestamp] = rec \n  node.error(records);\n\n  context.set('socketCache', records)\n  return Object.values(records) \n}\n*/\nmsg.payload = cache(source, msg.location, msg.timestamp, subtopic, msg.payload)\n//node.error(msg.payload)\nreturn msg \n",
+        "func": "// set source, location and topic \n// should this be done by common routine \n\nlet tokens = msg.topic.split('/')\nconst source = tokens[0]\nconst subtopic = tokens[1]\nconst utils = global.get(\"utils\");\n\nnode.status({ fill: 'green', shape: \"dot\", text:`${source} / ${subtopic} = ${msg.payload}`})\n\nfunction cache(device, location, timestamp, key, value)\n{\n  let records = context.get('socketCache') ?? {}\n\n  let rec = records[device] ?? \n  { \n    socket : device,\n    location : '??',  // enfocring column order\n    dt : '??',\n    state : '??'\n  }\n  rec[key] = value\n  rec.location = location\n  rec.dt = utils.getTimeOrDate(timestamp)\n  records[device] = rec \n\n\n  context.set('socketCache', records)\n  return Object.values(records) \n}\n/*\nfunction cacheOld(timestamp, key, value)\n{\n  let records = context.get('socketCache') ?? {}\n  //records[12334] = { abc : 344,  ryrt : 6456 }\n  //node.error(records);\n\n  let rec = records[timestamp] ?? { timestamp : timestamp, dt : utils.getHHMM(timestamp) }\n  rec[key] = value\n  records[timestamp] = rec \n  node.error(records);\n\n  context.set('socketCache', records)\n  return Object.values(records) \n}\n*/\nmsg.payload = cache(source, msg.location, msg.timestamp, subtopic, msg.payload)\n//node.error(msg.payload)\nreturn msg \n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -10565,7 +10570,7 @@
         "finalize": "",
         "libs": [],
         "x": 430,
-        "y": 40,
+        "y": 160,
         "wires": [
             [
                 "7b0631ab1469a238",
@@ -10585,54 +10590,17 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 660,
-        "y": 120,
+        "x": 640,
+        "y": 100,
         "wires": []
-    },
-    {
-        "id": "15f4452fb3838945",
-        "type": "debug",
-        "z": "aec6945d4d03ae69",
-        "name": "debug 83",
-        "active": false,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 660,
-        "y": 180,
-        "wires": []
-    },
-    {
-        "id": "fd2648b61dcfcbe7",
-        "type": "function",
-        "z": "aec6945d4d03ae69",
-        "name": "filter",
-        "func": "let tokens = msg.topic.split('/')\nconst source = tokens[0]\nconst subtopic = tokens[1]\nconst utils = global.get(\"utils\");\n\n\nif (source != 'p2' && source != 'p3')\n  return null \nreturn msg;",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 190,
-        "y": 120,
-        "wires": [
-            [
-                "cc21049a7c2c050a",
-                "15f4452fb3838945"
-            ]
-        ]
     },
     {
         "id": "b5c35fb1ed9c7d0a",
         "type": "ui-table",
         "z": "aec6945d4d03ae69",
         "group": "85581f135f4bd40d",
-        "name": "sockets",
-        "label": "Power Table",
+        "name": "13A power sockets",
+        "label": "13A power sockets",
         "order": 1,
         "width": 0,
         "height": 0,
@@ -10647,11 +10615,54 @@
         "mobileBreakpointType": "defaults",
         "action": "replace",
         "className": "",
-        "x": 660,
-        "y": 40,
+        "x": 670,
+        "y": 160,
         "wires": [
             []
         ]
+    },
+    {
+        "id": "a34c85f308f92988",
+        "type": "switch",
+        "z": "aec6945d4d03ae69",
+        "name": "p filter",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "regex",
+                "v": "^p[\\d]{1,2}\\/",
+                "vt": "str",
+                "case": false
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 250,
+        "y": 160,
+        "wires": [
+            [
+                "cc21049a7c2c050a",
+                "72dc8fb49248a4b4"
+            ]
+        ]
+    },
+    {
+        "id": "72dc8fb49248a4b4",
+        "type": "debug",
+        "z": "aec6945d4d03ae69",
+        "name": "debug 85",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 400,
+        "y": 100,
+        "wires": []
     },
     {
         "id": "3b37161a0c61f52e",
@@ -11483,7 +11494,7 @@
         "group": "9ee3507d7e391438",
         "name": "",
         "label": "chart",
-        "order": 3,
+        "order": 5,
         "chartType": "line",
         "category": "series",
         "categoryType": "msg",
@@ -11630,6 +11641,155 @@
         "statusType": "auto",
         "x": 330,
         "y": 1680,
+        "wires": []
+    },
+    {
+        "id": "59ef510543ce46c5",
+        "type": "ui-form",
+        "z": "86219b48706129b6",
+        "name": "weekday1",
+        "group": "9ee3507d7e391438",
+        "label": "",
+        "order": 4,
+        "width": "",
+        "height": "",
+        "options": [
+            {
+                "label": "w1 Start time",
+                "key": "start",
+                "type": "time",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "w1 Stop time",
+                "key": "stop",
+                "type": "time",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "start": "",
+            "stop": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "resetOnSubmit": false,
+        "topic": "weekday",
+        "topicType": "str",
+        "splitLayout": "",
+        "className": "",
+        "passthru": false,
+        "dropdownOptions": [],
+        "x": 200,
+        "y": 1800,
+        "wires": [
+            [
+                "9b89690cc2f6727f",
+                "a96a0ca88fe244ae"
+            ]
+        ]
+    },
+    {
+        "id": "95fb98cd59eab36b",
+        "type": "ui-form",
+        "z": "86219b48706129b6",
+        "name": "weekday2",
+        "group": "9ee3507d7e391438",
+        "label": "",
+        "order": 3,
+        "width": "",
+        "height": "",
+        "options": [
+            {
+                "label": "w2 Start time",
+                "key": "start",
+                "type": "time",
+                "required": true,
+                "rows": null
+            },
+            {
+                "label": "w2 Stop time",
+                "key": "stop",
+                "type": "time",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "start": "",
+            "stop": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "resetOnSubmit": false,
+        "topic": "weekday",
+        "topicType": "str",
+        "splitLayout": "",
+        "className": "",
+        "passthru": false,
+        "dropdownOptions": [],
+        "x": 400,
+        "y": 1800,
+        "wires": [
+            [
+                "fd6fdad174867739"
+            ]
+        ]
+    },
+    {
+        "id": "9b89690cc2f6727f",
+        "type": "function",
+        "z": "86219b48706129b6",
+        "name": "function 3",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 220,
+        "y": 1900,
+        "wires": [
+            [
+                "59ef510543ce46c5"
+            ]
+        ]
+    },
+    {
+        "id": "a96a0ca88fe244ae",
+        "type": "debug",
+        "z": "86219b48706129b6",
+        "name": "debug 86",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 1860,
+        "wires": []
+    },
+    {
+        "id": "fd6fdad174867739",
+        "type": "debug",
+        "z": "86219b48706129b6",
+        "name": "debug 87",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 1800,
         "wires": []
     },
     {
