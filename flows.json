@@ -75,7 +75,7 @@
         "id": "86219b48706129b6",
         "type": "tab",
         "label": "playspace",
-        "disabled": false,
+        "disabled": true,
         "info": "",
         "env": []
     },
@@ -274,8 +274,8 @@
         "y": 520,
         "wires": [
             [
-                "911fc6b6c3ef646a",
-                "876206ef7e56e4d6"
+                "876206ef7e56e4d6",
+                "911fc6b6c3ef646a"
             ]
         ]
     },
@@ -3117,7 +3117,7 @@
         "type": "function",
         "z": "a39c97029f2c005f",
         "name": "calculate b0",
-        "func": "/**\n *\n * ver 2.0\n */\n\nconst timeNow = Date.now()\n\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst utils = global.get('utils')\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 1 }, // main entrance \n    { name: 'g4', weight: 1 }, // cu ground\n    { name: 'm0', weight: 1 }, // first floor corridor\n    { name: 'm3', weight: 1 }, // cu front\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorStatus(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMMSS(timeNow)} b0:${buildingTemperature.toFixed(1)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n//  const tokens = msg.topic.split(\"/\")\n//  const sensorName = tokens[0]\n//  const sensorProperty = tokens[1]\n\n  const instrumentation = msg.payload ;\n\n  let b0 = null\n\n\n//  const sensorsSelected = sensorWeight.map((e) => e.name)\n//  if (sensorsSelected.includes(sensorName)) \n//    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 65)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      param:        'temperature',  // needed for influx\n      prefix:       'local',        // pretend to be a sensor, albeit virtual, so influx stores\n      reportOnDiff: 0.05,           // 0.1 is quite a jump for building with high thermal mass \n      windowPeriodSecs: 15 * 60 ,   // report every 15 minutes regardless\n      track: true                   // update status text under node\n    }\n    //b0 = isNaN(bt) ? null : b0 ;\n  }\n  return b0\n}\n\nconst b0 = processUpdates(msg)\nconst spt = RED.util.cloneMessage(b0);\nspt.topic = 'b0/spt'\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn [[b0], [spt]]",
+        "func": "/**\n *\n * ver 2.0\n */\n\nconst timeNow = Date.now()\n\nconst siteConfig = global.get('site-config', 'file') ?? {}\n\nconst utils = global.get('utils')\n\nconst sensorWeight =\n  [\n    { name: 'g3', weight: 1 }, // main entrance \n    { name: 'g4', weight: 1 }, // cu ground\n    { name: 'm0', weight: 1 }, // first floor corridor\n    { name: 'm3', weight: 1 }, // cu front\n  ]\n\n\n// need to move this out to app node that calculate this\n\nfunction calculateBuildingTemperature(instruments, minsTimeout) \n{ \n  const sensorsKnown = Object.keys(siteConfig['sensorMap'])\n  // note messages are stored in instruments\n  // make instrument temperatures easier to access\n  const sensorTemp = ((name) => instruments[name + '/temperature'].payload)\n\n  const sensorsReport = utils.sensorStatus(sensorsKnown, instruments, minsTimeout, timeNow)\n\n  const sensors = sensorWeight\n    // filter the sensorWeight table so only online sensors included\n    .filter((w) => (sensorsReport['online'].includes(w.name)))\n    \n    // create new map of weighted temperatures\n    .map((e) => ({  name: e.name, \n                    t: sensorTemp(e.name), \n                    wt: sensorTemp(e.name) * e.weight, w: e.weight \n                }))\n    // filter out suspect values\n    //.filter((e) => 16 < e.t && e.t < 23 && e.t != 22)\n    \n  const sensorIDs = sensors.map((e) => e.name).join(\",\")\n\n  // calculate weighted average\n  const buildingTemperature = sensors.reduce((sum, e, idx) => (sum + e.wt), 0)\n    / sensors.reduce((sum, e, idx) => (sum + e.w), 0)\n\n  node.status({\n    fill: \"yellow\", shape: \"dot\",\n    text: `${utils.getHHMMSS(timeNow)} b0:${buildingTemperature.toFixed(2)} [${sensorIDs}]`\n  });\n  return buildingTemperature\n}\n\n/**\n* @param {NodeMessage} msg\n*/\n\nfunction processUpdates(msg) \n{\n//  const tokens = msg.topic.split(\"/\")\n//  const sensorName = tokens[0]\n//  const sensorProperty = tokens[1]\n\n  const instrumentation = msg.payload ;\n\n  let b0 = null\n\n\n//  const sensorsSelected = sensorWeight.map((e) => e.name)\n//  if (sensorsSelected.includes(sensorName)) \n//    if (['temperature'].includes(sensorProperty)) \n  {\n    const bt = calculateBuildingTemperature(instrumentation, 65)\n\n    // create a virtual sensor \n    b0 = {\n      topic:        'b0/temperature',\n      source:       'b0',\n      location:     'building',\n      payload:      Math.round(100 * bt) / 100, // update on 0.01 increments\n      bt0:          Math.round(100 * bt) / 100, // update on 0.01 increments\n      param:        'temperature',  // needed for influx\n      prefix:       'local',        // pretend to be a sensor, albeit virtual, so influx stores\n      reportOnDiff: 0.05,           // 0.1 is quite a jump for building with high thermal mass \n      windowPeriodSecs: 15 * 60 ,   // report every 15 minutes regardless\n      track: true                   // update status text under node\n    }\n    //b0 = isNaN(bt) ? null : b0 ;\n  }\n  return b0\n}\n\nconst b0 = processUpdates(msg)\nconst spt = RED.util.cloneMessage(b0);\nspt.topic = 'b0/spt'\n//node.error(\"exiting dump history\" + JSON.stringify(history));\nreturn [[b0], [spt]]",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -4058,7 +4058,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 640,
-        "y": 180,
+        "y": 140,
         "wires": []
     },
     {
@@ -4093,7 +4093,7 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "curate weather",
-        "func": "\n// check if weather is cached \n\nswitch (msg.topic)\n{\n  case 'settings':\n  \n  case 'bump': \n    const openweather = context.get('openweather', 'file')\n\n    if (openweather != null)\n    {\n      const nowSecs = Math.floor(Date.now() / 1000);\n      const firstWeatherReport = openweather.list[0].dt\n      const oneHour = 60 * 60\n      const openweatherTooOld = nowSecs > oneHour + firstWeatherReport\n      if (!openweatherTooOld)\n      {\n        msg.payload = openweather\n        msg.topic = 'cachedWeather'\n        break;\n      }\n      msg.topic = 'liveWeather'\n      return [[msg], null]\n    }\n    break\n\n  case 'liveWeather': \n    context.set('openweather', msg.payload, 'file')\n    break \n\n  default:\n    node.error(`Unknown topic ${msg.topic}. Discarding msg`)\n    return null \n}\n\n//node.error(\" hey \" + msg.topic + \" \" + msg.payload)\n\nlet snaps = []\n\nfor (const fcast of msg.payload.list)\n{\n  const snap = { \n    dt : fcast.dt,\n    dt_local : new Date(fcast.dt * 1000).toLocaleString(),\n    dt_txt_UTC : fcast.dt_txt,\n    temp : fcast.main.temp, \n    wind : fcast.wind.speed,\n    deg : fcast.wind.deg,    \n  }\n  snaps.push(snap)\n}\n\n// flip payloads around so that snaps can be dumped into a table\nmsg.openweather = msg.payload ;\nmsg.payload = snaps\nreturn [null, [msg]];",
+        "func": "\nconst dateNow = Date.now()  // milliseconds\n\n// check if weather is cached \n\nswitch (msg.topic)\n{\n  case 'settings':\n  \n  case 'bump': \n    const openweather = context.get('openweather', 'file')\n\n    if (openweather != null)\n    {\n      const firstWeatherReport = 1000 * openweather.list[0].dt\n      const oneHour = 60 * 60 * 1000  // ms\n      const openweatherTooOld = dateNow > oneHour + firstWeatherReport\n      if (!openweatherTooOld)\n      {\n        msg.payload = openweather\n        msg.topic = 'cachedWeather'\n        break;\n      }\n      msg.topic = 'liveWeather'\n      return [[msg], null]\n    }\n    break\n\n  case 'liveWeather': \n    context.set('openweather', msg.payload, 'file')\n    break \n\n  default:\n    node.error(`Unknown topic ${msg.topic}. Discarding msg`)\n    return null \n}\n\n//node.error(\" hey \" + msg.topic + \" \" + msg.payload)\n\nlet snaps = []\n\nfor (const fcast of msg.payload.list)  \n{\n  const snap = { \n    dt : fcast.dt * 1000,  // openweather uses time in seconds\n    dt_local : new Date(fcast.dt * 1000).toLocaleString(),\n    dt_txt_UTC : fcast.dt_txt,\n    temp : fcast.main.temp, \n    wind : fcast.wind.speed,\n    deg : fcast.wind.deg,    \n  }\n  snaps.push(snap)\n}\n\n// flip payloads around so that snaps can be dumped into a table\nmsg.openweather = msg.payload ;\nmsg.payload = snaps\nreturn [null, [msg]];",
         "outputs": 2,
         "timeout": 0,
         "noerr": 0,
@@ -4118,8 +4118,8 @@
         "type": "function",
         "z": "e7fcf1f501be8b60",
         "name": "optimum start",
-        "func": "\n// all times are seconds (not ms) from 1970 !!\n// todo : convert to Locale time\n\nconst utils = global.get('utils')\n\nconst localeDate = (ts) => new Date(ts * 1000).toLocaleString()\n\nconst nowSecs = Math.floor(Date.now() / 1000);\n\nfunction oatCreateFn(snapshots) {\n  const times = snapshots.map((w) => w.dt);   // secs from 1970\n  const temps = snapshots.map((w) => w.temp);\n\n  return (t) => interp(t, times, temps);\n}\n\n/**\n * Oct 7 20:00 21.6   oat 11.2C\n * Oct 8 05:00 20.4   oat 7.84C\n * \n * over 9 hours, temp dropped 1.2C, OAT 9.5\n */\n\n\nconst capacity = []\n\nconst initSettings =\n{\n  dtOpen: getNextLocaleTimestamp(9, 0),\n  spt: 19,\n  hsp: 21,\n  mass: 100,        // kWh per °C\n  power: 37,        // kW\n  loss: 1.8         // heat loss in kW per per °C\n}\n\nfunction optimumStart(settings, weatherSnaps, dtStart) {\n\n  const tHistory = context.get('btemperatures') ?? []\n\n  const earliestHistory = getLastLocaleTimeStamp(0, -1)\n  const dt = Date.now()\n  tHistory.push({ time: dt, temperature: utils.toFix(settings.spt, 1), series: 'Building Temperature' })\n  tHistory.push({ time: dt, temperature: utils.toFix(settings.oat, 1), series: 'Outside Air Temperature' })\n  if (tHistory.length > 5000 || tHistory[tHistory.length-1].dt < (earliestHistory/1000))\n    tHistory.pop() \n  context.set('btemperatures', tHistory)\n\n  const tFuture = Array.from(tHistory)\n\n  const oStart = startTime(\n    settings,\n    dtStart,\n    oatCreateFn(weatherSnaps),\n    tFuture)\n\n  const offTime = localeDate(dtStart)\n  const optimumStart = localeDate(oStart)\n  const openTime = localeDate(settings.dtOpen)\n\n  const texxt = `${offTime}->${optimumStart}->${openTime}`\n\n  node.status({ fill: \"yellow\", shape: \"ring\", text: `${texxt}` });\n\n  const log = []\n\n  const msg = { topic: 'optStart', payload: oStart }  // sending secs\n\n  const chart = { topic: 'chart', payload : tFuture }\n\n  return [[msg], [chart], log];\n}\n\n\n/**\n * Initially generated by Claude\n * \n * Optimum start time (hours, same clock as dtOpen).\n * p.dtOpen   building opening time (unix)\n * p.hsp      heating set point temp (°C)\n * p.spt      indoor space temp when heating switched off (°C)\n * p.capacity thermal capacity (kWh/°C)\n * p.power    boiler output (kW)\n * p.loss     heat loss (kW) per °C\n * dtStart    time heating switched off (unix)\n * oatFn      function(t) -> outside temp (°C)\n * dtStep     step size in secs (360 = 6 min)\n */\n\n\nfunction startTime(prop, dtStart, oatFn, tChart, dtStep = 15 * 60) {\n  const dtH = dtStep / 3600; // step in hours, since C, P, L are kWh/kW based\n\n  // Forward passive cooling curve from switch-off to opening\n\n  let dt = dtStart;\n  let spt = prop.spt;\n  let n = 1000  // stop node-red from crashing if there's an infinite loop\n\n  const coolT = [];\n  const coolTemp = [];\n  while (dt < prop.dtOpen && n) {\n    const oat = oatFn(dt)\n    spt += (dtH / prop.mass) * (-prop.loss * (spt - oat));\n    coolT.push(dt);\n    coolTemp.push(spt);\n    tChart.push({ time: dt*1000, temperature: utils.toFix(spt, 1), series: 'Building Cooling (pred.)' })\n    tChart.push({ time: dt*1000, temperature: utils.toFix(oat, 1), series: 'Outside Air Temp. (pred.)' })\n//    tChart.push({ time: dt, temperature: spt, series: 'Building Cooling' })\n//    tChart.push({ time: dt, temperature: oat, series: 'Outside Air Temperature' })\n    dt += dtStep;\n    n -= 1\n  }\n  // Backward heating curve from opening time\n  dt = prop.dtOpen;\n  spt = prop.hsp;    // should using live temperature\n  while (dt > dtStart && n) {\n    const oat = oatFn(dt)\n    spt -= (dtH / prop.mass) * (prop.power - prop.loss * (spt - oat));\n    tChart.push({ time: dt*1000, temperature: utils.toFix(spt, 1), series: 'Building Warming (pred.)' })\n    dt -= dtStep;\n    const sptCool = interp(dt, coolT, coolTemp);\n    if (spt <= sptCool) return dt; // curves meet: this is the start time\n    n -= 1\n  }\n  return dtStart; // must start immediately / can't make it\n}\n\nfunction getLastLocaleTimeStamp(targetHour, dayCount, targetMinute = 0)\n{\n  const now = new Date();\n  const targetDate = new Date();\n  // 1. Set the target time for TODAY first\n  targetDate.setHours(targetHour, targetMinute, 0, 0);\n\n  // 2. Conditional check: If that time has already passed today, move to tomorrow\n  {\n    targetDate.setDate(targetDate.getDate() + dayCount);\n  }\n  // 3. Convert milliseconds to Unix seconds and store in msg.payload\n  return Math.floor(targetDate.getTime() / 1000);\n}\n\n\nfunction getNextLocaleTimestamp(targetHour, targetMinute = 0) \n{\n  const now = new Date();\n  const targetDate = new Date();\n\n  // 1. Set the target time for TODAY first\n  targetDate.setHours(targetHour, targetMinute, 0, 0);\n\n  // 2. Conditional check: If that time has already passed today, move to tomorrow\n  if (now >= targetDate) {\n    targetDate.setDate(targetDate.getDate() + 1);\n  }\n  // 3. Convert milliseconds to Unix seconds and store in msg.payload\n  return Math.floor(targetDate.getTime() / 1000);\n}\n\n\nfunction getNextUtcTimestamp(hours, mins = 0) {\n\n  const now = new Date(nowSecs * 1000)\n  const target = new Date(Date.UTC(now.getUTCFullYear(),\n    now.getUTCMonth(),\n    now.getUTCDate(),\n    hours, mins, 0, 0\n  ));\n  // If hours:mins UTC has already passed today, move to tomorrow\n  if (now >= target) {\n    target.setUTCDate(target.getUTCDate() + 1);\n  }\n  // Convert milliseconds to seconds (Unix timestamp)\n  return Math.floor(target.getTime() / 1000);\n}\n\n\n\n// Linear interpolation (like numpy.interp): clamps outside the range.\n// xs must be ascending.\nfunction interp(x, xs, ys) {\n  if (x <= xs[0]) return ys[0];\n  const n = xs.length;\n  if (x >= xs[n - 1]) return ys[n - 1];\n  let i = 1;\n  while (xs[i] < x) i++;\n  const f = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);\n  return ys[i - 1] + f * (ys[i] - ys[i - 1]);\n}\n\nconst dtStart = Math.min(nowSecs, getNextLocaleTimestamp(0, 0))\n\nconst settings = Object.assign(initSettings, msg.settings)\n//node.error(JSON.stringify(settings))\nreturn optimumStart(settings, msg.payload, dtStart)\n",
-        "outputs": 3,
+        "func": "\n// all times are msecs\n// todo : convert to Locale time\n\nconst utils = global.get('utils')\n\nconst localeDate = (ts) => new Date(ts).toLocaleString()\n\nconst  dateNow = Date.now();\n\nfunction oatCreateFn(snapshots) {\n  const times = snapshots.map((w) => w.dt);   // msecs from 1970\n  const temps = snapshots.map((w) => w.temp);\n  return (t) => interp(t, times, temps);\n}\n\n/**\n * Oct 7 20:00 21.6   oat 11.2C\n * Oct 8 05:00 20.4   oat 7.84C\n *\n * over 9 hours, temp dropped 1.2C, OAT 9.5\n */\n\n\nconst capacity = []\n\nconst initSettings =\n{\n  dtOpen: getNextLocaleTimestamp(9, 0),\n  spt: 19,\n  hsp: 21,\n  mass: 100,        // kWh per °C\n  power: 37,        // kW\n  loss: 1.8         // heat loss in kW per per °C\n}\n\nfunction optimumStart(settings, weatherSnaps, dtStart) {\n\n  const sptHistory = context.get('spt') ?? []\n  const oatHistory = context.get('oat') ?? []\n\n  const earliestHistory = getLastLocaleTimeStamp(0, -1)  // yesterday midnight\n  const dt = dateNow // ms\n  sptHistory.push({ time: dt, temperature: utils.toFix(settings.spt, 1), series: 'Building Temperature' })\n  oatHistory.push({ time: dt, temperature: utils.toFix(settings.oat, 1), series: 'Outside Air Temperature' })\n  //  if (tHistory.length > 5000 || tHistory[tHistory.length-1].dt < (earliestHistory/1000))\n  //    tHistory.pop()\n  // comparisons below in milliseconds\n  while (sptHistory.length > 1000) //|| tHistory[tHistory.length - 1].time < earliestHistory)\n    sptHistory.pop()\n  while (oatHistory.length > 1000) //|| tHistory[tHistory.length - 1].time < earliestHistory)\n    oatHistory.pop()\n\n  node.error(`earlier ${earliestHistory}  pop ${sptHistory[sptHistory.length - 1].time} len ${sptHistory.length}`)\n\n  context.set('spt', sptHistory)\n  context.set('oat', oatHistory)\n  \n  const sptFuture = Array.from(sptHistory)\n  const oatFuture = Array.from(oatHistory)\n\n  const oStart = startTime(\n    settings,\n    dtStart,\n    oatCreateFn(weatherSnaps),\n    sptFuture, oatFuture)\n\n  const offTime = localeDate(dtStart)\n  const optimumStart = localeDate(oStart)\n  const openTime = localeDate(settings.dtOpen)\n\n  const texxt = `${offTime}->${optimumStart}->${openTime}`\n\n  node.status({ fill: \"yellow\", shape: \"ring\", text: `${texxt}` });\n\n  const log = []\n  //const toSecs = (ms) => Math.round(ms/1000)\n  const msg = { topic: 'optStart', payload: oStart }  // sending millisecs\n\n  const sptchart = { topic: 'chart', payload: sptFuture }\n  const oatchart = { topic: 'chart', payload: oatFuture }\n\n  return [[msg], [sptchart], [oatchart], log];\n}\n\n\n/**\n * Initially generated by Claude\n *\n * Optimum start time (hours, same clock as dtOpen).\n * p.dtOpen   building opening time (unix)\n * p.hsp      heating set point temp (°C)\n * p.spt      indoor space temp when heating switched off (°C)\n * p.capacity thermal capacity (kWh/°C)\n * p.power    boiler output (kW)\n * p.loss     heat loss (kW) per °C\n * dtStart    time heating switched off (unix)\n * oatFn      function(t) -> outside temp (°C)\n * dtStep     step size in secs (360 = 6 min)\n */\n\n\nfunction startTime(prop, dtStart, oatFn, sptChart, oatChart, dtStep = 30 * 60 * 1000) {\n  const dtH = dtStep / (60 * 60 * 1000) ; // step in hours, since C, P, L are kWh/kW based\n\n  // Forward passive cooling curve from switch-off to opening\n\n  let dt = dtStart;\n  let spt = prop.spt;\n  let n = 1000  // stop node-red from crashing if there's an infinite loop\n\n  const coolT = [];\n  const coolTemp = [];\n  while (dt < prop.dtOpen && n) {\n    const oat = oatFn(dt)\n    spt += (dtH / prop.mass) * (-prop.loss * (spt - oat));\n    coolT.push(dt);\n    coolTemp.push(spt);\n    sptChart.push({ time: dt, temperature: utils.toFix(spt, 2), series: 'Building Cooling (pred.)' })\n    oatChart.push({ time: dt, temperature: utils.toFix(oat, 2), series: 'Outside Air Temp. (pred.)' })\n    //    tChart.push({ time: dt, temperature: spt, series: 'Building Cooling' })\n    //    tChart.push({ time: dt, temperature: oat, series: 'Outside Air Temperature' })\n    dt += dtStep;\n    n -= 1\n  }\n  // Backward heating curve from opening time\n  dt = prop.dtOpen;\n  spt = prop.hsp;    // should using live temperature\n  while (dt > dtStart && n) {\n    const oat = oatFn(dt)\n    spt -= (dtH / prop.mass) * (prop.power - prop.loss * (spt - oat));\n    sptChart.push({ time: dt, temperature: utils.toFix(spt, 2), series: 'Building Warming (pred.)' })\n    dt -= dtStep;\n    const sptCool = interp(dt, coolT, coolTemp);\n    if (spt <= sptCool) return dt; // curves meet: this is the start time\n    n -= 1\n  }\n  return dtStart; // must start immediately / can't make it\n}\n\nfunction getLastLocaleTimeStamp(targetHour, dayCount, targetMinute = 0)\n{\n\n  const targetDate = new Date(dateNow)\n  // 1. Set the target time for TODAY first\n  targetDate.setHours(targetHour, targetMinute, 0, 0);\n\n  // 2. Conditional check: If that time has already passed today, move to tomorrow\n  {\n    targetDate.setDate(targetDate.getDate() + dayCount);\n  }\n  return targetDate.getTime()\n}\n\n\nfunction getNextLocaleTimestamp(targetHour, targetMinute = 0)\n{\n  const now = new Date(dateNow)\n  const targetDate = new Date(dateNow);\n\n  // 1. Set the target time for TODAY first\n  targetDate.setHours(targetHour, targetMinute, 0, 0);\n\n  // 2. Conditional check: If that time has already passed today, move to tomorrow\n  if (now >= targetDate) {\n    targetDate.setDate(targetDate.getDate() + 1);\n  }\n  return targetDate.getTime()\n}\n\n\nfunction getNextUtcTimestamp(hours, mins = 0) {\n\n  const now = new Date(dateNow)\n  const target = new Date(Date.UTC(now.getUTCFullYear(),\n                                   now.getUTCMonth(),\n                                   now.getUTCDate(),\n                                   hours, mins, 0, 0\n  ));\n  // If hours:mins UTC has already passed today, move to tomorrow\n  if (now >= target) {\n    target.setUTCDate(target.getUTCDate() + 1);\n  }\n  return target.getTime()\n\n}\n\n\n\n// Linear interpolation (like numpy.interp): clamps outside the range.\n// xs must be ascending.\nfunction interp(x, xs, ys) {\n  if (x <= xs[0]) return ys[0];\n  const n = xs.length;\n  if (x >= xs[n - 1]) return ys[n - 1];\n  let i = 1;\n  while (xs[i] < x) i++;\n  const f = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);\n  return ys[i - 1] + f * (ys[i] - ys[i - 1]);\n}\n\nconst dtStart = Math.min(dateNow, getNextLocaleTimestamp(0, 0))\n\nconst settings = Object.assign(initSettings, msg.settings)\n//node.error(JSON.stringify(settings))\nreturn optimumStart(settings, msg.payload, dtStart)\n",
+        "outputs": 4,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
@@ -4134,6 +4134,9 @@
             [
                 "fe96dbebd7f202a3",
                 "6b225ea73afc1d2e"
+            ],
+            [
+                "81b9f50208c687e5"
             ],
             [
                 "d6894441b5671df7"
@@ -4162,7 +4165,7 @@
         "type": "ui-chart",
         "z": "e7fcf1f501be8b60",
         "group": "eaf3efbfd265a483",
-        "name": "temp charts",
+        "name": "spt chart",
         "label": "",
         "order": 1,
         "chartType": "line",
@@ -4176,7 +4179,7 @@
         "xAxisFormatType": "{HH}:{mm}",
         "xmin": "",
         "xmax": "",
-        "yAxisLabel": "temperature",
+        "yAxisLabel": "building temperature",
         "yAxisProperty": "temperature",
         "yAxisPropertyType": "property",
         "ymin": "",
@@ -4210,11 +4213,11 @@
         ],
         "gridColorDefault": true,
         "width": "12",
-        "height": "8",
+        "height": "6",
         "className": "",
         "interpolation": "linear",
-        "x": 650,
-        "y": 260,
+        "x": 640,
+        "y": 220,
         "wires": [
             []
         ]
@@ -4233,7 +4236,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 630,
-        "y": 220,
+        "y": 180,
         "wires": []
     },
     {
@@ -4308,7 +4311,7 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 780,
-        "y": 120,
+        "y": 40,
         "wires": []
     },
     {
@@ -4487,7 +4490,7 @@
         "type": "debug",
         "z": "e7fcf1f501be8b60",
         "name": "debug 90",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -4495,7 +4498,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 410,
+        "x": 420,
         "y": 140,
         "wires": []
     },
@@ -4602,6 +4605,68 @@
         "wires": []
     },
     {
+        "id": "81b9f50208c687e5",
+        "type": "ui-chart",
+        "z": "e7fcf1f501be8b60",
+        "group": "eaf3efbfd265a483",
+        "name": "oat chart",
+        "label": "",
+        "order": 2,
+        "chartType": "line",
+        "category": "series",
+        "categoryType": "property",
+        "xAxisLabel": "time",
+        "xAxisProperty": "time",
+        "xAxisPropertyType": "property",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "outside air temperature",
+        "yAxisProperty": "temperature",
+        "yAxisPropertyType": "property",
+        "ymin": "",
+        "ymax": "",
+        "bins": 10,
+        "action": "replace",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "3",
+        "removeOlderUnit": "86400",
+        "removeOlderPoints": "",
+        "colors": [
+            "#0095ff",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#a347e1",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": "12",
+        "height": "6",
+        "className": "",
+        "interpolation": "linear",
+        "x": 640,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
         "id": "00c4ccd08c5fc11a",
         "type": "link in",
         "z": "81037ebb658aa24a",
@@ -4652,7 +4717,7 @@
         "type": "function",
         "z": "81037ebb658aa24a",
         "name": "flow control",
-        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils = global.get(\"utils\")\n\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y, 1), utils.toFix(slope, 1)]\n}\n\n\nfunction calculateFlowTemperature(prop) {\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n    , prop.hrFlowFull, prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n\n  const [lcTemp, lcSlope] = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1] = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n  // to create Weather Compensation plus Trim\n\n  const wctTemp = utils.toFix(wcTemp + trim, 1);\n\n  let flowSetPoint = prop.hrEnabled ? wctTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin)\n\n  return [wcTemp, lcTemp, trim, wctTemp, flowSetPoint]\n}\n\n\nfunction selectHeatSource(prop, flowSetPoint, status1, status2) {\n  // any time there is any setting change, we still \n  // reconsider what heat source we \n  const log = []\n  let heatSource = null       // this is how we set the LAE0 switch\n  let off = ''\n  const palette = {\n    disengage: \"purple\",\n    manual: \"blue\",\n    off: \"grey\",\n    auto: \"purple\",\n    ashp: \"green\",\n    gas: \"red\"\n  }\n\n  switch (prop.heatingMode) {\n\n    case 'auto':\n      const demand = prop.demand == 'heat-on'      // heat demanded\n      const flowMinReached = flowSetPoint > prop.flowMin\n      const currentHeatSource = flow.get('heatSource') ?? 'off'\n      const reach = prop.hsp + (currentHeatSource == 'off' ? -prop.hys : prop.hys)\n      const hspReached = prop.spt >= reach\n      const flowGasReached = flowSetPoint > prop.flowGas\n      heatSource = flowGasReached ? 'gas' : 'ashp'\n      if (!demand) {\n        log.push('Not scheduled to run')\n        off = 'off'\n      }\n      else {\n        if (flowGasReached) {\n          if (hspReached) {\n            log.push(`Heating setpoint reached`)\n            off = 'off'\n          }\n        }\n        else {\n          if (!flowMinReached) {\n            log.push('Requested flow temperature too low. Turn up Heating setpoint')\n            off = 'off'\n          }\n        }\n      }\n      break\n    case 'disengage':\n      heatSource = 'disengage'\n      log.push(`Disengaged: heat pump/gas boiler will remain stopped or running regardless of schedule or temperatures `)\n      break\n    case 'gas':\n      log.push('Gas boiler will stay running regardless of clock and temperatures')\n      heatSource = prop.heatingMode\n      break\n    case 'ashp':\n      log.push('ASHP will stay running regardless of clock and temperatures. Flow temperature will still be adjusted.')\n      heatSource = prop.heatingMode\n      break\n    case 'off':\n      heatSource = prop.heatingMode\n      break\n  }\n  prop.heatingModeHelp = log.join(' ')\n\n  //let texxt1 = `<div style=\"text-align:right; padding:0.3em; border-radius:0.5em; font-weight:normal; font-size:1.8em; background-color:${palette[heatSource]};color:white;\">${heatSource} ${off}</div>`\n  let texxt1 = `<div style=\"text-align:center; padding:0.3em; border-radius:0.5em; font-weight:normal; font-size:1.7em; background-color:${palette[heatSource]};color:white; width:5em; height:100%;\">${heatSource} ${off}</div>`\n\n  //texxt1 = `${heatSource} ${off}`\n\n  let texxt2 = log.join(' ')\n  texxt2 = texxt2 ? `<div style=\"text-align:left;\">${utils.getHHMMNow()} ${texxt2}</div>` : ''\n  status2.unshift(texxt2)\n\n\n\n  status1.unshift(texxt1)\n\n  return off ? 'off' : heatSource\n}\n\nfunction doCalculation(settings, ashpControl, switchControl, influx, notices) {\n  const [weatherComp, loadComp, trim, weatherPlusTrim, flowSetPoint] = calculateFlowTemperature(settings)\n  const status1 = []\n  const status2 = []\n  const heatSource = selectHeatSource(settings, flowSetPoint, status1, status2)\n\n  ashpControl.push({\n    topic: 'ashp0/SETPOINT_hsp1',\n    measurement: 'temperature',\n    payload: flowSetPoint,\n    prefix: 'local',\n    track: true               // update status text under node\n  });\n  ashpControl.push({\n    topic: 'ashp0/SETPOINT_hsp2',\n    measurement: 'temperature',\n    payload: flowSetPoint,\n    prefix: 'local',\n    track: true               // update status text under node\n  });\n\n  switchControl.push({\n    topic: 'joule0/heatSource',\n    measurement: 'state',\n    payload: heatSource,\n    settings: settings,          // need pump overrun time later\n    prefix: 'local',\n    track: true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    spt: settings.spt,  // space temperature\n    hsp: settings.hsp,  // heat setpoint\n    PID: utils.toFix(settings.pidOut, 2),\n    //    lcLow: settings.lcLow,  \n    //    lcHigh: settings.lcHigh, \n    lc: loadComp,\n    trim: trim,\n    wct: weatherPlusTrim,\n    dem: settings.demand,\n    hs: heatSource,\n    min: settings.flowMin,\n    gas: settings.flowGas,\n    max: settings.flowMax,\n    wat: flowSetPoint\n  }\n\n  const logText = Object.entries(calcs)\n    .map(([key, value]) => `${key}:${value}`)\n    .join(\" \");\n\n  influx.push({\n    topic: 'log/record/joule0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param: 'control',   // for influx\n    //source: 'joule0'\n  })\n\n  notices.push({\n    topic: 'joule0/status1Html',\n    payload: status1,\n    prefix: 'local'\n  })\n\n  notices.push({\n    topic: 'joule0/status2Html',\n    payload: status2,\n    prefix: 'local'\n  })\n\n  notices.push({\n    topic: 'log/text/joule0',\n    measurement: null,\n    payload: `${utils.getTimeNow()} ${logText}`,\n    prefix: 'local'\n  })\n\n\n  notices.push({\n    topic: 'joule0/flowSetpoint',\n    param: 'temperature',\n    payload: flowSetPoint,\n    prefix: 'local'\n  })\n  const manual = false;\n  node.status({\n    fill: \"yellow\",\n    shape: manual ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'spt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'spt' topic from heat settings\", msg);\n  return null\n}\n\nif (msg.settingsPassingThrough === undefined) {\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst influx = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, influx, notices)\nconst disengage = settings.heatingMode == 'disengage'\n\n// only emit control messages if we're not in manual heatingMode\nreturn [disengage ? null : ashpControl, disengage ? null : switchControl, influx, notices]\n",
+        "func": "/** \n * Calculate flow temperature. \n * This is the most important node.\n */\n\n\nconst utils = global.get(\"utils\")\n\n\n/**\n* For a value of x between x1 to x2, find the value of y between y1 and y2\n* Assume x y and have a linear relationship.\n*/\n\nfunction lookup(x, x1, x2, y1, y2) {\n  // Calculate the slope (m)\n  const slope = (y2 - y1) / (x2 - x1);\n\n  // Calculate the y-intercept (b) using the point-slope form (y - y1 = m(x - x1))\n  const yIntercept = y1 - slope * x1;\n\n  // Calculate the y value for the given x\n  const y = slope * x + yIntercept;\n\n  return [utils.toFix(y, 1), utils.toFix(slope, 1)]\n}\n\n\nfunction calculateFlowTemperature(prop) {\n  const oatBanded = Math.max(Math.min(prop.oat, prop.hrOatFull), prop.hrOatNone)\n  //node.warn(\"band \" + oatBanded);\n\n  const res = lookup(oatBanded, prop.hrOatFull, prop.hrOatNone\n    , prop.hrFlowFull, prop.hrFlowNone);\n\n  const [wcTemp, wcSlope] = res\n\n  // use v1 algorithm and hard coded range for now \n\n  const [lcTemp, lcSlope] = lookup(prop.pidOut, 0, 1, prop.lcLow, prop.lcHigh)\n\n  const [trim, lcSlope1] = lookup(prop.pidOut, 0, 1, -prop.lcTrim, prop.lcTrim)\n\n  // add the weather compensation and the load compensation (needs fixing)\n  // to create Weather Compensation plus Trim\n\n  const wctTemp = utils.toFix(wcTemp + trim, 1);\n\n  let flowSetPoint = prop.hrEnabled ? wctTemp : lcTemp\n\n  //node.error(` load comp ${lcTemp}  flowSetPoint ${flowSetPoint} `)\n\n  flowSetPoint = Math.max(Math.min(flowSetPoint, prop.flowMax), prop.flowMin)\n\n  return [wcTemp, lcTemp, trim, wctTemp, flowSetPoint]\n}\n\n\nfunction selectHeatSource(prop, flowSetPoint, status1, status2) {\n  // any time there is any setting change, we still \n  // reconsider what heat source we \n  const log = []\n  let heatSource = null       // this is how we set the LAE0 switch\n  let off = ''\n  const palette = {\n    disengage: \"purple\",\n    manual: \"blue\",\n    off: \"grey\",\n    auto: \"purple\",\n    ashp: \"green\",\n    gas: \"red\"\n  }\n\n  switch (prop.heatingMode) {\n\n    case 'auto':\n      const demand = prop.demand == 'heat-on'      // heat demanded\n      const flowMinReached = flowSetPoint > prop.flowMin\n      const currentHeatSource = flow.get('heatSource') ?? 'off'\n      const reach = prop.hsp + (currentHeatSource == 'off' ? -prop.hys : prop.hys)\n      const hspReached = prop.spt >= reach\n      const flowGasReached = flowSetPoint > prop.flowGas\n      heatSource = flowGasReached ? 'gas' : 'ashp'\n      if (!demand) {\n        log.push('Not scheduled to run')\n        off = 'off'\n      }\n      else {\n        if (flowGasReached) {\n          if (hspReached) {\n            log.push(`Heating setpoint reached`)\n            off = 'off'\n          }\n        }\n        else {\n          if (!flowMinReached) {\n            log.push('Requested flow temperature too low. Turn up Heating setpoint')\n            off = 'off'\n          }\n        }\n      }\n      break\n    case 'disengage':\n      heatSource = 'disengage'\n      log.push(`Disengaged: heat pump/gas boiler will remain stopped or running regardless of schedule or temperatures `)\n      break\n    case 'gas':\n      log.push('Gas boiler will stay running regardless of clock and temperatures')\n      heatSource = prop.heatingMode\n      break\n    case 'ashp':\n      log.push('ASHP will stay running regardless of clock and temperatures. Flow temperature will still be adjusted.')\n      heatSource = prop.heatingMode\n      break\n    case 'off':\n      heatSource = prop.heatingMode\n      break\n  }\n  prop.heatingModeHelp = log.join(' ')\n\n  //let texxt1 = `<div style=\"text-align:right; padding:0.3em; border-radius:0.5em; font-weight:normal; font-size:1.8em; background-color:${palette[heatSource]};color:white;\">${heatSource} ${off}</div>`\n  let texxt1 = `${heatSource} ${off}`\n  let texxt2 = log.join(' ')\n  texxt2 = texxt2 ? `${utils.getHHMMNow()} ${texxt2}` : ''\n\n  status1.unshift(texxt1)\n  status2.unshift(texxt2)\n  return off ? 'off' : heatSource\n}\n\nfunction doCalculation(settings, ashpControl, switchControl, influx, notices) {\n  const [weatherComp, loadComp, trim, weatherPlusTrim, flowSetPoint] = calculateFlowTemperature(settings)\n  const status1 = []\n  const status2 = []\n  const heatSource = selectHeatSource(settings, flowSetPoint, status1, status2)\n\n  ashpControl.push({\n    topic: 'ashp0/SETPOINT_hsp1',\n    measurement: 'temperature',\n    payload: flowSetPoint,\n    prefix: 'local',\n    track: true               // update status text under node\n  });\n  ashpControl.push({\n    topic: 'ashp0/SETPOINT_hsp2',\n    measurement: 'temperature',\n    payload: flowSetPoint,\n    prefix: 'local',\n    track: true               // update status text under node\n  });\n\n  switchControl.push({\n    topic: 'joule0/heatSource',\n    measurement: 'state',\n    payload: heatSource,\n    settings: settings,          // need pump overrun time later\n    prefix: 'local',\n    track: true               // update status text under node\n  });\n\n  const calcs = {\n    time: utils.getTimeNow(),\n    hm: settings.heatingMode,\n    oat: settings.oat,\n    wc: weatherComp,\n    spt: settings.spt,  // space temperature\n    hsp: settings.hsp,  // heat setpoint\n    PID: utils.toFix(settings.pidOut, 2),\n    //    lcLow: settings.lcLow,  \n    //    lcHigh: settings.lcHigh, \n    lc: loadComp,\n    trim: trim,\n    wct: weatherPlusTrim,\n    dem: settings.demand,\n    hs: heatSource,\n    min: settings.flowMin,\n    gas: settings.flowGas,\n    max: settings.flowMax,\n    wat: flowSetPoint\n  }\n\n  const logText = Object.entries(calcs)\n    .map(([key, value]) => `${key}:${value}`)\n    .join(\" \");\n\n  influx.push({\n    topic: 'log/record/joule0',\n    payload: calcs,\n    timestamp: Date.now(),\n    prefix: 'local',\n    param: 'control',   // for influx\n    //source: 'joule0'\n  })\n\n  notices.push({\n    topic: 'joule0/status1',\n    payload: status1,\n    prefix: 'local'\n  })\n\n  notices.push({\n    topic: 'joule0/status2',\n    payload: status2,\n    prefix: 'local'\n  })\n\n  notices.push({\n    topic: 'log/text/joule0',\n    measurement: null,\n    payload: `${utils.getTimeNow()} ${logText}`,\n    prefix: 'local'\n  })\n\n\n  notices.push({\n    topic: 'joule0/flowSetpoint',\n    param: 'temperature',\n    payload: flowSetPoint,\n    prefix: 'local'\n  })\n  const manual = false;\n  node.status({\n    fill: \"yellow\",\n    shape: manual ? \"dot\" : \"ring\",\n    text: `${utils.getTimeNow()} heatSource:${heatSource} flow:${flowSetPoint}`\n  })\n}\n\n// assertions to ensure some degree of robustness\n\nif (msg.topic != 'spt')  // building temperature\n{\n  node.error(\"Will only accept msgs with 'spt' topic from heat settings\", msg);\n  return null\n}\n\nif (msg.settingsPassingThrough === undefined) {\n  node.error(\"Will only accept msgs with settings\", msg);\n  return null\n}\nconst settings = msg.settingsPassingThrough\nsettings.pidOut = msg.payload\nconst ashpControl = []\nconst switchControl = []\nconst influx = []\nconst notices = []\n\n// need to check that setpoint and bt and oat are NOT null\n\ndoCalculation(settings, ashpControl, switchControl, influx, notices)\nconst disengage = settings.heatingMode == 'disengage'\n\n// only emit control messages if we're not in manual heatingMode\nreturn [disengage ? null : ashpControl, disengage ? null : switchControl, influx, notices]\n",
         "outputs": 4,
         "timeout": 0,
         "noerr": 0,
@@ -6308,19 +6373,19 @@
             },
             {
                 "t": "regex",
-                "v": "status1Html",
+                "v": "status1$",
                 "vt": "str",
                 "case": false
             },
             {
                 "t": "regex",
-                "v": "status2Html",
+                "v": "status2$",
                 "vt": "str",
                 "case": false
             },
             {
                 "t": "regex",
-                "v": "status3",
+                "v": "status3$",
                 "vt": "str",
                 "case": false
             },
@@ -6479,7 +6544,7 @@
                 "8a81b4dda778a32a"
             ],
             [
-                "50d49369fff140db"
+                "d9db1e0a801c367a"
             ],
             [
                 "c3740bcd6237fb0e"
@@ -6573,7 +6638,7 @@
         "sectors": [],
         "major_division": 1,
         "minor_division": 0.2,
-        "value_decimal_places": 1,
+        "value_decimal_places": "2",
         "scale_decimal_places": 0,
         "label": "",
         "measurement": "temperature",
@@ -6585,7 +6650,9 @@
                 "lengthPercent": "100"
             }
         ],
+        "hubcolor": "black",
         "sweep_angle": "250",
+        "keepwidth": true,
         "myclass": "",
         "x": 570,
         "y": 2540,
@@ -8031,7 +8098,7 @@
         "type": "debug",
         "z": "3187bd06ef664359",
         "name": "returned",
-        "active": true,
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -8492,30 +8559,6 @@
         ]
     },
     {
-        "id": "50d49369fff140db",
-        "type": "ui-text",
-        "z": "3187bd06ef664359",
-        "group": "7d2a07e2b30dad87",
-        "order": 2,
-        "width": "2",
-        "height": "1",
-        "name": "heatStatus1",
-        "label": "",
-        "format": "{{msg.payload}}",
-        "layout": "row-left",
-        "style": true,
-        "font": "Arial,Arial,Helvetica,sans-serif",
-        "fontSize": "16",
-        "color": "#000000",
-        "wrapText": true,
-        "className": "",
-        "value": "payload",
-        "valueType": "msg",
-        "x": 710,
-        "y": 100,
-        "wires": []
-    },
-    {
         "id": "d7a729c9b54aef0b",
         "type": "ui-slider",
         "z": "3187bd06ef664359",
@@ -8624,7 +8667,7 @@
         "page": "",
         "ui": "",
         "name": "rangeSlider",
-        "order": 5,
+        "order": 8,
         "width": 0,
         "height": 0,
         "head": "",
@@ -9308,25 +9351,25 @@
         ]
     },
     {
-        "id": "639f25202730a6b8",
+        "id": "d9db1e0a801c367a",
         "type": "ui-template",
         "z": "3187bd06ef664359",
-        "group": "9ee3507d7e391438",
+        "group": "7d2a07e2b30dad87",
         "page": "",
         "ui": "",
-        "name": "",
-        "order": 0,
-        "width": 0,
-        "height": 0,
+        "name": "status 1",
+        "order": 2,
+        "width": "2",
+        "height": "1",
         "head": "",
-        "format": "<template>\n    <div>\n        <h2>Counter</h2>\n        <!-- Conditional Styling using Attribute Binding (\":\") -->\n        <!-- and rendering content inside <tags></tags> with {{ }} -->\n        <p :style=\"{'color' : (count > 5 ? 'red' : 'green' )}\">Current Count: {{ count }}</p>\n        <!-- Computed Rendering using Vue Computed Variables -->\n        <p class=\"my-class\">Formatted Count: {{ formattedCount }}</p>\n        <!-- Conditional Rendering with \"v-if\" -->\n        <b v-if=\"count > 5\">Too many!</b>\n        <v-btn @click=\"increase()\">Increment</v-btn>\n    </div>\n</template>\n\n<script>\n    export default {\n        data() {\n            // define variables available component-wide\n            // (in <template> and component functions)\n            return {\n                count: 0\n            }\n        },\n        watch: {\n            // watch for any changes of \"count\"\n            count: function () {\n                if (this.count % 5 === 0) {\n                    this.send({payload: 'Multiple of 5'})\n                }\n            }\n        },\n        computed: {\n            // automatically compute this variable\n            // whenever VueJS deems appropriate\n            formattedCount: function () {\n                return this.count + ' Apples'\n            }\n        },\n        methods: {\n            // expose a method to our <template> and Vue Application\n            increase: function () {\n                this.count++\n            }\n        },\n        mounted() {\n            // code here when the component is first loaded\n        },\n        unmounted() {\n            // code here when the component is removed from the Dashboard\n            // i.e. when the user navigates away from the page\n        }\n    }\n</script>\n<style>\n    /* define any styles here - supports raw CSS */\n    .my-class {\n        color: red;\n    }\n</style>",
+        "format": "<template>\n    <div class='heat-status' :style=\"{ backgroundColor: getBackgroundColor(msg?.payload) }\">{{msg?.payload}}\n    </div>\n</template>\n\n\n<script>\n    export default {\n        methods: {\n            // expose a method to our <template> and Vue Application\n            getBackgroundColorWorks: function (status) {\n                const palette = {\n                    disengage: \"purple\",\n                    manual: \"blue\",\n                    off: \"grey\",\n                    auto: \"purple\",\n                    ashp: \"green\",\n                    gas: \"red\"\n                }\n                return palette[status] ?? 'yellow'\n            },\n            getBackgroundColor: function (status) {\n                //return '#555555'\n                const matches = status.match(/^[a-z]*/) ;\n                const stat = (matches.length == 1) ? matches[0] : 'hmm'\n                \n                const palette = {\n                    disengage: \"purple\",\n                    manual: \"blue\",\n                    off: \"grey\",\n                    auto: \"purple\",\n                    ashp: \"green\",\n                    gas: \"red\",\n                    hmm: \"grey\"\n                }\n                return palette[stat] ?? 'yellow';\n            }\n        }\n    }\n</script>\n\n<style scoped>\n    /* All your styling attributes go safely here */\n    .heat-status {\n        text-align: center;\n        padding: 0.3em;\n        border-radius: 0.5em;\n        font-weight: normal;\n        font-size: 1.7em;\n        color: white;\n        width: 5em;\n        height: 100%;\n    }\n</style>",
         "storeOutMessages": true,
         "passthru": true,
         "resendOnRefresh": true,
         "templateScope": "local",
         "className": "",
-        "x": 160,
-        "y": 3000,
+        "x": 700,
+        "y": 100,
         "wires": [
             []
         ]
@@ -11726,7 +11769,7 @@
         "group": "9ee3507d7e391438",
         "name": "",
         "label": "chart",
-        "order": 4,
+        "order": 7,
         "chartType": "line",
         "category": "series",
         "categoryType": "msg",
@@ -11810,7 +11853,7 @@
         "z": "86219b48706129b6",
         "d": true,
         "group": "9ee3507d7e391438",
-        "order": 1,
+        "order": 4,
         "width": 0,
         "height": 0,
         "name": "abc",
@@ -11882,7 +11925,7 @@
         "name": "weekday1",
         "group": "9ee3507d7e391438",
         "label": "",
-        "order": 3,
+        "order": 6,
         "width": "",
         "height": "",
         "options": [
@@ -11931,7 +11974,7 @@
         "name": "weekday2",
         "group": "9ee3507d7e391438",
         "label": "",
-        "order": 2,
+        "order": 5,
         "width": "",
         "height": "",
         "options": [
@@ -12124,6 +12167,136 @@
         "x": 220,
         "y": 780,
         "wires": []
+    },
+    {
+        "id": "639f25202730a6b8",
+        "type": "ui-template",
+        "z": "86219b48706129b6",
+        "group": "9ee3507d7e391438",
+        "page": "",
+        "ui": "",
+        "name": "status 1",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n    <div class='heat-status' \n    :style=\"{ backgroundColor: getBackgroundColor(msg?.payload) }\">{{msg?.payload}}\n    </div>\n</template>\n\n\n<script>\n    export default {\n        methods: {\n            // expose a method to our <template> and Vue Application\n            getBackgroundColorWorks: function (status) {\n                const palette = {\n                    disengage: \"purple\",\n                    manual: \"blue\",\n                    off: \"grey\",\n                    auto: \"purple\",\n                    ashp: \"green\",\n                    gas: \"red\"\n                }\n                return palette[status] ?? 'yellow'\n            },\n            getBackgroundColor: function (status) {\n                //return '#555555'\n                const matches = status.match(/^[a-z]*/) ;\n                const stat = (matches.length == 1) ? matches[0] : 'hmm'\n                \n                const palette = {\n                    disengage: \"purple\",\n                    manual: \"blue\",\n                    off: \"grey\",\n                    auto: \"purple\",\n                    ashp: \"green\",\n                    gas: \"red\",\n                    hmm: \"grey\"\n                }\n                return palette[stat] ?? 'yellow';\n            }\n        }\n    }\n</script>\n\n<style scoped>\n    /* All your styling attributes go safely here */\n    .heat-status {\n        text-align: center;\n        padding: 0.3em;\n        border-radius: 0.5em;\n        font-weight: normal;\n        font-size: 1.7em;\n        color: white;\n        width: 5em;\n        height: 100%;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 360,
+        "y": 2100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "56f80f8fc687c131",
+        "type": "inject",
+        "z": "86219b48706129b6",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "status",
+        "payload": "gas off",
+        "payloadType": "str",
+        "x": 190,
+        "y": 2100,
+        "wires": [
+            [
+                "639f25202730a6b8"
+            ]
+        ]
+    },
+    {
+        "id": "89e5b7d25e9578a3",
+        "type": "inject",
+        "z": "86219b48706129b6",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "status",
+        "payload": "off",
+        "payloadType": "str",
+        "x": 180,
+        "y": 2140,
+        "wires": [
+            [
+                "639f25202730a6b8"
+            ]
+        ]
+    },
+    {
+        "id": "fd27bc2821a36094",
+        "type": "ui-template",
+        "z": "86219b48706129b6",
+        "group": "9ee3507d7e391438",
+        "page": "",
+        "ui": "",
+        "name": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "head": "",
+        "format": "<template>\n    <div>\n        <h2>Counter</h2>\n        <!-- Conditional Styling using Attribute Binding (\":\") -->\n        <!-- and rendering content inside <tags></tags> with {{ }} -->\n        <p :style=\"{'color' : (count > 5 ? 'red' : 'green' )}\">Current Count: {{ count }}</p>\n        <!-- Computed Rendering using Vue Computed Variables -->\n        <p class=\"my-class\">Formatted Count: {{ formattedCount }}</p>\n        <!-- Conditional Rendering with \"v-if\" -->\n        <b v-if=\"count > 5\">Too many!</b>\n        <v-btn @click=\"increase()\">Increment</v-btn>\n    </div>\n</template>\n\n<script>\n    export default {\n        data() {\n            // define variables available component-wide\n            // (in <template> and component functions)\n            return {\n                count: 0\n            }\n        },\n        watch: {\n            // watch for any changes of \"count\"\n            count: function () {\n                if (this.count % 5 === 0) {\n                    this.send({payload: 'Multiple of 5'})\n                }\n            }\n        },\n        computed: {\n            // automatically compute this variable\n            // whenever VueJS deems appropriate\n            formattedCount: function () {\n                return this.count + ' Apples'\n            }\n        },\n        methods: {\n            // expose a method to our <template> and Vue Application\n            increase: function () {\n                this.count++\n            }\n        },\n        mounted() {\n            // code here when the component is first loaded\n        },\n        unmounted() {\n            // code here when the component is removed from the Dashboard\n            // i.e. when the user navigates away from the page\n        }\n    }\n</script>\n<style>\n    /* define any styles here - supports raw CSS */\n    .my-class {\n        color: red;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 180,
+        "y": 2020,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cc56a64fd1ec8e32",
+        "type": "ui-template",
+        "z": "86219b48706129b6",
+        "group": "9ee3507d7e391438",
+        "page": "",
+        "ui": "",
+        "name": "status 1",
+        "order": 3,
+        "width": "2",
+        "height": "1",
+        "head": "",
+        "format": "<template>\n    <!-- We bind to a local reactive variable 'bgColor' instead of a method -->\n    <span class=\"heat-status\" :style=\"{ backgroundColor: bgColor }\">\n        {{ msg?.payload ?? 'No Data' }}\n    </span>\n</template>\n\n<script>\n    export default {\n    data() {\n        return {\n            // Define a local reactive variable with a safe starting fallback color\n            bgColor: 'grey'\n        }\n    },\n    // We watch 'msg' for changes coming from Node-RED\n    watch: {\n        msg: {\n            handler(msg) {\n                if (!msg || !msg.payload) return;\n\n                const status = msg.payload ;\n                \n                const palette = {\n                    disengage: \"purple\",\n                    manual: \"blue\",\n                    off: \"grey\",\n                    auto: \"purple\",\n                    ashp: \"green\",\n                    gas: \"red\"\n                };\n\n                // Update our local state variable, which instantly updates the DOM\n                this.bgColor = palette[status] ?? 'yellow';\n            },\n            //immediate: true, // Run immediately on page load\n            //deep: true       // Watch nested properties inside the msg object\n        }\n    }\n}\n</script>\n\n<style scoped>\n    .heat-status {\n        display: inline-block;\n        /* Required for custom width/height styles to take effect on a <span> */\n        text-align: center;\n        padding: 0.3em;\n        border-radius: 0.5em;\n        font-weight: normal;\n        font-size: 1.7em;\n        color: white;\n        width: 5em;\n        height: 100%;\n    }\n</style>",
+        "storeOutMessages": true,
+        "passthru": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "className": "",
+        "x": 180,
+        "y": 2060,
+        "wires": [
+            []
+        ]
     },
     {
         "id": "dda1bcaa405b6302",
